@@ -2,13 +2,16 @@
 
 config_dict = {
   ### locations of assets ###
-  data_dir: 'gdrive/MyDrive/WW_abd_mri/',
+  data_dir: '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
   dataset_file: './stored_assets/dataset.pkl',
+  train_csv = pd.read_csv(data_dir + 'trainfiles.csv'),
+  test_csv = pd.read_csv(data_dir + 'testfiles.csv'),
   metadata_model_file: './stored_assets/metadata_model.pkl',
   pixel_model_file: './stored_assets/pixel_model_file.pkl,
-  series_description_model_file: './stored_assets/series_description_model_file.pkl'
-  
-  
+  series_description_model_file: './stored_assets/series_description_model_file.pkl',
+  val_list = [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66], #using same train/val/test split as in the original split based on the metadata classifier
+
+
   ### converts numeric labels to textual descriptors ###
   abd_label_dict: {
     '1': {
@@ -209,5 +212,35 @@ config_dict = {
         'plane': 'ax/cor',
         'contrast': '1'
       }
-  }
+  }, 
+  # Data cropping and normalization, also converts single channel to 3 channel for the model
+    data_transforms = {
+    'train': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        #transforms.RandomHorizontalFlip(),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ]),
+    'test': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+},
+
+
 }
