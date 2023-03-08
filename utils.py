@@ -32,4 +32,11 @@ def get_dicoms(path, first_dcm=False, **kwargs):
     return fns, df
 
   
+ ### takes the contents of the dataframe column with path/filenames and converts pieces into separate df columns ###   
+ def expand_filename_into_columns(df, cols):
+    for iterator in range(len(cols)):
+        df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[iterator])
+    return df
+
+        
   
