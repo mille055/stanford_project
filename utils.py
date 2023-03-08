@@ -31,6 +31,9 @@ def get_dicoms(path, first_dcm=False, **kwargs):
     df = pd.DataFrame.from_dicoms(fns, **kwargs)
     return fns, df
 
+### Reads a DICOM file and returns the corresponding pydicom.Dataset ###
+def dcmread(fn: Path, no_pixels=True, force=True):
+    return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
   
  ### takes the contents of the dataframe column with path/filenames and converts pieces into separate df columns ###   
  def expand_filename_into_columns(df, cols):
