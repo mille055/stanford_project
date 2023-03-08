@@ -1,3 +1,13 @@
+import pandas as pd
+import numpy as np
+import pydicom
+from pydicom.dataset import Dataset as DcmDataset
+from pydicom.tag import BaseTag as DcmTag
+from pydicom.multival import MultiValue as DcmMultiValue
+
+
+### local imports ###
+from config import config_dict
 
 
 ### gets the dicom files from a provided directory ###
