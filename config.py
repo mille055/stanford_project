@@ -10,7 +10,8 @@ config_dict = {
   pixel_model_file: './stored_assets/pixel_model_file.pkl,
   series_description_model_file: './stored_assets/series_description_model_file.pkl',
   val_list = [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66], #using same train/val/test split as in the original split based on the metadata classifier
-
+  random_seed = 42,
+  train_val_split_percent = 0.2,
 
   ### converts numeric labels to textual descriptors ###
   abd_label_dict: {
