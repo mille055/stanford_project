@@ -22,7 +22,7 @@ Reference: Gauriau R, et al. Using DICOM Metadata for Radiological Image Series 
 ## Pixel-based Classifier
 More description to follow....
 Results from current model:
-![img.png](../assets/figures/FigPixel2023032.png)
+![img.png](/assets/figures/FigPixel2023032.png)
 
 
 ## References:
