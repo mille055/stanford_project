@@ -2,7 +2,8 @@
 
 config_dict = {
   ### locations of assets ###
-  data_dir: '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
+  img_data_dir: '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
+  txt_data_dir: '../data/',
   dataset_file: './stored_assets/dataset.pkl',
   train_csv = pd.read_csv(data_dir + 'trainfiles.csv'),
   test_csv = pd.read_csv(data_dir + 'testfiles.csv'),

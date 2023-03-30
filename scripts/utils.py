@@ -121,3 +121,22 @@ def imshow(img, title):
 
     plt.axis('off')
     plt.show()
+
+
+def shorten_df(df, selection_fraction = 0.5):
+    df1 = df.copy()
+    grouped_df = df.groupby(['patientID', 'series'])
+    sorted_df = grouped_df['file_info'].apply(lambda x: x.sort_values())
+  
+    selected_filename = grouped_df['file_info'].apply(lambda x: x.sort_values().iloc[int(len(x)*selection_fraction)])
+
+  
+    selected_filename = selected_filename.reset_index()
+  
+    # perform merge and deal with duplicate/unnecessary columns
+    df1 = df1.merge(selected_filename, on=['patientID', 'series'], how='left') 
+    df_short = df1.drop(['file_info_x', 'img_num'], axis=1)
+    df_short = df_short.rename(columns = {'file_info_y': 'file_info'})
+    df_short.drop_duplicates(inplace=True)
+    df_short.reset_index(drop=True, inplace=True)
+    return df_short
