@@ -1,2 +1,5 @@
 pydicom
 monai
+spacy
+nltk
+sentence_transformers
