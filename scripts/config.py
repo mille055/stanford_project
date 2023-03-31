@@ -1,6 +1,7 @@
 ###### For configuration of the training or inference of the models ######
 import torchvision
 from torchvision import datasets, models, transforms
+import pandas as pd
 
 
   ### locations of assets ###
@@ -13,9 +14,6 @@ metadata_model_file =  './stored_assets/metadata_model.pkl'
 pixel_model_file = './stored_assets/pixel_model_file.pkl'
 series_description_model_file = './stored_assets/series_description_model_file.pkl'
 
-### pickled dataframes
-test_df_for_labels = pd.read_pickle('../data/X_test02282023.pkl')
-train_df_for_labels = pd.read_pickle('../data/X_train02282023.pkl')
 
 
 #validation split

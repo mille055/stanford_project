@@ -38,43 +38,43 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 senttrans_model = SentenceTransformer(sentence_encoder, device=device)
 
 
-def load_text_data(train_csv_file, test_csv_file):
+def load_text_data(train_df, test_df):
     
+    # train_csv = pd.read_csv(train_csv_file)
+    # test_csv = pd.read_csv(test_csv_file)
     
-    train_csv = pd.read_csv(train_csv_file)
-    test_csv = pd.read_csv(test_csv_file)
-    
-    #run once at start to rid unneccesary column
-    train_csv.drop('Unnamed: 0', axis=1, inplace=True)
-    test_csv.drop('Unnamed: 0', axis=1, inplace=True)
+    # #run once at start to rid unneccesary column
+    # train_csv.drop('Unnamed: 0', axis=1, inplace=True)
+    # test_csv.drop('Unnamed: 0', axis=1, inplace=True)
 
     # create shortened dataframes for train and test
-    train_csv_short = shorten_df(train_csv, selection_fraction = 0.5)
-    test_csv_short = shorten_df(test_csv, selection_fraction = 0.5)
+    train_df_short = shorten_df(train_df, selection_fraction = 0.5)
+    test_df_short = shorten_df(test_df, selection_fraction = 0.5)
 
-    val_df = train_csv_short[train_csv_short.patientID.isin(val_list)].reset_index(drop=True)
-    train_df = train_csv_short[~train_csv_short.index.isin(val_df.index)].reset_index(drop=True)
-    test_df = test_csv_short.reset_index(drop=True)
+    # create train, val, test datasets
+    val = train_df_short[train_df_short.patientID.isin(val_list)].reset_index(drop=True)
+    train = train_df_short[~train_df_short.index.isin(val.index)].reset_index(drop=True)
+    test = test_df_short.reset_index(drop=True)
 
     # train = train_df.reset_index(drop=True)
     # val = val_df.reset_index(drop=True)
     # test = test_df.reset_index(drop=True)
-    print(train_df.columns)
+    print(train.columns)
 
-    X_train = train_df[series_description_column]
-    y_train = train_df_for_labels[text_label]
+    X_train = train[series_description_column]
+    y_train = train[text_label]
 
-    X_val = val_df[series_description_column]
-    y_val = val_df[text_label]
+    X_val = val[series_description_column]
+    y_val = val[text_label]
 
-    X_test = test_df_for_labels[series_description_column]
-    y_test = test_df_for_labels[text_label]
+    X_test = test[series_description_column]
+    y_test = test[text_label]
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def train_text_model(senttrans_model=senttrans_model):
-    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data()
+def train_text_model(senttrans_model=senttrans_model, train_df=train_data, test_df=test_data):
+    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_df, test_df)
     
     #encode the text labels in the train, val, and test datasets
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]
@@ -120,6 +120,11 @@ def list_incorrect_text_predictions(ytrue, ypreds):
     return y_incorrect_list
 
 ## test
+## pickled dataframes
+test_data = pd.read_pickle('../data/X_test02282023.pkl')
+train_data = pd.read_pickle('../data/X_train02282023.pkl')
+print(train_data.columns)
+
 preds, acc, preds_val, acc_val, preds_test, acc_test, logreg_model = train_text_model()
 list = list_incorrect_text_predictions(y_test, preds_test)
 print(list)
