@@ -3,3 +3,7 @@ monai
 spacy
 nltk
 sentence_transformers
+torch
+torchvision
+
+

@@ -1,13 +1,20 @@
 import pandas as pd
 import numpy as np
 import pydicom
+
 from pydicom.dataset import Dataset as DcmDataset
 from pydicom.tag import BaseTag as DcmTag
 from pydicom.multival import MultiValue as DcmMultiValue
-
+from pathlib import Path
+from torch.optim import lr_scheduler
+import torch.backends.cudnn as cudnn
+import torchvision
+from torchvision import datasets, models, transforms
+from torch.utils.data import Dataset, DataLoader
+from torchvision.transforms import ToTensor
 
 ### local imports ###
-from config import config_dict
+from config import *
 
 
 ### gets the dicom files from a provided directory ###
@@ -36,7 +43,7 @@ def dcmread(fn: Path, no_pixels=True, force=True):
     return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
   
  ### takes the contents of the dataframe column with path/filenames and converts pieces into separate df columns ###   
- def expand_filename_into_columns(df, cols):
+def expand_filename_into_columns(df, cols):
     for iterator in range(len(cols)):
         df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[iterator])
     return df
@@ -122,21 +129,16 @@ def imshow(img, title):
     plt.axis('off')
     plt.show()
 
+# produce high quality confusion matrix image and save it
+# still need to add labels
+def plot_and_save_cm(ytrue, ypreds):
+    cm = confusion_matrix(ytrue, ypreds)
+    plt.figure(figsize=(25, 25))
+    plt.tight_layout()
+    ConfusionMatrixDisplay(cm).plot(cmap='Blues')
+    plt.savefig("./assets/images/ConfusionMatrixSentences" + datetime.now().strftime('%Y%m%d') + ".png", dpi=300, bbox_inches='tight')
 
-def shorten_df(df, selection_fraction = 0.5):
-    df1 = df.copy()
-    grouped_df = df.groupby(['patientID', 'series'])
-    sorted_df = grouped_df['file_info'].apply(lambda x: x.sort_values())
-  
-    selected_filename = grouped_df['file_info'].apply(lambda x: x.sort_values().iloc[int(len(x)*selection_fraction)])
+    plt.show()
 
-  
-    selected_filename = selected_filename.reset_index()
-  
-    # perform merge and deal with duplicate/unnecessary columns
-    df1 = df1.merge(selected_filename, on=['patientID', 'series'], how='left') 
-    df_short = df1.drop(['file_info_x', 'img_num'], axis=1)
-    df_short = df_short.rename(columns = {'file_info_y': 'file_info'})
-    df_short.drop_duplicates(inplace=True)
-    df_short.reset_index(drop=True, inplace=True)
-    return df_short
+    return plt
+
