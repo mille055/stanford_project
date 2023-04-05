@@ -231,36 +231,7 @@ abd_label_dict = {
         'contrast': '1'
     } }
 
-# Data cropping and normalization, also converts single channel to 3 channel for the model
-data_transforms = {
-    'train': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize(299),
-        transforms.CenterCrop(299),
-        #transforms.RandomHorizontalFlip(),
-        transforms.Grayscale(num_output_channels=3),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ]),
-    'val': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize(299),
-        transforms.CenterCrop(299),
-        transforms.Grayscale(num_output_channels=3),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ]),
-    'test': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize(299),
-        transforms.CenterCrop(299),
-        transforms.Grayscale(num_output_channels=3),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])}
-
-
-features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
+feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'EchoTime', 'EchoTrainLength', 'PixelSpacing', 'ContrastBolusAgent',
        'InversionTime', 'DiffusionBValue', 'seq_E', 'seq_EP', 'seq_G',
        'seq_GR', 'seq_I', 'seq_IR', 'seq_M', 'seq_P', 'seq_R', 'seq_S',
@@ -375,3 +346,33 @@ column_lists = {
         'ContrastBolusAgent',
         'AngioFlag', 
         'DiffusionBValue']}
+
+# Data cropping and normalization, also converts single channel to 3 channel for the model
+data_transforms = {
+    'train': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        #transforms.RandomHorizontalFlip(),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ]),
+    'test': transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(299),
+        transforms.CenterCrop(299),
+        transforms.Grayscale(num_output_channels=3),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])}
+
+
