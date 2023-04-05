@@ -278,8 +278,8 @@ _features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime
        'opt_T', 'opt_T2FLAIR_GEMS', 'opt_TRF_GEMS', 'opt_VASCTOF_GEMS',
        'opt_VB_GEMS', 'opt_W', 'opt_X', 'opt__', 'type_ADC', 'type_DIFFUSION', 'type_DERIVED']
 
-#export
-_keep = [
+
+keep = [
     'fname',
     # Patient info
     'PatientID',
@@ -314,28 +314,28 @@ _keep = [
     'contrast'
 ]
 
-_dummies = [
+dummies = [
     'ScanningSequence',
     'SequenceVariant',
     'ScanOptions',
     'ImageType'
 ]
 
-_d_prefixes = [
+d_prefixes = [
     'seq',
     'var',
     'opt',
     'type'
 ]
 
-_binarize = [
+binarize = [
     'MRAcquisitionType',
     'AngioFlag',
     'ContrastBolusAgent',
     'DiffusionBValue'
 ]
 
-_rescale = [
+rescale = [
     'SliceThickness',
     'RepetitionTime',
     'EchoTime',

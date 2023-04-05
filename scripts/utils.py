@@ -14,7 +14,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
 ### local imports ###
-from AIPI540_individual_project.scripts.config import *
+from config import *
 
 
 ### gets the dicom files from a provided directory ###
@@ -155,7 +155,7 @@ def rescale_cols(df, cols):
     df1[cols] = scaler.fit_transform(df1[cols])
     return df1.fillna(0)
 
-def get_dummies(df, cols=_dummies, prefix=_d_prefixes):
+def get_dummies(df, cols=dummies, prefix=d_prefixes):
     df1 = df.copy()
     for i, col in enumerate(cols):
         df1[col] = df1[col].fillna('NONE')
@@ -165,7 +165,7 @@ def get_dummies(df, cols=_dummies, prefix=_d_prefixes):
         )
     return df1
 
-def preprocess(df, keep=_keep, dummies=_dummies, d_prefixes=_d_prefixes, binarize=_binarize, rescale=_rescale):
+def preprocess(df, keep= keep, dummies= dummies, d_prefixes= d_prefixes, binarize= binarize, rescale= rescale):
     "Preprocess metadata for Random Forest classifier to predict sequence type"
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
@@ -248,68 +248,68 @@ def train_setup_abdomen(df, cols=['patientID','exam','series'], preproc=False, n
  
     return train, val, y, y_names
 
-def _get_meta_preds(clf, df, features, y_names=_y_names):
-    y_pred = clf.predict(df[features])
-    y_prob = clf.predict_proba(df[features])
-    preds = pd.Series(y_names.take(y_pred))
-    probas = pd.Series([y_prob[i][pred] for i, pred in enumerate(y_pred)])
-    return pd.DataFrame({'seq_pred': preds, 'pred_proba': probas})
+# def _get_meta_preds(clf, df, features, y_names=_y_names):
+#     y_pred = clf.predict(df[features])
+#     y_prob = clf.predict_proba(df[features])
+#     preds = pd.Series(y_names.take(y_pred))
+#     probas = pd.Series([y_prob[i][pred] for i, pred in enumerate(y_pred)])
+#     return pd.DataFrame({'seq_pred': preds, 'pred_proba': probas})
 
-def predict_from_df(df, features=_features, thresh=0.8, model_path=_model_path, clf=None, **kwargs):
-    "Predict series from `df[features]` at confidence threshold `p >= thresh`"
-    if 'plane' not in df.columns:
-        df1 = preprocess(df)
-        labels = extract_labels(df1)
-        df1 = df1.join(labels[['plane', 'contrast', 'seq_label']])
-    else:
-        df1 = df.copy()
-    if clf:
-        model_path = None
-    else:
-        clf = load(model_path)    
-    df1 = df1.join(_get_preds(clf, df1, features, **kwargs))
-    filt = df1['pred_proba'] < thresh
-    df1['seq_pred'][filt] = 'unknown'
-    return df1
+# def predict_from_df(df, features=_features, thresh=0.8, model_path=_model_path, clf=None, **kwargs):
+#     "Predict series from `df[features]` at confidence threshold `p >= thresh`"
+#     if 'plane' not in df.columns:
+#         df1 = preprocess(df)
+#         labels = extract_labels(df1)
+#         df1 = df1.join(labels[['plane', 'contrast', 'seq_label']])
+#     else:
+#         df1 = df.copy()
+#     if clf:
+#         model_path = None
+#     else:
+#         clf = load(model_path)    
+#     df1 = df1.join(_get_preds(clf, df1, features, **kwargs))
+#     filt = df1['pred_proba'] < thresh
+#     df1['seq_pred'][filt] = 'unknown'
+#     return df1
 
-def predict_from_folder(path, **kwargs):
-    "Read DICOMs into a `pandas.DataFrame` from `path` then predict series"
-    _, df = get_dicoms(path)
-    return predict_from_df(df, **kwargs)
+# def predict_from_folder(path, **kwargs):
+#     "Read DICOMs into a `pandas.DataFrame` from `path` then predict series"
+#     _, df = get_dicoms(path)
+#     return predict_from_df(df, **kwargs)
 
-class Finder():
-    "A class for finding DICOM files of a specified sequence type from a specific ."
-    def __init__(self, path):
-        self.root = path
-        self.fns, self.dicoms = get_dicoms(self.root)
-        self.dicoms = preprocess(self.dicoms)
-        self.labels = extract_labels(self.dicoms)
-        self.dicoms = self.dicoms.join(self.labels[['plane', 'contrast']])
+# class Finder():
+#     "A class for finding DICOM files of a specified sequence type from a specific ."
+#     def __init__(self, path):
+#         self.root = path
+#         self.fns, self.dicoms = get_dicoms(self.root)
+#         self.dicoms = preprocess(self.dicoms)
+#         self.labels = extract_labels(self.dicoms)
+#         self.dicoms = self.dicoms.join(self.labels[['plane', 'contrast']])
         
-    def predict(self,  model_path=_model_path, features=_features, ynames=_y_names, **kwargs):
-        try:
-            self.clf = load(model_path)
-        except FileNotFoundError as e:
-            print("No model found. Try again by passing the `model_path` keyword argument.")
-            raise
-        self.features = features
-        self.ynames = ynames
-        preds = self.clf.predict(self.dicoms[features])
-        self.preds = ynames.take(preds)
-        self.probas = self.clf.predict_proba(self.dicoms[features])
+#     def predict(self,  model_path=_model_path, features=_features, ynames=_y_names, **kwargs):
+#         try:
+#             self.clf = load(model_path)
+#         except FileNotFoundError as e:
+#             print("No model found. Try again by passing the `model_path` keyword argument.")
+#             raise
+#         self.features = features
+#         self.ynames = ynames
+#         preds = self.clf.predict(self.dicoms[features])
+#         self.preds = ynames.take(preds)
+#         self.probas = self.clf.predict_proba(self.dicoms[features])
         
-    def find(self, plane='ax', seq='t1', contrast=True, thresh=0.8, **kwargs):
-        try:
-            self.probas
-        except AttributeError:
-            print("Prediction not yet performed. Please run `Finder.predict()` and try again.")
-            raise
-        preds = np.argwhere(self.probas > 0.8)
-        ind = preds[:, 0]
-        pred_names = _y_names.take(preds[:, 1])
-        df = pd.DataFrame(pred_names, index=ind, columns=['seq_pred'])
-        df = self.dicoms[_output_columns].join(df)
-        return df.query(f'plane == "{plane}" and seq_pred == "{seq}" and contrast == {int(contrast)}')
+#     def find(self, plane='ax', seq='t1', contrast=True, thresh=0.8, **kwargs):
+#         try:
+#             self.probas
+#         except AttributeError:
+#             print("Prediction not yet performed. Please run `Finder.predict()` and try again.")
+#             raise
+#         preds = np.argwhere(self.probas > 0.8)
+#         ind = preds[:, 0]
+#         pred_names = _y_names.take(preds[:, 1])
+#         df = pd.DataFrame(pred_names, index=ind, columns=['seq_pred'])
+#         df = self.dicoms[_output_columns].join(df)
+#         return df.query(f'plane == "{plane}" and seq_pred == "{seq}" and contrast == {int(contrast)}')
     
 
 
