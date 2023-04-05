@@ -6,7 +6,8 @@ import pandas as pd
 
   ### locations of assets ###
 file_dict = {
-'img_data_dir':  '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
+'img_data_dir_colab':  '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
+'img_data_dir_local': 'volumes/cm7/Abdominal_MRI_dataset_split/',
 'txt_data_dir':  '../data/',
 'test_datafile': '../data/X_test02282023.pkl',
 'train_datafile': '../data/X_train02282023.pkl',

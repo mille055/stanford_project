@@ -50,10 +50,25 @@ def dcmread(fn: Path, no_pixels=True, force=True):
     return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
 
 
+def as_dict(self: DcmDataset, filt=True, split_multi=False):
+    if filt:
+        vals = [self[o] for o in self.keys() if self[o].keyword in _cols]
+    else:
+        vals = [self[o] for o in self.keys()]
+    items = [(v.keyword, v.value.name) if v.keyword == 'SOPClassUID' else (v.keyword, v.value) for v in vals]
+    res = dict(items)
+    res['fname'] = self.filename
+    if split_multi:
+        for k, v in items: _split_elem(res, k, v)
+        for k in res: res[k] = _cast_dicom_special(res[k])
+    return res
+
+
 def _dcm2dict(fn, excl_private=False, **kwargs):
     ds = fn.dcmread(**kwargs)
     if excl_private: ds.remove_private_tags()
     return ds.as_dict(**kwargs)
+
 
 @delegates(parallel)
 def _from_dicoms(cls, fns, n_workers=0, **kwargs):
@@ -174,7 +189,7 @@ def rescale_cols(df, cols):
     df1[cols] = scaler.fit_transform(df1[cols])
     return df1.fillna(0)
 
-def get_dummies(df, cols=dummies, prefix=d_prefixes):
+def get_dummies(df, cols=column_lists['dummies'], prefix=column_lists['d_prefixes']):
     df1 = df.copy()
     for i, col in enumerate(cols):
         df1[col] = df1[col].fillna('NONE')
@@ -184,7 +199,7 @@ def get_dummies(df, cols=dummies, prefix=d_prefixes):
         )
     return df1
 
-def preprocess(df, keep= keep, dummies= dummies, d_prefixes= d_prefixes, binarize= binarize, rescale= rescale):
+def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
     "Preprocess metadata for Random Forest classifier to predict sequence type"
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
@@ -358,7 +373,7 @@ def load_csv_dataset(train_file, test_file, val = True, val_lists = None):
     train_df.drop('Unnamed: 0', axis=1, inplace=True)
     test_df.drop('Unnamed: 0', axis=1, inplace=True)
     if val:
-        if val_lists
+        if val_lists:
             val_df = train_df[train_df.patientID.isin(val_lists)]
             train_df = train_df[~train_df.index.isin(val_df.index)] 
         else:
@@ -406,15 +421,16 @@ class ImgDataset(Dataset):
         return self.data_df.shape[0]
     
     def __getitem__(self, idx):
-        source = data_dir_local
-        dest = '/content/gdrive/MyDrive/WW_MRI_abd2/split/'
+        source = file_dict['img_data_dir_local']
+        dest = file_dict['img_data_dir_colab']
 
         img_file = self.data_df.file_info[idx]
-        rel = os.path.relpath(img_file, source)
-        img_file_new = os.path.join(dest,rel)
+        #if in colab, changing path
+        #rel = os.path.relpath(img_file, source)
+        #img_file_new = os.path.join(dest,rel)
         
         #print('getting file', img_file)
-        ds = pydicom.dcmread(img_file_new)
+        ds = pydicom.dcmread(img_file)
         img = np.array(ds.pixel_array, dtype=np.float32)
         #img = img/255.
         #img = cv2.resize(img, (224,224))
@@ -431,6 +447,7 @@ class ImgDataset(Dataset):
         x = img
         labl = self.data_df.label[idx]
       
+        # pool the arterial phase into a single label
         if labl in [2,3,4,5]: 
           labl=2
         y = torch.tensor(labl, dtype = torch.float32)
