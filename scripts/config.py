@@ -30,6 +30,7 @@ sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription_x'
 text_label = 'ap_label_code'
 
+#metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'EchoTime', 'EchoTrainLength', 'PixelSpacing', 'ContrastBolusAgent',
        'InversionTime', 'DiffusionBValue', 'seq_E', 'seq_EP', 'seq_G',
