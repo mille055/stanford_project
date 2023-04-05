@@ -229,8 +229,7 @@ abd_label_dict = {
         'short': 't1_fat_sat',
         'plane': 'ax/cor',
         'contrast': '1'
-      } 
-  }
+    } }
 
 # Data cropping and normalization, also converts single channel to 3 channel for the model
 data_transforms = {
@@ -258,8 +257,7 @@ data_transforms = {
         transforms.Grayscale(num_output_channels=3),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-    }
+    ])}
 
 
 features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
@@ -376,5 +374,4 @@ column_lists = {
         'PhotometricInterpretation',
         'ContrastBolusAgent',
         'AngioFlag', 
-        'DiffusionBValue']
-}
+        'DiffusionBValue']}
