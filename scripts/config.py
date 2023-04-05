@@ -5,18 +5,19 @@ import pandas as pd
 
 
   ### locations of assets ###
-img_data_dir =  '/content/gdrive/MyDrive/WW_MRI_abd2/split/'
-txt_data_dir =  '../data/'
-test_datafile = '../data/X_test02282023.pkl'
-train_datafile = '../data/X_train02282023.pkl'
-dataset_file = './stored_assets/dataset.pkl'
-train_csv_file = txt_data_dir + 'trainfiles.csv'
-test_csv_file = txt_data_dir + 'testfiles.csv'
-metadata_model_file =  './stored_assets/metadata_model.pkl'
-pixel_model_file = './stored_assets/pixel_model_file.pkl'
-series_description_model_file = './stored_assets/series_description_model_file.pkl'
-labels_file = '../data/cmm_labels.txt'
-
+file_dict = {
+'img_data_dir':  '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
+'txt_data_dir':  '../data/',
+'test_datafile': '../data/X_test02282023.pkl',
+'train_datafile': '../data/X_train02282023.pkl',
+'dataset_file': './stored_assets/dataset.pkl',
+'train_csv_file': 'trainfiles.csv',
+'test_csv_file': 'testfiles.csv',
+'metadata_model_file':  './stored_assets/metadata_model.pkl',
+'pixel_model_file': './stored_assets/pixel_model_file.pkl',
+'series_description_model_file': './stored_assets/series_description_model_file.pkl',
+'labels_file': '../data/cmm_labels.txt'
+}
 
 #validation split
 val_list =  [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66] #using same train/val/test split as in the original split based on the metadata classifier
