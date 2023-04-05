@@ -34,12 +34,15 @@ from monai.transforms import AddChannel, Compose, RandRotate90, Resize, ScaleInt
 import warnings
 warnings.filterwarnings("ignore")
 
-#local imports
-from config import *
+### local imports ###
+from config import file_dict, abd_label_dict
+from config import column_lists, features
+from config import val_list, train_val_split_percent, random_seed, data_transforms
+from config import sentence_encoder, series_description_column, text_label
 from utils import *
 
-dum = dummies 
-dirf = img_data_dir
+dum = column_lists['dummies'] 
+dirf = file_dict['img_data_dir']
 
 print(dum)
 print(dirf)

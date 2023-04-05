@@ -18,9 +18,10 @@ from joblib import dump, load
 
 
 ### local imports ###
+from config import file_dict, abd_label_dict
 from config import column_lists, features
-from config import abd_label_dict, val_list, train_val_split_percent, random_sead, data_transforms
-from config import entence_encoder, series_description_column, text_label
+from config import val_list, train_val_split_percent, random_seed, data_transforms
+from config import sentence_encoder, series_description_column, text_label
 
 
 ### gets the dicom files from a provided directory ###
