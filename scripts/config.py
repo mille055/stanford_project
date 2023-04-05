@@ -259,3 +259,87 @@ data_transforms = {
     ])
     }
 
+
+_features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
+       'EchoTime', 'EchoTrainLength', 'PixelSpacing', 'ContrastBolusAgent',
+       'InversionTime', 'DiffusionBValue', 'seq_E', 'seq_EP', 'seq_G',
+       'seq_GR', 'seq_I', 'seq_IR', 'seq_M', 'seq_P', 'seq_R', 'seq_S',
+       'seq_SE', 'var_E', 'var_K', 'var_MP', 'var_MTC', 'var_N', 'var_O',
+       'var_OSP', 'var_P', 'var_S', 'var_SK', 'var_SP', 'var_SS', 'var_TOF',
+       'opt_1', 'opt_2', 'opt_A', 'opt_ACC_GEMS', 'opt_B', 'opt_C', 'opt_D',
+       'opt_E', 'opt_EDR_GEMS', 'opt_EPI_GEMS', 'opt_F', 'opt_FAST_GEMS',
+       'opt_FC', 'opt_FC_FREQ_AX_GEMS', 'opt_FC_SLICE_AX_GEMS',
+       'opt_FILTERED_GEMS', 'opt_FR_GEMS', 'opt_FS', 'opt_FSA_GEMS',
+       'opt_FSI_GEMS', 'opt_FSL_GEMS', 'opt_FSP_GEMS', 'opt_FSS_GEMS', 'opt_G',
+       'opt_I', 'opt_IFLOW_GEMS', 'opt_IR', 'opt_IR_GEMS', 'opt_L', 'opt_M',
+       'opt_MP_GEMS', 'opt_MT', 'opt_MT_GEMS', 'opt_NPW', 'opt_P', 'opt_PFF',
+       'opt_PFP', 'opt_PROP_GEMS', 'opt_R', 'opt_RAMP_IS_GEMS', 'opt_S',
+       'opt_SAT1', 'opt_SAT2', 'opt_SAT_GEMS', 'opt_SEQ_GEMS', 'opt_SP',
+       'opt_T', 'opt_T2FLAIR_GEMS', 'opt_TRF_GEMS', 'opt_VASCTOF_GEMS',
+       'opt_VB_GEMS', 'opt_W', 'opt_X', 'opt__', 'type_ADC', 'type_DIFFUSION', 'type_DERIVED']
+
+#export
+_keep = [
+    'fname',
+    # Patient info
+    'PatientID',
+    # Study info
+    'StudyInstanceUID',
+    'StudyID',
+    # Series info
+    'SeriesInstanceUID',
+    'SeriesNumber',
+    'SeriesDescription',
+    'AcquisitionNumber',
+    # Image info and features
+    'InstanceNumber',
+    'ImageOrientationPatient',
+    'ScanningSequence',
+    'SequenceVariant',
+    'ScanOptions',
+    'MRAcquisitionType',
+    'AngioFlag',
+    'SliceThickness',
+    'RepetitionTime',
+    'EchoTime',
+    'EchoTrainLength',
+    'PixelSpacing',
+    'ContrastBolusAgent',
+    'InversionTime',
+    'DiffusionBValue',
+    'ImageType',
+    # Labels
+    'plane',
+    'seq_label',
+    'contrast'
+]
+
+_dummies = [
+    'ScanningSequence',
+    'SequenceVariant',
+    'ScanOptions',
+    'ImageType'
+]
+
+_d_prefixes = [
+    'seq',
+    'var',
+    'opt',
+    'type'
+]
+
+_binarize = [
+    'MRAcquisitionType',
+    'AngioFlag',
+    'ContrastBolusAgent',
+    'DiffusionBValue'
+]
+
+_rescale = [
+    'SliceThickness',
+    'RepetitionTime',
+    'EchoTime',
+    'EchoTrainLength',
+    'PixelSpacing',
+    'InversionTime'
+]
