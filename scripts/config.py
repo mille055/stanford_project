@@ -312,29 +312,25 @@ keep = [
     # Labels
     'plane',
     'seq_label',
-    'contrast'
-]
+    'contrast']
 
 dummies = [
     'ScanningSequence',
     'SequenceVariant',
     'ScanOptions',
-    'ImageType'
-]
+    'ImageType']
 
 d_prefixes = [
     'seq',
     'var',
     'opt',
-    'type'
-]
+    'type']
 
 binarize = [
     'MRAcquisitionType',
     'AngioFlag',
     'ContrastBolusAgent',
-    'DiffusionBValue'
-]
+    'DiffusionBValue']
 
 rescale = [
     'SliceThickness',
@@ -342,8 +338,7 @@ rescale = [
     'EchoTime',
     'EchoTrainLength',
     'PixelSpacing',
-    'InversionTime'
-]
+    'InversionTime']
 
 dicom_cols = [
     'PatientID',
@@ -379,6 +374,5 @@ dicom_cols = [
     'SliceThickness',
     'PhotometricInterpretation',
     'ContrastBolusAgent',
-    'AngioFlag', # addition to list from paper
-    'DiffusionBValue' # addition to list from paper
-]
+    'AngioFlag', 
+    'DiffusionBValue']
