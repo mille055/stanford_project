@@ -14,7 +14,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
 ### local imports ###
-from config import *
+from AIPI540_individual_project.scripts.config import *
 
 
 ### gets the dicom files from a provided directory ###
