@@ -18,7 +18,7 @@ from joblib import dump, load
 
 
 ### local imports ###
-from config import dicom_cols, keep, dummies, d_prefixes, binarize, rescale, features
+from config import column_lists, features
 from config import abd_label_dict, val_list, train_val_split_percent, random_sead, data_transforms
 from config import entence_encoder, series_description_column, text_label
 

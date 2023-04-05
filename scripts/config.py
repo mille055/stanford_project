@@ -279,100 +279,101 @@ features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime'
        'opt_T', 'opt_T2FLAIR_GEMS', 'opt_TRF_GEMS', 'opt_VASCTOF_GEMS',
        'opt_VB_GEMS', 'opt_W', 'opt_X', 'opt__', 'type_ADC', 'type_DIFFUSION', 'type_DERIVED']
 
+column_lists = {
+    'keep': [
+        'fname',
+        # Patient info
+        'PatientID',
+        # Study info
+        'StudyInstanceUID',
+        'StudyID',
+        # Series info
+        'SeriesInstanceUID',
+        'SeriesNumber',
+        'SeriesDescription',
+        'AcquisitionNumber',
+        # Image info and features
+        'InstanceNumber',
+        'ImageOrientationPatient',
+        'ScanningSequence',
+        'SequenceVariant',
+        'ScanOptions',
+        'MRAcquisitionType',
+        'AngioFlag',
+        'SliceThickness',
+        'RepetitionTime',
+        'EchoTime',
+        'EchoTrainLength',
+        'PixelSpacing',
+        'ContrastBolusAgent',
+        'InversionTime',
+        'DiffusionBValue',
+        'ImageType',
+        # Labels
+        'plane',
+        'seq_label',
+        'contrast'],
 
-keep = [
-    'fname',
-    # Patient info
-    'PatientID',
-    # Study info
-    'StudyInstanceUID',
-    'StudyID',
-    # Series info
-    'SeriesInstanceUID',
-    'SeriesNumber',
-    'SeriesDescription',
-    'AcquisitionNumber',
-    # Image info and features
-    'InstanceNumber',
-    'ImageOrientationPatient',
-    'ScanningSequence',
-    'SequenceVariant',
-    'ScanOptions',
-    'MRAcquisitionType',
-    'AngioFlag',
-    'SliceThickness',
-    'RepetitionTime',
-    'EchoTime',
-    'EchoTrainLength',
-    'PixelSpacing',
-    'ContrastBolusAgent',
-    'InversionTime',
-    'DiffusionBValue',
-    'ImageType',
-    # Labels
-    'plane',
-    'seq_label',
-    'contrast']
+    'dummies': [
+        'ScanningSequence',
+        'SequenceVariant',
+        'ScanOptions',
+        'ImageType'],
 
-dummies = [
-    'ScanningSequence',
-    'SequenceVariant',
-    'ScanOptions',
-    'ImageType']
+    'd_prefixes': [
+        'seq',
+        'var',
+        'opt',
+        'type'],
 
-d_prefixes = [
-    'seq',
-    'var',
-    'opt',
-    'type']
+    'binarize': [
+        'MRAcquisitionType',
+        'AngioFlag',
+        'ContrastBolusAgent',
+        'DiffusionBValue'],
 
-binarize = [
-    'MRAcquisitionType',
-    'AngioFlag',
-    'ContrastBolusAgent',
-    'DiffusionBValue']
+    'rescale': [
+        'SliceThickness',
+        'RepetitionTime',
+        'EchoTime',
+        'EchoTrainLength',
+        'PixelSpacing',
+        'InversionTime'],
 
-rescale = [
-    'SliceThickness',
-    'RepetitionTime',
-    'EchoTime',
-    'EchoTrainLength',
-    'PixelSpacing',
-    'InversionTime']
-
-dicom_cols = [
-    'PatientID',
-    # Study info
-    'StudyInstanceUID',
-    'StudyID',
-    'StudyDescription', # to filter on "MRI BRAIN WITH AND WITHOUT CONTRAST" in some cases
-    'Manufacturer',
-    'ManufacturerModelName',
-    'MagneticFieldStrength',
-    # Series info
-    'SeriesInstanceUID',
-    'SeriesNumber',
-    'SeriesDescription', # needed for labeling series
-    'SequenceName', # may be used for labeling series
-    'BodyPartExamined', # to filter on "HEAD" or "BRAIN"
-    'AcquisitionNumber',
-    # Image info and features
-    'InstanceNumber', # i.e. image number
-    'SOPClassUID', # to filter on "MR Image Storage"
-    'ImageOrientationPatient', # to calculate slice orientation (e.g. axial, coronal, sagittal)
-    'EchoTime',
-    'InversionTime',
-    'EchoTrainLength',
-    'RepetitionTime',
-    'TriggerTime',
-    'SequenceVariant',
-    'ScanOptions',
-    'ScanningSequence',
-    'MRAcquisitionType',
-    'ImageType',
-    'PixelSpacing',
-    'SliceThickness',
-    'PhotometricInterpretation',
-    'ContrastBolusAgent',
-    'AngioFlag', 
-    'DiffusionBValue']
+    'dicom_cols': [
+        'PatientID',
+        # Study info
+        'StudyInstanceUID',
+        'StudyID',
+        'StudyDescription', # to filter on "MRI BRAIN WITH AND WITHOUT CONTRAST" in some cases
+        'Manufacturer',
+        'ManufacturerModelName',
+        'MagneticFieldStrength',
+        # Series info
+        'SeriesInstanceUID',
+        'SeriesNumber',
+        'SeriesDescription', # needed for labeling series
+        'SequenceName', # may be used for labeling series
+        'BodyPartExamined', # to filter on "HEAD" or "BRAIN"
+        'AcquisitionNumber',
+        # Image info and features
+        'InstanceNumber', # i.e. image number
+        'SOPClassUID', # to filter on "MR Image Storage"
+        'ImageOrientationPatient', # to calculate slice orientation (e.g. axial, coronal, sagittal)
+        'EchoTime',
+        'InversionTime',
+        'EchoTrainLength',
+        'RepetitionTime',
+        'TriggerTime',
+        'SequenceVariant',
+        'ScanOptions',
+        'ScanningSequence',
+        'MRAcquisitionType',
+        'ImageType',
+        'PixelSpacing',
+        'SliceThickness',
+        'PhotometricInterpretation',
+        'ContrastBolusAgent',
+        'AngioFlag', 
+        'DiffusionBValue']
+}
