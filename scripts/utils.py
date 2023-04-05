@@ -14,6 +14,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
 ### local imports ###
+from . import config
 from config import *
 
 
