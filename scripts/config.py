@@ -49,6 +49,8 @@ feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'opt_T', 'opt_T2FLAIR_GEMS', 'opt_TRF_GEMS', 'opt_VASCTOF_GEMS',
        'opt_VB_GEMS', 'opt_W', 'opt_X', 'opt__', 'type_ADC', 'type_DIFFUSION', 'type_DERIVED']
 
+new_dict = {}
+
 column_lists = {
     'keep': [
         'fname',
