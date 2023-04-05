@@ -12,6 +12,10 @@ import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
+import os, sys, glob, re
+import numpy as np, pandas as pd
+from joblib import dump, load
+
 
 ### local imports ###
 from config import *
@@ -41,7 +45,19 @@ def get_dicoms(path, first_dcm=False, **kwargs):
 ### Reads a DICOM file and returns the corresponding pydicom.Dataset ###
 def dcmread(fn: Path, no_pixels=True, force=True):
     return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
-  
+
+
+def _dcm2dict(fn, excl_private=False, **kwargs):
+    ds = fn.dcmread(**kwargs)
+    if excl_private: ds.remove_private_tags()
+    return ds.as_dict(**kwargs)
+
+@delegates(parallel)
+def _from_dicoms(cls, fns, n_workers=0, **kwargs):
+    return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
+pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+
+
 def get_series_fp(fn): return Path(fn).parent
 
  ### takes the contents of the dataframe column with path/filenames and converts pieces into separate df columns ###   
@@ -387,7 +403,7 @@ class ImgDataset(Dataset):
         return self.data_df.shape[0]
     
     def __getitem__(self, idx):
-        source = '/volumes/cm7/Abdominal_MRI_dataset_split/'
+        source = data_dir_local
         dest = '/content/gdrive/MyDrive/WW_MRI_abd2/split/'
 
         img_file = self.data_df.file_info[idx]

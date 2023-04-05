@@ -260,7 +260,7 @@ data_transforms = {
     }
 
 
-_features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
+features = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'EchoTime', 'EchoTrainLength', 'PixelSpacing', 'ContrastBolusAgent',
        'InversionTime', 'DiffusionBValue', 'seq_E', 'seq_EP', 'seq_G',
        'seq_GR', 'seq_I', 'seq_IR', 'seq_M', 'seq_P', 'seq_R', 'seq_S',
@@ -342,4 +342,42 @@ rescale = [
     'EchoTrainLength',
     'PixelSpacing',
     'InversionTime'
+]
+
+dicom_cols = [
+    'PatientID',
+    # Study info
+    'StudyInstanceUID',
+    'StudyID',
+    'StudyDescription', # to filter on "MRI BRAIN WITH AND WITHOUT CONTRAST" in some cases
+    'Manufacturer',
+    'ManufacturerModelName',
+    'MagneticFieldStrength',
+    # Series info
+    'SeriesInstanceUID',
+    'SeriesNumber',
+    'SeriesDescription', # needed for labeling series
+    'SequenceName', # may be used for labeling series
+    'BodyPartExamined', # to filter on "HEAD" or "BRAIN"
+    'AcquisitionNumber',
+    # Image info and features
+    'InstanceNumber', # i.e. image number
+    'SOPClassUID', # to filter on "MR Image Storage"
+    'ImageOrientationPatient', # to calculate slice orientation (e.g. axial, coronal, sagittal)
+    'EchoTime',
+    'InversionTime',
+    'EchoTrainLength',
+    'RepetitionTime',
+    'TriggerTime',
+    'SequenceVariant',
+    'ScanOptions',
+    'ScanningSequence',
+    'MRAcquisitionType',
+    'ImageType',
+    'PixelSpacing',
+    'SliceThickness',
+    'PhotometricInterpretation',
+    'ContrastBolusAgent',
+    'AngioFlag', # addition to list from paper
+    'DiffusionBValue' # addition to list from paper
 ]
