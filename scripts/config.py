@@ -29,7 +29,7 @@ train_val_split_percent = 0.2
 sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription_x'
 text_label = 'ap_label_code'
-new_dict = {}
+new_dict = {'a':'apple'}
 
 #metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
