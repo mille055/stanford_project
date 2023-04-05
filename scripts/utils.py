@@ -14,7 +14,6 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
 ### local imports ###
-from . import config
 from config import *
 
 
@@ -190,6 +189,8 @@ def labels_from_file(label_path, column_names):
 
     
     return label_df
+
+
 def convert_labels_from_file(label_df):
     labels=label_df.copy()
     labels['GT label'] = labels['label_code'].astype(str).apply(lambda x: abd_label_dict[x]['short'])
@@ -324,7 +325,31 @@ def exclude_other(df):
     filt2 = df2.SOPClassUID == "MR Image Storage"
     return df2[filt2].reset_index(drop=True)  
 
-  
+def load_pickled_dataset(train_file, test_file):
+  with open(train_file, 'rb') as f:
+    train_df = pickle.load(f)
+  with open(test_file, 'rb') as g:
+    test_df = pickle.load(g)
+
+  return train_df, test_df
+
+def load_csv_dataset(train_file, test_file, val = True, val_lists = None):
+    train_df = pd.read_csv(train_file)
+    test_df = pd.read_csv(test_file)
+    train_df.drop('Unnamed: 0', axis=1, inplace=True)
+    test_df.drop('Unnamed: 0', axis=1, inplace=True)
+    if val:
+        if val_lists
+            val_df = train_df[train_df.patientID.isin(val_lists)]
+            train_df = train_df[~train_df.index.isin(val_df.index)] 
+        else:
+            train_set, val_set = next(GroupShuffleSplit(test_size=.20, n_splits=1, random_state = 42).split(train_df, groups=train_df['patientID']))
+            train_df, val_df = train_set, val_set
+        return train_df, val_df, test_df
+
+    else: 
+        return train_df, test_df
+
 # this function will select the image in the middle of each series of images, so that only a single image from each series is selected for training
 # There is one image from each series for each patient
 def shorten_df(df, selection_fraction = 0.5):
