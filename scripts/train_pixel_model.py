@@ -7,11 +7,9 @@ import os.path
 import glob
 import numpy as np
 import tensorflow as tf
-import csv
 import matplotlib.pyplot as plt
 import time
 import copy
-import pydicom
 import configparser
 import pandas as pd
 import sklearn
@@ -31,7 +29,7 @@ from monai.data import DataLoader, ImageDataset
 from monai.transforms import AddChannel, Compose, RandRotate90, Resize, ScaleIntensity, EnsureType
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())

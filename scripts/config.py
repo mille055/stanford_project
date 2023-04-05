@@ -7,6 +7,8 @@ import pandas as pd
   ### locations of assets ###
 img_data_dir =  '/content/gdrive/MyDrive/WW_MRI_abd2/split/'
 txt_data_dir =  '../data/'
+test_datafile = '../data/X_test02282023.pkl'
+train_datafile = '../data/X_train02282023.pkl'
 dataset_file = './stored_assets/dataset.pkl'
 train_csv_file = txt_data_dir + 'trainfiles.csv'
 test_csv_file = txt_data_dir + 'testfiles.csv'
