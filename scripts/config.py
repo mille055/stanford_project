@@ -30,6 +30,8 @@ sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription_x'
 text_label = 'ap_label_code'
 
+new_dict = {}
+
 #metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'EchoTime', 'EchoTrainLength', 'PixelSpacing', 'ContrastBolusAgent',
@@ -49,7 +51,6 @@ feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
        'opt_T', 'opt_T2FLAIR_GEMS', 'opt_TRF_GEMS', 'opt_VASCTOF_GEMS',
        'opt_VB_GEMS', 'opt_W', 'opt_X', 'opt__', 'type_ADC', 'type_DIFFUSION', 'type_DERIVED']
 
-new_dict = {}
 
 column_lists = {
     'keep': [
