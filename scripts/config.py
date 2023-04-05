@@ -15,7 +15,7 @@ test_csv_file = txt_data_dir + 'testfiles.csv'
 metadata_model_file =  './stored_assets/metadata_model.pkl'
 pixel_model_file = './stored_assets/pixel_model_file.pkl'
 series_description_model_file = './stored_assets/series_description_model_file.pkl'
-
+labels_file = '../data/cmm_labels.txt'
 
 
 #validation split
