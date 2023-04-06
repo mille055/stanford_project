@@ -70,9 +70,18 @@ def _dcm2dict(fn, excl_private=False, **kwargs):
     return ds.as_dict(**kwargs)
 
 
-def _from_dicoms(cls, fns, n_workers=0, **kwargs):
-    return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
+# @delegates(parallel)
+# def _from_dicoms(cls, fns, n_workers=0, **kwargs):
+#     return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
+# pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+
+def _from_dicoms(cls, fns):
+    dicts = [_dcm2dict(fn) for fn in fns]  # Process the files sequentially
+    return pd.DataFrame(dicts)
 pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+
+def _from_dicoms(cls, fns, n_workers=0, **kwargs):
+    return pd.DataFrame(_dcm2dict, fns, n_workers=n_workers, **kwargs)
 
 
 def get_series_fp(fn): return Path(fn).parent
