@@ -140,10 +140,15 @@ def rm_extra_info(t):
 
 
 def detect_contrast(row):
-    sd = rm_extra_info(str(row['SeriesDescription']).lower())
-    if _c.search(sd): return 1
+    
+    #if entry in contrastbolusagent contains a value
     c = row['ContrastBolusAgent']
     if type(c) == str: return 1
+    # heuristic based on series description text
+    sd = rm_extra_info(str(row['SeriesDescription']).lower())
+    _c = re.compile(r'(\+-?c|post|with|dyn|portal|equilibrium|hepatobiliary|delayed)')
+    if _c.search(sd): return 1
+
     return 0
 
 def _find_seq(sd):
