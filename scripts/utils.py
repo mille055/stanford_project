@@ -17,7 +17,8 @@ from torchvision.transforms import ToTensor
 import os, sys, glob, re
 import numpy as np, pandas as pd
 from joblib import dump, load
-
+from fastai.basics import delegates
+from fastcore.parallel import parallel
 
 ### local imports ###
 from config import file_dict, abd_label_dict
@@ -51,13 +52,13 @@ def get_dicoms(path, first_dcm=False, **kwargs):
 def dcmread(fn: Path, no_pixels=True, force=True):
     return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
 
-def _cast_dicom_special(x):
+def cast_dicom_special(x):
     cls = type(x)
     if not cls.__module__.startswith('pydicom'): return x
     if cls.__base__ == object: return x
     return cls.__base__(x)
 
-def _split_elem(res, k, v):
+def split_elem(res, k, v):
     if not isinstance(v, DcmMultiValue): return
     for i, o in enumerate(v): res[f'{k}{"" if i == 0 else i}'] = o
 
@@ -65,15 +66,15 @@ def _split_elem(res, k, v):
 def as_dict(self: DcmDataset, filt=True, split_multi=False):
     if filt:
         vals = [self[o] for o in self.keys() if self[o].keyword in column_lists['dicom_cols']]
-        #print(vals)
+        
     else:
         vals = [self[o] for o in self.keys()]
     items = [(v.keyword, v.value.name) if v.keyword == 'SOPClassUID' else (v.keyword, v.value) for v in vals]
     res = dict(items)
     res['fname'] = self.filename
     if split_multi:
-        for k, v in items: _split_elem(res, k, v)
-        for k in res: res[k] = _cast_dicom_special(res[k])
+        for k, v in items: split_elem(res, k, v)
+        for k in res: res[k] = cast_dicom_special(res[k])
     return res
 
 
@@ -82,27 +83,28 @@ def as_dict(self: DcmDataset, filt=True, split_multi=False):
 #     if excl_private: ds.remove_private_tags()
 #     return ds.as_dict(**kwargs)
 
-def _dcm2dict(fn, excl_private=False, **kwargs):
+def dcm2dict(fn, excl_private=False, **kwargs):
     ds = dcmread(fn, **kwargs)
     if excl_private: ds.remove_private_tags()
     return ds.as_dict(**kwargs)
 
-def dcm2dict2(dcm_file, excl_private = False, **kwargs):
-    dcm_data = dcmread(dcm_file, **kwargs)
-    if excl_private: dcm_data.remove_private_tags()
-    dcm_dict = {keyword_for_tag(tag): dcm_data.get(tag) for tag in dcm_data.keys()}
-    return dcm_dict
+# def dcm2dict2(dcm_file, excl_private = False, **kwargs):
+#     dcm_data = dcmread(dcm_file, **kwargs)
+#     if excl_private: dcm_data.remove_private_tags()
+#     dcm_dict = {keyword_for_tag(tag): dcm_data.get(tag) for tag in dcm_data.keys()}
+#     return dcm_dict
 
 
-# @delegates(parallel)
-# def _from_dicoms(cls, fns, n_workers=0, **kwargs):
-#     return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
-# pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 
-def _from_dicoms(cls, fns):
-    dicts = [dcm2dict2(fn) for fn in fns]  # Process the files sequentially
-    return pd.DataFrame(dicts)
+@delegates(parallel)
+def _from_dicoms(cls, fns, n_workers=0, **kwargs):
+    return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
 pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+
+# def _from_dicoms(cls, fns):
+#     dicts = [dcm2dict(fn) for fn in fns]  # Process the files sequentially
+#     return pd.DataFrame(dicts)
+# pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 
 def get_series_fp(fn): return Path(fn).parent
 
