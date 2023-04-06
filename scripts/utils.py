@@ -97,9 +97,9 @@ def dcm2dict(fn, excl_private=False, **kwargs):
 
 
 @delegates(parallel)
-def _from_dicoms(cls, fns, n_workers=0, **kwargs):
+def from_dicoms(cls, fns, n_workers=0, **kwargs):
     return pd.DataFrame(parallel(dcm2dict, fns, n_workers=n_workers, **kwargs))
-pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+pd.DataFrame.from_dicoms = classmethod(from_dicoms)
 
 # def _from_dicoms(cls, fns):
 #     dicts = [dcm2dict(fn) for fn in fns]  # Process the files sequentially
