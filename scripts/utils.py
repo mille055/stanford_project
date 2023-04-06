@@ -151,6 +151,8 @@ def detect_contrast(row):
 
     return 0
 
+
+
 def _find_seq(sd):
     if _t1.search(sd):
         if _spgr.search(sd): return 'spgr'
@@ -521,3 +523,69 @@ def plot_and_save_cm(ytrue, ypreds):
 
     return plt
 
+
+#explore train.fit and kgroupcross validation
+def train_setup_abdomen_cross(df, cols=['patientID','exam','series'], need_preproc=False, need_labels=False):
+
+    if need_preproc:
+        df1=preprocess(df)
+        
+    else:
+        df1=df.copy()
+    
+    if need_labels:
+
+        labels = extract_labels(df1)
+        df1 = df1.merge(labels, on=cols)
+ 
+    length = df1.shape[0]
+
+    gkf = GroupKFold(n_splits=5)
+    for train_set, val_set in gkf.split(df1, groups=df1['patientID']):
+        #print(train_set, len(train_set), train_set.dtype)
+        #print(df1.iloc[train_set])
+        train_df, val = df1.iloc[train_set], df1.iloc[val_set]
+        y, y_names = train_df['label_code'],train_df['GT label']
+        
+        clf_gkf = train_fit(train_df, y, features=preproc._features, fname='cross_from_notebook.skl' )
+        scores = cross_validate(clf_gkf, train_df[preproc._features], y, scoring=['precision_macro', 'recall_macro'])
+        print(scores)
+    #return train, val, y, y_names
+
+    
+#grid search for hyperparameters for the metadata model
+def train_fit_parameter_trial(train, y, features, fname='model-run.skl'):
+    "Train a Random Forest classifier on `train[features]` and `y`, then save to `fname` and return."
+    clf = RandomForestClassifier(n_jobs=2, random_state=0)
+    clf.fit(train[features], y)
+    print('Parameters currently in use:\n')
+    pprint(clf.get_params())
+    
+    
+    # Number of trees in random forest
+    n_estimators = [int(x) for x in np.linspace(start = 20, stop = 500, num = 20)]
+    # Number of features to consider at every split
+    max_features = ['auto', 'sqrt']
+    # Maximum number of levels in tree
+    max_depth = [int(x) for x in np.linspace(10, 660, num = 10)]
+    max_depth.append(None)
+    # Minimum number of samples required to split a node
+    min_samples_split = [2, 5, 10, 20]
+    # Minimum number of samples required at each leaf node
+    min_samples_leaf = [2, 4, 8]
+    # Method of selecting samples for training each tree
+    bootstrap = [True, False]
+    random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
+    
+    clf_random = RandomizedSearchCV(estimator = clf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=0, n_jobs = -1)
+    clf_random.fit(train[features], y)
+    opt_clf = clf_random.best_estimator_
+    pprint(clf_random.best_params_)
+    pickle.dump(opt_clf, open(fname, 'wb'))
+    #dump(clf_random, fname)
+    return opt_clf
