@@ -51,7 +51,13 @@ features = feats
 
 samples = ['/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (35-68)/0052.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (1-34)/0018.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/20/0037.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/9/0017.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/11/0017.dcm']
 
+# def _from_dicoms(cls, fns):
+#     dicts = [dcm2dict2(fn) for fn in fns]  # Process the files sequentially
+#     return pd.DataFrame(dicts)
+# pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
+
+
 sample = samples[0]
-sampledict = dcm2dict2(sample)
-print(sampledict)
+df = pd.DataFrame.from_dicoms(samples)
+print(df.EchoTime.value_counts())
 #print(column_lists['dicom_cols'])
