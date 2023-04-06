@@ -39,7 +39,7 @@ from config import file_dict, abd_label_dict
 from config import column_lists, feats
 from config import val_list, train_val_split_percent, random_seed, data_transforms
 from config import sentence_encoder, series_description_column, text_label
-
+from utils import *
 
 dum = column_lists['dummies'] 
 dirf = file_dict['img_data_dir_local']
@@ -48,3 +48,6 @@ features = feats
 print(dum)
 print(dirf)
 print(features)
+
+samples = ['/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (35-68)/0052.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (1-34)/0018.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/20/0037.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/9/0017.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/11/0017.dcm']
+df = pd.DataFrame.from_dicoms(samples)

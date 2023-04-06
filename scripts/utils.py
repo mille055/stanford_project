@@ -49,10 +49,20 @@ def get_dicoms(path, first_dcm=False, **kwargs):
 def dcmread(fn: Path, no_pixels=True, force=True):
     return pydicom.dcmread(str(fn), stop_before_pixels=no_pixels, force=force)
 
+def _cast_dicom_special(x):
+    cls = type(x)
+    if not cls.__module__.startswith('pydicom'): return x
+    if cls.__base__ == object: return x
+    return cls.__base__(x)
+
+def _split_elem(res, k, v):
+    if not isinstance(v, DcmMultiValue): return
+    for i, o in enumerate(v): res[f'{k}{"" if i == 0 else i}'] = o
+
 
 def as_dict(self: DcmDataset, filt=True, split_multi=False):
     if filt:
-        vals = [self[o] for o in self.keys() if self[o].keyword in _cols]
+        vals = [self[o] for o in self.keys() if self[o].keyword in column_lists['dicom_cols']]
     else:
         vals = [self[o] for o in self.keys()]
     items = [(v.keyword, v.value.name) if v.keyword == 'SOPClassUID' else (v.keyword, v.value) for v in vals]
@@ -64,10 +74,16 @@ def as_dict(self: DcmDataset, filt=True, split_multi=False):
     return res
 
 
+# def _dcm2dict(fn, excl_private=False, **kwargs):
+#     ds = fn.dcmread(**kwargs)
+#     if excl_private: ds.remove_private_tags()
+#     return ds.as_dict(**kwargs)
+
 def _dcm2dict(fn, excl_private=False, **kwargs):
-    ds = fn.dcmread(**kwargs)
+    ds = dcmread(fn, **kwargs)
     if excl_private: ds.remove_private_tags()
     return ds.as_dict(**kwargs)
+
 
 
 # @delegates(parallel)
@@ -79,10 +95,6 @@ def _from_dicoms(cls, fns):
     dicts = [_dcm2dict(fn) for fn in fns]  # Process the files sequentially
     return pd.DataFrame(dicts)
 pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
-
-def _from_dicoms(cls, fns, n_workers=0, **kwargs):
-    return pd.DataFrame(_dcm2dict, fns, n_workers=n_workers, **kwargs)
-
 
 def get_series_fp(fn): return Path(fn).parent
 
