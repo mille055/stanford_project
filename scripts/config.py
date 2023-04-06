@@ -29,7 +29,7 @@ train_val_split_percent = 0.2
 sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription_x'
 text_label = 'ap_label_code'
-new_dict = {'a':'apple'}
+exclusion_labels = [21,22,26,27,28,29]
 
 #metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
@@ -358,7 +358,7 @@ abd_label_dict = {
         'short': 'adc',
         'plane': 'ax',
         'contrast': '0'
-    },
+    }, ## no longer in use below
      '30': {
         'long': 'Axial Post Contrast Fat Suppressed T1w',
         'short': 't1_fat_sat',
