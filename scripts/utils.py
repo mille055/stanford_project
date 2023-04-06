@@ -76,7 +76,7 @@ def as_dict(self: DcmDataset, filt=True, split_multi=False):
         for k, v in items: split_elem(res, k, v)
         for k in res: res[k] = cast_dicom_special(res[k])
     return res
-
+DcmDataset.as_dict = as_dict
 
 # def _dcm2dict(fn, excl_private=False, **kwargs):
 #     ds = fn.dcmread(**kwargs)
@@ -98,7 +98,7 @@ def dcm2dict(fn, excl_private=False, **kwargs):
 
 @delegates(parallel)
 def _from_dicoms(cls, fns, n_workers=0, **kwargs):
-    return pd.DataFrame(parallel(_dcm2dict, fns, n_workers=n_workers, **kwargs))
+    return pd.DataFrame(parallel(dcm2dict, fns, n_workers=n_workers, **kwargs))
 pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 
 # def _from_dicoms(cls, fns):

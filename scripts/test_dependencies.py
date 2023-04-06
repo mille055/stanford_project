@@ -58,6 +58,11 @@ samples = ['/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (35-68)/
 
 
 sample = samples[0]
+sampledcm = dcmread(sample)
+sampledict = sampledcm.as_dict()
+print(sampledict)
+
 df = pd.DataFrame.from_dicoms(samples)
-print(df.EchoTime.value_counts())
-#print(column_lists['dicom_cols'])
+print(df.head())
+
+
