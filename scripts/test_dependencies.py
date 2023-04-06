@@ -45,9 +45,13 @@ dum = column_lists['dummies']
 dirf = file_dict['img_data_dir_local']
 features = feats
 
-print(dum)
-print(dirf)
-print(features)
+# print(dum)
+# print(dirf)
+# print(features)
 
 samples = ['/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (35-68)/0052.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (1-34)/0018.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/20/0037.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/9/0017.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/11/0017.dcm']
-df = pd.DataFrame.from_dicoms(samples)
+
+sample = samples[0]
+sampledict = _dcm2dict(sample)
+print(sampledict)
+#print(column_lists['dicom_cols'])

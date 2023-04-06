@@ -63,6 +63,7 @@ def _split_elem(res, k, v):
 def as_dict(self: DcmDataset, filt=True, split_multi=False):
     if filt:
         vals = [self[o] for o in self.keys() if self[o].keyword in column_lists['dicom_cols']]
+        #print(vals)
     else:
         vals = [self[o] for o in self.keys()]
     items = [(v.keyword, v.value.name) if v.keyword == 'SOPClassUID' else (v.keyword, v.value) for v in vals]
