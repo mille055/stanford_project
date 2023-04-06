@@ -243,7 +243,7 @@ def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'],
     df1 = get_dummies(df1, dummies, d_prefixes)
     df1 = make_binary_cols(df1, binarize)
     df1 = rescale_cols(df1, rescale)
-    for f in _features:
+    for f in feats:
         if f not in df1.columns:
             df1[f] = 0
     return df1
