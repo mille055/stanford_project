@@ -26,8 +26,9 @@ from config import column_lists, feats
 from config import val_list, train_val_split_percent, random_seed, data_transforms
 from config import sentence_encoder, series_description_column, text_label
 from sklearn.preprocessing import MultiLabelBinarizer
-
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 ### gets the dicom files from a provided directory ###
 def get_dicoms(path, first_dcm=False, **kwargs):
