@@ -5,6 +5,8 @@ import pydicom
 from pydicom.dataset import Dataset as DcmDataset
 from pydicom.tag import BaseTag as DcmTag
 from pydicom.multival import MultiValue as DcmMultiValue
+from pydicom.datadict import keyword_for_tag
+
 from pathlib import Path
 from torch.optim import lr_scheduler
 import torch.backends.cudnn as cudnn
@@ -85,6 +87,11 @@ def _dcm2dict(fn, excl_private=False, **kwargs):
     if excl_private: ds.remove_private_tags()
     return ds.as_dict(**kwargs)
 
+def dcm2dict2(dcm_file, excl_private = False, **kwargs):
+    dcm_data = dcmread(dcm_file, **kwargs)
+    if excl_private: dcm_data.remove_private_tags()
+    dcm_dict = {keyword_for_tag(tag): dcm_data.get(tag) for tag in dcm_data.keys()}
+    return dcm_dict
 
 
 # @delegates(parallel)
@@ -93,7 +100,7 @@ def _dcm2dict(fn, excl_private=False, **kwargs):
 # pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 
 def _from_dicoms(cls, fns):
-    dicts = [_dcm2dict(fn) for fn in fns]  # Process the files sequentially
+    dicts = [dcm2dict2(fn) for fn in fns]  # Process the files sequentially
     return pd.DataFrame(dicts)
 pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 

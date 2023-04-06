@@ -52,6 +52,6 @@ features = feats
 samples = ['/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (35-68)/0052.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/18 (1-34)/0018.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/20/0037.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/9/0017.dcm', '/volumes/cm7/Abdominal_MRI_dataset_split/train/104/exam1/11/0017.dcm']
 
 sample = samples[0]
-sampledict = _dcm2dict(sample)
+sampledict = dcm2dict2(sample)
 print(sampledict)
 #print(column_lists['dicom_cols'])
