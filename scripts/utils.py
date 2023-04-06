@@ -437,6 +437,11 @@ def shorten_df(df, selection_fraction = 0.5):
   df_short.reset_index(drop=True, inplace=True)
   return df_short
 
+def pool_arterial_labels(df, label_col='label'):
+    df1 = df.copy()
+    df1[label_col] = df1[label_col].apply(lambda x: 2 if x in [2,3,4,5] else x)
+    return df1
+
 
   # custom datasest - gets the image data using pydicom.dcmread and transforms
 # also gets label from the label column and merges classes 2-5 which are all flavors
