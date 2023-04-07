@@ -55,6 +55,7 @@ column_lists = {
     'keep': [
         'fname',
         # Patient info
+        'patientID',
         'PatientID',
         # Study info
         'StudyInstanceUID',
