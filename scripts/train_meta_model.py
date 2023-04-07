@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, plot_confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt  
 from sklearn.metrics import precision_recall_fscore_support as score
-import pprint
+from pprint import pprint
 import pickle
 
 from config import file_dict, feats, column_lists
