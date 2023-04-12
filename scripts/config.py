@@ -30,7 +30,7 @@ sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription_x'
 text_label = 'ap_label_code'
 exclusion_labels = [21,22,26,27,28,29]
-RF_params = {'bootstrap': False,
+RF_opt_params = {'bootstrap': False,
  'ccp_alpha': 0.0,
  'class_weight': None,
  'criterion': 'gini',
