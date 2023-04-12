@@ -67,7 +67,7 @@ column_lists = {
         'AcquisitionNumber',
         # Image info and features
         'InstanceNumber',
-        'ImageOrientationPatient',
+        #'ImageOrientationPatient',
         'ScanningSequence',
         'SequenceVariant',
         'ScanOptions',

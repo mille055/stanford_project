@@ -100,7 +100,53 @@ def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
     # load best model weights
     model.load_state_dict(best_model_wts)
     return model
-  
+
+
+
+def test_model(model,test_loader,device):
+    model = model.to(device)
+    # Turn autograd off
+    with torch.no_grad():
+
+        # Set the model to evaluation mode
+        model.eval()
+
+        # Set up lists to store true and predicted values
+        y_true = []
+        test_preds = []
+
+        # Calculate the predictions on the test set and add to list
+        for data in test_loader:
+            inputs, labels = data[0].to(device), data[1].to(device)
+            # Feed inputs through model to get raw scores
+            logits = model.forward(inputs)
+            # Convert raw scores to probabilities (not necessary since we just care about discrete probs in this case)
+            probs = F.softmax(logits,dim=1)
+            # Get discrete predictions using argmax
+            preds = np.argmax(probs.cpu().numpy(),axis=1)
+            # Add predictions and actuals to lists
+            test_preds.extend(preds)
+            y_true.extend(labels.cpu())
+
+        # Calculate the accuracy
+        test_preds = np.array(test_preds)
+        y_true = np.array(y_true)
+        test_acc = np.sum(test_preds == y_true)/y_true.shape[0]
+        
+        # Recall for each class
+        recall_vals = []
+        for i in range(10):
+            class_idx = np.argwhere(y_true==i)
+            total = len(class_idx)
+            correct = np.sum(test_preds[class_idx]==i)
+            recall = correct / total
+            recall_vals.append(recall)
+    
+    return test_acc,recall_vals
+
+
+
+
 def main():
   # use resnet50 transfer learning
   model_ft = models.resnet50(pretrained=True)
