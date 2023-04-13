@@ -103,7 +103,7 @@ def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-def test_model(model,test_loader,device):
+def test_pix_model(model,test_loader,device):
     model = model.to(device)
     # Turn autograd off
     with torch.no_grad():
