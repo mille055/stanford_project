@@ -30,7 +30,6 @@ exclusion_labels = [21,22,26,27,28,29]
 #text model 
 sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription'
-text_label = 'ap_label_code'
 
 #optimized parameters from grid search 
 RF_parameters = {
