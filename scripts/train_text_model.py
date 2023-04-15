@@ -38,24 +38,25 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 senttrans_model = SentenceTransformer(sentence_encoder, device=device)
 
 
-def load_text_data(train_file, test_file):
+def load_text_data(train_csv, val_csv, test_csv):
     
-    # train_csv = pd.read_csv(train_csv_file)
-    # test_csv = pd.read_csv(test_csv_file)
+    train_df = pd.read_csv(train_csv)
+    val_df = pd.read_csv(val_csv)
+    test_df = pd.read_csv(test_csv)
     
     # #run once at start to rid unneccesary column
     # train_csv.drop('Unnamed: 0', axis=1, inplace=True)
     # test_csv.drop('Unnamed: 0', axis=1, inplace=True)
 
-    train_df = pd.read_pickle(train_file)
-    test_df = pd.read_pickle(test_file)
+    #train_df = pd.read_pickle(train_file)
+    #test_df = pd.read_pickle(test_file)
     #print('val list:', val_list)
     #val_df = train_df[train_df.patientID.isin(val_list)]
     #train_df = train_df[~train_df.index.isin(val_df.index)]
 
-    train_df = train_df.reset_index(drop=True)
+    #train_df = train_df.reset_index(drop=True)
     #val_df = val_df.reset_index(drop=True)
-    test_df = test_df.reset_index(drop=True)
+    #test_df = test_df.reset_index(drop=True)
 
     # # create shortened dataframes for train and test
     # train_df_short = shorten_df(train_df, selection_fraction = 0.5)
@@ -74,18 +75,18 @@ def load_text_data(train_file, test_file):
     X_train = train_df[series_description_column]
     y_train = train_df[text_label]
 
-    # X_val = val_df[series_description_column]
-    # y_val = val_df[text_label]
+    X_val = val_df[series_description_column]
+    y_val = val_df[text_label]
     # print('shape of X_val, y_val is :', X_val.shape, y_val.shape)
 
     X_test = test_df[series_description_column]
     y_test = test_df[text_label]
 
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def train_text_model(train_data, test_data, senttrans_model=senttrans_model):
-    X_train, y_train, X_test, y_test = load_text_data(train_data, test_data)
+def train_text_model(train_data,  test_data, senttrans_model=senttrans_model):
+    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_data, test_data)
     
     #encode the text labels in the train, val, and test datasets
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]

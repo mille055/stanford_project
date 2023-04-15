@@ -407,12 +407,10 @@ def load_pickled_dataset(train_file, test_file):
 
   return train_df, test_df
 
-def load_csv_dataset(train_file, test_file, val = True, val_lists = None):
+def create_val_dataset_from_csv(train_file, test_file, val=True, val_lists=val_list):
     train_df = pd.read_csv(train_file)
     test_df = pd.read_csv(test_file)
     
-    train_df.drop('Unnamed: 0', axis=1, inplace=True)
-    test_df.drop('Unnamed: 0', axis=1, inplace=True)
     if val:
         if val_lists:
             val_df = train_df[train_df.patientID.isin(val_lists)]
@@ -424,6 +422,15 @@ def load_csv_dataset(train_file, test_file, val = True, val_lists = None):
 
     else: 
         return train_df, test_df
+
+
+def load_datasets_from_csv(train_csv, val_csv, test_csv):
+    train_df = pd.read_csv(train_csv)
+    val_df = pd.read_csv(val_csv)
+    test_df = pd.read_csv(test_csv)
+
+    return train_df, val_df, test_df
+
 
 # this function will select the image in the middle of each series of images, so that only a single image from each series is selected for training
 # There is one image from each series for each patient
@@ -444,6 +451,22 @@ def shorten_df(df, selection_fraction = 0.5):
   df_short.drop_duplicates(inplace=True)
   df_short.reset_index(drop=True, inplace=True)
   return df_short
+
+
+def prepare_df(df):
+    df1 = df.copy()
+    filenames = df1.file_info.tolist()
+    getdicoms = pd.DataFrame.from_dicoms(filenames)
+    merged = getdicoms.merge(df1, left_on='fname', right_on='file_info')
+    merged.drop(columns=['file_info'], inplace=True)
+    
+    merged['contrast'] = merged.apply(detect_contrast, axis=1)
+    merged['plane'] = merged.apply(compute_plane, axis=1)
+    
+    
+    return merged
+
+
 
 def pool_arterial_labels(df, label_col='label'):
     df1 = df.copy()
