@@ -24,13 +24,15 @@ file_dict = {
 val_list =  [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66] #using same train/val/test split as in the original split based on the metadata classifier
 random_seed = 42
 train_val_split_percent = 0.2
+exclusion_labels = [21,22,26,27,28,29]
+
 
 #text model 
 sentence_encoder = 'all-MiniLM-L6-v2'
-series_description_column = 'SeriesDescription_x'
+series_description_column = 'SeriesDescription'
 text_label = 'ap_label_code'
-exclusion_labels = [21,22,26,27,28,29]
-RF_opt_params = {'bootstrap': False,
+
+RF_params = {'bootstrap': False,
  'ccp_alpha': 0.0,
  'class_weight': None,
  'criterion': 'gini',
