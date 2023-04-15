@@ -43,7 +43,7 @@ def train_fit_parameter_trial(train, y, features, fname='../models/model-run.skl
                'min_samples_leaf': min_samples_leaf,
                'bootstrap': bootstrap}
     
-    clf_random = RandomizedSearchCV(estimator = clf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=random_seed, num_jobs=-1)
+    clf_random = RandomizedSearchCV(estimator = clf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=random_seed, n_jobs=-1)
     clf_random.fit(train[features], y)
     opt_clf = clf_random.best_estimator_
     pprint(clf_random.best_params_)

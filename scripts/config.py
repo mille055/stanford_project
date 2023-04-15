@@ -25,8 +25,7 @@ val_list =  [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66] #using same 
 random_seed = 42
 train_val_split_percent = 0.2
 exclusion_labels = [21,22,26,27,28,29,1]
-classes =  [0,  2,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-       23, 25]
+classes =  [0,  2,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 23, 25]
 
 #text model 
 sentence_encoder = 'all-MiniLM-L6-v2'
@@ -38,8 +37,8 @@ RF_parameters = {
     'ccp_alpha': 0.0,
     'class_weight': None,
     'criterion': 'gini',
-    'max_depth': 660,
-    'max_features': 'sqrt',
+    'max_depth': 371,
+    'max_features': 'auto',
     'max_leaf_nodes': None,
     'max_samples': None,
     'min_impurity_decrease': 0.0,
@@ -47,12 +46,13 @@ RF_parameters = {
     'min_samples_leaf': 2,
     'min_samples_split': 10,
     'min_weight_fraction_leaf': 0.0,
-    'n_estimators': 348,
+    'n_estimators': 373,
     'n_jobs': 2,
     'oob_score': False,
     'random_state': 0,
     'verbose': 0,
     'warm_start': False}
+
 
 #metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
