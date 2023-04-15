@@ -11,7 +11,7 @@ import pickle
 from config import file_dict, feats, column_lists
 from config import abd_label_dict, val_list, train_val_split_percent, random_seed, data_transforms
 from config import sentence_encoder, series_description_column, text_label
-from config import RF_params
+from config import RF_parameters
 from utils import *
 
 #grid search for hyperparameters

@@ -32,25 +32,27 @@ sentence_encoder = 'all-MiniLM-L6-v2'
 series_description_column = 'SeriesDescription'
 text_label = 'ap_label_code'
 
-RF_params = {'bootstrap': False,
- 'ccp_alpha': 0.0,
- 'class_weight': None,
- 'criterion': 'gini',
- 'max_depth': 226,
- 'max_features': 'auto',
- 'max_leaf_nodes': None,
- 'max_samples': None,
- 'min_impurity_decrease': 0.0,
- 'min_impurity_split': None,
- 'min_samples_leaf': 2,
- 'min_samples_split': 5,
- 'min_weight_fraction_leaf': 0.0,
- 'n_estimators': 121,
- 'n_jobs': 2,
- 'oob_score': False,
- 'random_state': 0,
- 'verbose': 0,
- 'warm_start': False}
+#optimized parameters from grid search 
+RF_parameters = {
+                'bootstrap': False,
+                'ccp_alpha': 0.0,
+                'class_weight': None,
+                'criterion': 'gini',
+                'max_depth': 226,
+                'max_features': 'auto',
+                'max_leaf_nodes': None,
+                'max_samples': None,
+                'min_impurity_decrease': 0.0,
+                'min_impurity_split': None,
+                'min_samples_leaf': 2,
+                'min_samples_split': 5,
+                'min_weight_fraction_leaf': 0.0,
+                'n_estimators': 121,
+                'n_jobs': 2,
+                'oob_score': False,
+                'random_state': 0,
+                'verbose': 0,
+                'warm_start': False}
 
 #metadata feature list
 feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
