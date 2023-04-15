@@ -31,8 +31,10 @@ import copy
 from datetime import datetime
 import pickle 
 
-from config import *
-from utils import shorten_df, plot_and_save_cm
+from config import file_dict, feats, column_lists, RF_parameters, classes
+from config import abd_label_dict, val_list, train_val_split_percent, random_seed, data_transforms
+from config import sentence_encoder, series_description_column
+from utils import shorten_df, plot_and_save_cm, prepare_df
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 senttrans_model = SentenceTransformer(sentence_encoder, device=device)
@@ -71,57 +73,61 @@ def load_text_data(train_csv, val_csv, test_csv):
     # val = val_df.reset_index(drop=True)
     # test = test_df.reset_index(drop=True)
     #print(train_df.columns)
+    train_df = prepare_df(train_df)
+    val_df = prepare_df(val_df)
+    test_df = prepare_df(test_df)
+
 
     X_train = train_df[series_description_column]
-    y_train = train_df[text_label]
+    y_train = train_df['label']
 
     X_val = val_df[series_description_column]
-    y_val = val_df[text_label]
+    y_val = val_df['label']
     # print('shape of X_val, y_val is :', X_val.shape, y_val.shape)
 
     X_test = test_df[series_description_column]
-    y_test = test_df[text_label]
+    y_test = test_df['label']
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def train_text_model(train_data,  test_data, senttrans_model=senttrans_model):
-    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_data, test_data)
+def train_text_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
+    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_data, val_data, test_data)
     
     #encode the text labels in the train, val, and test datasets
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]
-    # X_val_encoded = [senttrans_model.encode(doc) for doc in X_val.to_list()]
+    X_val_encoded = [senttrans_model.encode(doc) for doc in X_val.to_list()]
     X_test_encoded = [senttrans_model.encode(doc) for doc in X_test.to_list()]
 
     # Train a classification model using logistic regression classifier
     logreg_model = LogisticRegression(solver='saga')
     logreg_model.fit(X_train_encoded, y_train)
-    preds = logreg_model.predict(X_train_encoded)
-    acc = sum(preds == y_train) / len(y_train)
-    print('Accuracy on the training set is {:.3f}'.format(acc))
+    train_preds = logreg_model.predict(X_train_encoded)
+    train_acc = sum(preds == y_train) / len(y_train)
+    print('Accuracy on the training set is {:.3f}'.format(train_acc))
 
     ## assess on the val set
-    # print('size of X_val_encoded is ', len(X_val_encoded))
-    # print('size of y_val is ', len(y_val))
+    print('size of X_val_encoded is ', len(X_val_encoded))
+    print('size of y_val is ', len(y_val))
 
-    # preds_val = logreg_model.predict(X_val_encoded)
-    # print('size of preds_val is ', len(preds_val))
-    # acc_val = sum(preds_val == y_val)/ len(y_val)
+    val_preds = logreg_model.predict(X_val_encoded)
+    print('size of preds_val is ', len(val_preds))
+    val_acc = sum(preds_val == y_val)/ len(y_val)
     # ## display results on test set
-    # print('Accuracy on the val set is {:.3f}'.format(acc_val))
+    print('Accuracy on the val set is {:.3f}'.format(val_acc))
 
     ## assess on the test set
-    preds_test = logreg_model.predict(X_test_encoded)
-    acc_test = sum(preds_test == y_test) / len(y_test)
+    test_preds = logreg_model.predict(X_test_encoded)
+    test_acc = sum(test_preds == y_test) / len(y_test)
     ## display results on test set
-    print('Accuracy on the test set is {:.3f}'.format(acc_test))
+    print('Accuracy on the test set is {:.3f}'.format(test_acc))
 
 
     #export model
     txt_model_filename = "../models/text_model"+ datetime.now().strftime('%Y%m%d') + ".st"
     pickle.dump(logreg_model, open(txt_model_filename, 'wb'))
 
-    return preds, acc, preds_test, acc_test, logreg_model
+    return train_preds, train_acc, val_preds, val_acc, test_preds, test_acc, logreg_model
 
 
 
@@ -138,11 +144,13 @@ def list_incorrect_text_predictions(ytrue, ypreds, series_desc):
     return y_incorrect_list, y_incorrect_list_label
 
 ## test
-## pickled dataframes
-test_datafile = '../data/X_test02282023.pkl'
-train_datafile = '../data/X_train02282023.pkl'
-X_train, y_train, X_test, y_test = load_text_data(train_datafile, test_datafile)
-series_desc = X_test.tolist()
-preds, acc, preds_test, acc_test, logreg_model = train_text_model(train_datafile, test_datafile)
-list, list_label = list_incorrect_text_predictions(y_test, preds_test, series_desc)
-print(list_label)
+## csv files
+# train_datafile = '../data/trainfiles.csv'
+# test_datafile = '../data/testfiles.csv'
+# val_datafile = '../data/valfiles.csv'
+
+# X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_datafile, val_datafile, test_datafile)
+# series_desc = X_test.tolist()
+# preds, acc, preds_test, acc_test, logreg_model = train_text_model(train_datafile, test_datafile)
+# list, list_label = list_incorrect_text_predictions(y_test, preds_test, series_desc)
+# print(list_label)
