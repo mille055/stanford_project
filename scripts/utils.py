@@ -24,7 +24,7 @@ from fastcore.parallel import parallel
 from config import file_dict, abd_label_dict
 from config import column_lists, feats
 from config import val_list, train_val_split_percent, random_seed, data_transforms
-from config import sentence_encoder, series_description_column, text_label
+from config import sentence_encoder, series_description_column
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -410,6 +410,7 @@ def load_pickled_dataset(train_file, test_file):
 def load_csv_dataset(train_file, test_file, val = True, val_lists = None):
     train_df = pd.read_csv(train_file)
     test_df = pd.read_csv(test_file)
+    
     train_df.drop('Unnamed: 0', axis=1, inplace=True)
     test_df.drop('Unnamed: 0', axis=1, inplace=True)
     if val:
