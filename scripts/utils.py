@@ -536,12 +536,12 @@ def imshow(img, title):
 
 # produce high quality confusion matrix image and save it
 # still need to add labels
-def plot_and_save_cm(ytrue, ypreds):
+def plot_and_save_cm(ytrue, ypreds, fname):
     cm = confusion_matrix(ytrue, ypreds)
     plt.figure(figsize=(25, 25))
     plt.tight_layout()
     ConfusionMatrixDisplay(cm).plot(cmap='Blues')
-    plt.savefig("./assets/images/ConfusionMatrixSentences" + datetime.now().strftime('%Y%m%d') + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(fname + datetime.now().strftime('%Y%m%d') + ".png", dpi=300, bbox_inches='tight')
 
     plt.show()
 
