@@ -114,7 +114,7 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttr
     logreg_model.fit(X_train_encoded, y_train)
     
     train_preds = logreg_model.predict(X_train_encoded)
-    train_acc = sum(preds == y_train) / len(y_train)
+    train_acc = sum(train_preds == y_train) / len(y_train)
     print('Accuracy on the training set is {:.3f}'.format(train_acc))
 
     ## assess on the val set
