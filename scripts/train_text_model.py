@@ -73,39 +73,32 @@ def load_text_data(train_csv, val_csv, test_csv):
     # val = val_df.reset_index(drop=True)
     # test = test_df.reset_index(drop=True)
     #print(train_df.columns)
+    train_df = shorten_df(train_df)
+    val_df = shorten_df(val_df)
+    test_df = shorten_df(test_df)
+    
     train_df = prepare_df(train_df)
     val_df = prepare_df(val_df)
     test_df = prepare_df(test_df)
 
-
-    X_train = train_df[series_description_column]
-    y_train = train_df['label']
-
-    X_val = val_df[series_description_column]
-    y_val = val_df['label']
-    # print('shape of X_val, y_val is :', X_val.shape, y_val.shape)
-
-    X_test = test_df[series_description_column]
-    y_test = test_df['label']
-
-    return X_train, y_train, X_val, y_val, X_test, y_test
+    return train_df, val_df, test_df
 
 
 # now accepts dataframes instead
 def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
-    print('getting the text from the column', series_description_column)
-   
     X_train = train_data[series_description_column]
     y_train = train_data['label']
-    
+    #print(X_train.to_list())
     X_val = val_data[series_description_column]
     y_val = val_data['label']
-    
+    # print('shape of X_val, y_val is :', X_val.shape, y_val.shape)
+
     X_test = test_data[series_description_column]
     y_test = test_data['label']
-    
+
     #encode the text labels in the train, val, and test datasets
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]
+    print(X_train_encoded[0].shape)
     X_val_encoded = [senttrans_model.encode(doc) for doc in X_val.to_list()]
     X_test_encoded = [senttrans_model.encode(doc) for doc in X_test.to_list()]
 
@@ -114,6 +107,7 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttr
     logreg_model.fit(X_train_encoded, y_train)
     
     train_preds = logreg_model.predict(X_train_encoded)
+    train_probs = logreg_model.predict_proba(X_train_encoded)
     train_acc = sum(train_preds == y_train) / len(y_train)
     print('Accuracy on the training set is {:.3f}'.format(train_acc))
 
@@ -121,13 +115,14 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttr
     print('size of X_val_encoded is ', len(X_val_encoded))
     print('size of y_val is ', len(y_val))
     val_preds = logreg_model.predict(X_val_encoded)
+    val_probs = logreg_model.predict_proba(X_val_encoded)
     print('size of preds_val is ', len(val_preds))
     val_acc = sum(val_preds == y_val)/ len(y_val)
-    # ## display results on test set
     print('Accuracy on the val set is {:.3f}'.format(val_acc))
-
-    ## assess on the test set
+    
+    ## display results on test set
     test_preds = logreg_model.predict(X_test_encoded)
+    test_probs = logreg_model.predict_proba(X_test_encoded)
     test_acc = sum(test_preds == y_test) / len(y_test)
     ## display results on test set
     print('Accuracy on the test set is {:.3f}'.format(test_acc))
@@ -137,8 +132,7 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttr
     txt_model_filename = "../models/text_model"+ datetime.now().strftime('%Y%m%d') + ".st"
     pickle.dump(logreg_model, open(txt_model_filename, 'wb'))
 
-    return train_preds, train_acc, val_preds, val_acc, test_preds, test_acc, logreg_model
-
+    return train_preds, train_probs, train_acc, val_preds, val_probs, val_acc, test_preds, test_probs, test_acc, logreg_model
 
 
 
@@ -159,8 +153,8 @@ def list_incorrect_text_predictions(ytrue, ypreds, series_desc):
 # test_datafile = '../data/testfiles.csv'
 # val_datafile = '../data/valfiles.csv'
 
-# X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_datafile, val_datafile, test_datafile)
-# series_desc = X_test.tolist()
-# preds, acc, preds_test, acc_test, logreg_model = train_text_model(train_datafile, test_datafile)
-# list, list_label = list_incorrect_text_predictions(y_test, preds_test, series_desc)
-# print(list_label)
+# train_data, val_data, test_data = load_text_data2(train_datafile, val_datafile, test_datafile)
+# train_preds, train_probs, train_acc, val_preds, val_probs, val_acc, test_preds, test_probs, test_acc, logreg_model = train_text_log_model2(train_data, val_data, test_data)
+# print(test_preds, test_acc)
+# # list, list_label = list_incorrect_text_predictions(y_test, preds_test, series_desc)
+# # print(list_label)
