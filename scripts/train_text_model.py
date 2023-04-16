@@ -46,33 +46,6 @@ def load_text_data(train_csv, val_csv, test_csv):
     val_df = pd.read_csv(val_csv)
     test_df = pd.read_csv(test_csv)
     
-    # #run once at start to rid unneccesary column
-    # train_csv.drop('Unnamed: 0', axis=1, inplace=True)
-    # test_csv.drop('Unnamed: 0', axis=1, inplace=True)
-
-    #train_df = pd.read_pickle(train_file)
-    #test_df = pd.read_pickle(test_file)
-    #print('val list:', val_list)
-    #val_df = train_df[train_df.patientID.isin(val_list)]
-    #train_df = train_df[~train_df.index.isin(val_df.index)]
-
-    #train_df = train_df.reset_index(drop=True)
-    #val_df = val_df.reset_index(drop=True)
-    #test_df = test_df.reset_index(drop=True)
-
-    # # create shortened dataframes for train and test
-    # train_df_short = shorten_df(train_df, selection_fraction = 0.5)
-    # test_df_short = shorten_df(test_df, selection_fraction = 0.5)
-
-    # # create train, val, test datasets
-    # val = train_df_short[train_df_short.patientID.isin(val_list)].reset_index(drop=True)
-    # train = train_df_short[~train_df_short.index.isin(val.index)].reset_index(drop=True)
-    # test = test_df_short.reset_index(drop=True)
-
-    # train = train_df.reset_index(drop=True)
-    # val = val_df.reset_index(drop=True)
-    # test = test_df.reset_index(drop=True)
-    #print(train_df.columns)
     train_df = shorten_df(train_df)
     val_df = shorten_df(val_df)
     test_df = shorten_df(test_df)
@@ -84,21 +57,19 @@ def load_text_data(train_csv, val_csv, test_csv):
     return train_df, val_df, test_df
 
 
-# now accepts dataframes instead
-def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
-    X_train = train_data[series_description_column]
-    y_train = train_data['label']
-    #print(X_train.to_list())
-    X_val = val_data[series_description_column]
-    y_val = val_data['label']
-    # print('shape of X_val, y_val is :', X_val.shape, y_val.shape)
 
-    X_test = test_data[series_description_column]
+def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
+    X_train = train_data['SeriesDescription']
+    y_train = train_data['label']
+    
+    X_val = val_data['SeriesDescription']
+    y_val = val_data['label']
+    
+    X_test = test_data['SeriesDescription']
     y_test = test_data['label']
 
-    #encode the text labels in the train, val, and test datasets
+    
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]
-    print(X_train_encoded[0].shape)
     X_val_encoded = [senttrans_model.encode(doc) for doc in X_val.to_list()]
     X_test_encoded = [senttrans_model.encode(doc) for doc in X_test.to_list()]
 
@@ -112,8 +83,8 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttr
     print('Accuracy on the training set is {:.3f}'.format(train_acc))
 
     ## assess on the val set
-    print('size of X_val_encoded is ', len(X_val_encoded))
-    print('size of y_val is ', len(y_val))
+    #print('size of X_val_encoded is ', len(X_val_encoded))
+    #print('size of y_val is ', len(y_val))
     val_preds = logreg_model.predict(X_val_encoded)
     val_probs = logreg_model.predict_proba(X_val_encoded)
     print('size of preds_val is ', len(val_preds))
