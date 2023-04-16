@@ -91,8 +91,18 @@ def load_text_data(train_csv, val_csv, test_csv):
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def train_text_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
-    X_train, y_train, X_val, y_val, X_test, y_test = load_text_data(train_data, val_data, test_data)
+# now accepts dataframes instead
+def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
+    print('getting the text from the column', series_description_column)
+   
+    X_train = train_data[series_description_column]
+    y_train = train_data['label']
+    
+    X_val = val_data[series_description_column]
+    y_val = val_data['label']
+    
+    X_test = test_data[series_description_column]
+    y_test = test_data['label']
     
     #encode the text labels in the train, val, and test datasets
     X_train_encoded = [senttrans_model.encode(doc) for doc in X_train.to_list()]
@@ -102,6 +112,7 @@ def train_text_model(train_data, val_data, test_data, senttrans_model=senttrans_
     # Train a classification model using logistic regression classifier
     logreg_model = LogisticRegression(solver='saga')
     logreg_model.fit(X_train_encoded, y_train)
+    
     train_preds = logreg_model.predict(X_train_encoded)
     train_acc = sum(preds == y_train) / len(y_train)
     print('Accuracy on the training set is {:.3f}'.format(train_acc))
@@ -109,10 +120,9 @@ def train_text_model(train_data, val_data, test_data, senttrans_model=senttrans_
     ## assess on the val set
     print('size of X_val_encoded is ', len(X_val_encoded))
     print('size of y_val is ', len(y_val))
-
     val_preds = logreg_model.predict(X_val_encoded)
     print('size of preds_val is ', len(val_preds))
-    val_acc = sum(preds_val == y_val)/ len(y_val)
+    val_acc = sum(val_preds == y_val)/ len(y_val)
     # ## display results on test set
     print('Accuracy on the val set is {:.3f}'.format(val_acc))
 
