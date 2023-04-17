@@ -256,29 +256,10 @@ def labels_from_file(label_path, column_names):
     label_df = pd.read_csv(label_path,header=None)
     label_df.columns=column_names
 
-def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
-    "Preprocess metadata for Random Forest classifier to predict sequence type"
-    print("Preprocessing metadata for Random Forest classifier.")
-    df1 = exclude_other(df)
-    print(f"Have received {df1.shape[0]} entries.")
-    df1 = df1[[col for col in keep if col in df1.columns]]
-    if df1['PixelSpacing'].any:
-        df1['PixelSpacing'] = df1['PixelSpacing'].apply(lambda x: x[0])
-    df1 = get_dummies(df1, dummies, d_prefixes)
-    df1 = make_binary_cols(df1, binarize)
-    df1 = rescale_cols(df1, rescale)
-    for f in feats:
-        if f not in df1.columns:
-            df1[f] = 0
-    return df1
-
-
-    
     return label_df
 
-
-def preprocess2(df, keep=column_lists['keep'], dummies=column_lists['dummies'], d_prefixes=column_lists['d_prefixes'], binarize=column_lists['binarize'], rescale=column_lists['rescale']):
-    "Preprocess metadata for Random Forest classifier to predict sequence type"
+def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+   #Preprocess metadata for Random Forest classifier to predict sequence type
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
     print(f"Have received {df1.shape[0]} entries.")
@@ -306,6 +287,38 @@ def preprocess2(df, keep=column_lists['keep'], dummies=column_lists['dummies'], 
             df1[f] = 0
             
     return df1
+
+
+
+# def preprocess2(df, keep=column_lists['keep'], dummies=column_lists['dummies'], d_prefixes=column_lists['d_prefixes'], binarize=column_lists['binarize'], rescale=column_lists['rescale']):
+#     "Preprocess metadata for Random Forest classifier to predict sequence type"
+#     print("Preprocessing metadata for Random Forest classifier.")
+#     df1 = exclude_other(df)
+#     print(f"Have received {df1.shape[0]} entries.")
+    
+#     # Only keep columns that are both in the DataFrame and the 'keep' list
+#     df1 = df1[[col for col in keep if col in df1.columns]]
+    
+#     if 'PixelSpacing' in df1.columns and df1['PixelSpacing'].any:
+#         df1['PixelSpacing'] = df1['PixelSpacing'].apply(lambda x: x[0])
+    
+#     # Only get dummies for columns that are in the DataFrame
+#     dummies = [col for col in dummies if col in df1.columns]
+#     df1 = get_dummies(df1, dummies, d_prefixes)
+    
+#     # Only make binary columns for columns that are in the DataFrame
+#     binarize = [col for col in binarize if col in df1.columns]
+#     df1 = make_binary_cols(df1, binarize)
+    
+#     # Only rescale columns that are in the DataFrame
+#     rescale = [col for col in rescale if col in df1.columns]
+#     df1 = rescale_cols(df1, rescale)
+    
+#     for f in feats:
+#         if f not in df1.columns:
+#             df1[f] = 0
+            
+#     return df1
 
 
 def convert_labels_from_file(label_df):
