@@ -402,3 +402,10 @@ abd_label_dict = {
         'contrast': '1'
     } }
 
+feats_to_keep = ['MRAcquisitionType', 'AngioFlag','SliceThickness','RepetitionTime','EchoTime','EchoTrainLength',
+                 'PixelSpacing','ContrastBolusAgent', 'InversionTime','seq_E','seq_EP','seq_G','seq_IR','seq_P',
+                 'seq_R','seq_S','seq_SE','var_E','var_K','var_N','var_O','var_OSP','var_P','var_S','var_SK','var_SP',
+                 'var_SS','opt_2','opt_A','opt_ACC_GEMS','opt_D','opt_EDR_GEMS','opt_EPI_GEMS','opt_F','opt_FAST_GEMS',
+                 'opt_FC','opt_FC_SLICE_AX_GEMS','opt_FILTERED_GEMS','opt_FS','opt_I','opt_MP_GEMS','opt_NPW',
+                 'opt_P','opt_PFF','opt_PFP','opt_S','opt_SAT2','opt_SAT_GEMS','opt_SEQ_GEMS','opt_SP','opt_T',
+                 'opt_TRF_GEMS','opt_VASCTOF_GEMS','opt_W','opt_X','type_ADC','type_DIFFUSION','type_DERIVED']
