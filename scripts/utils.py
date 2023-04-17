@@ -117,6 +117,14 @@ def expand_filename_into_columns(df, cols):
         df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[iterator])
     return df
 
+### another version which goes backwards from the end of the filename
+def expand_filename(df, cols):
+    for iterator in range(len(cols)):
+        df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[-iterator])
+    return df
+
+
+
 def compute_plane(row):
     '''
     Computes the plane of imaging from the direction cosines provided in the `ImageOrientationPatient` field.
