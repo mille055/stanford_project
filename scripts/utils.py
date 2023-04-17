@@ -19,6 +19,8 @@ import numpy as np, pandas as pd
 from joblib import dump, load
 from fastai.basics import delegates
 from fastcore.parallel import parallel
+from fastcore.utils import gt
+from fastcore.foundation import L
 
 ### local imports ###
 from config import file_dict, abd_label_dict
@@ -123,6 +125,13 @@ def expand_filename(df, cols):
         df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[-iterator])
     return df
 
+def extract_image_number(filename):
+    pattern = r'-([0-9]+)\.dcm$'
+    match = re.search(pattern, filename)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
 
 
 def compute_plane(row):
@@ -133,12 +142,21 @@ def compute_plane(row):
     '''
     planes = ['sag', 'cor', 'ax']
     if 'ImageOrientationPatient1' in row.keys():
-        dircos = [v for k,v in row.items() if 'ImageOrientationPatient' in k]
+        dircos = [v for k, v in row.items() if 'ImageOrientationPatient' in k]
     else:
         dircos = row['ImageOrientationPatient']
-    dircos = np.array(dircos).reshape(2,3)
-    pnorm = abs(np.cross(dircos[0], dircos[1]))
-    return planes[np.argmax(pnorm)]
+
+        # Handle MultiValue objects by converting them to a list of floats
+        if isinstance(dircos, DcmMultiValue):
+            dircos = [float(x) for x in dircos]
+
+    # Check if dircos has the expected length
+    if not isinstance(dircos, float) and len(dircos) == 6:
+        dircos = np.array(dircos).reshape(2, 3)
+        pnorm = abs(np.cross(dircos[0], dircos[1]))
+        return planes[np.argmax(pnorm)]
+    else:
+        return 'unknown'
 
 #_re_extra_info = re.compile(r'[<\([].*?[\]\)>]')
 
