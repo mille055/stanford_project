@@ -118,6 +118,38 @@ def list_incorrect_text_predictions(ytrue, ypreds, series_desc):
     y_incorrect_list_label = [x for x in ylist_label if x[1]!=x[2]]
     return y_incorrect_list, y_incorrect_list_label
 
+
+def get_NLP_inference(model, filenames, device=device, classes=classes):
+    
+    senttrans_model = SentenceTransformer(sentence_encoder, device=device)
+    preds = []
+    probs = []
+
+    for filename in filenames:
+        try:
+            ds = pydicom.dcmread(filename)
+            description = ds.SeriesDescription
+            
+            description_encoded = senttrans_model.encode(description)
+
+            #print(f'Getting prediction for file {filename} with SeriesDesription label {description} and shape {description_encoded.shape}')
+
+            pred = model.predict(description_encoded.reshape(1, -1))[0]  # Use description_encoded and reshape to a 2D array
+            preds.append(pred)
+            prob = model.predict_proba(description_encoded.reshape(1, -1))  # Use description_encoded and reshape to a 2D array
+            probs.append(prob)
+
+            preds_np = np.array(preds)  # Convert preds to a NumPy array
+            probs_np = np.array(probs).squeeze()  # Convert probs to a NumPy array
+
+
+        except Exception as e:
+            print(f"Error processing file {filename}: {e}")
+
+    
+    return preds_np, probs_np
+
+
 ## test
 ## csv files
 # train_datafile = '../data/trainfiles.csv'
