@@ -508,6 +508,16 @@ def shorten_df(df, selection_fraction = 0.5):
   df_short.reset_index(drop=True, inplace=True)
   return df_short
 
+# like shorten_df but does not adjust the dataframe, just returns the selected filenames
+def select_one_filename(df, selection_fraction=0.5):
+    df1 = df.copy()
+    grouped_df = df.groupby(['patientID', 'series'])
+    sorted_df = grouped_df['file_info'].apply(lambda x: x.sort_values())
+  
+    selected_filename = grouped_df['file_info'].apply(lambda x: x.sort_values().iloc[int(len(x)*selection_fraction)])
+    selected_filename = selected_filename.reset_index()
+  
+    return selected_filename
 
 def prepare_df(df):
     df1 = df.copy()
