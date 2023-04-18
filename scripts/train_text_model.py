@@ -15,6 +15,7 @@ from random import shuffle
 import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, plot_confusion_matrix, ConfusionMatrixDisplay
 
 import torch
 import torch.nn as nn
@@ -27,7 +28,6 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 import time
-import os
 import copy
 from datetime import datetime
 import pickle 
