@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 import os
 import os.path
 import glob
+import pydicom
 
 import sys
 from random import shuffle

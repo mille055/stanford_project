@@ -17,7 +17,6 @@ pydicom==2.1.2
 seaborn 
 spacy==2.3.5
 
-torch==2.0.0
 pylibjpeg
 pylibjpeg-libjpeg
 pylibjpeg-openjpeg

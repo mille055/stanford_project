@@ -642,6 +642,26 @@ def train_setup_abdomen_cross(df, cols=['patientID','exam','series'], need_prepr
     #return train, val, y, y_names
 
     
+def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = True):
+   
+    class_text_labels = [abd_label_dict[str(x)]['short'] for x in classes]
+   
+     # Generate a classification report based on the true labels and predicted labels
+    print(classification_report(y_true, y_pred))
+
+    # Generate a confusion matrix based on the true labels and predicted labels
+    cm = confusion_matrix(y_true = y_true, y_pred = y_pred, labels=classes)
+
+    # Create a ConfusionMatrixDisplay object with the correct labels
+    cm_display = ConfusionMatrixDisplay(cm, display_labels=class_text_labels).plot(xticks_rotation = 'vertical', cmap='Blues')
+    plt.figure(figsize=(25, 25))
+    plt.tight_layout()
+    #ConfusionMatrixDisplay(cm, display_labels=class_text_labels).plot(xticks_rotation = 'vertical', cmap='Blues')
+    plt.savefig("../assets/FigCM_"+fn+datetime.today().strftime('%Y%m%d')+".tif",dpi=300, bbox_inches = 'tight')     
+
+    return cm      
+
+
 # #grid search for hyperparameters for the metadata model
 # def train_fit_parameter_trial(train, y, features, fname='model-run.skl'):
 #     "Train a Random Forest classifier on `train[features]` and `y`, then save to `fname` and return."
