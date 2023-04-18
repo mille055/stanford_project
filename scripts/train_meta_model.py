@@ -91,6 +91,17 @@ def calc_feature_importances(model,feat_names,num_to_show):
     plt.show()
     return RF_ranking
 
+def meta_inference(df, model, feature_list=feats):
+    X = preprocess(df)[feature_list]
+    y = df.label
+    preds = model.predict(X)
+    probs = model.predict_proba(X)
+    acc = np.sum(preds==y)/len(y)
+
+
+    return preds, probs, y, acc
+
+
 # to get inference on a row of the dataframe
 def get_meta_probs(row, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
     X = (row[features]).values.reshape(1,-1)
