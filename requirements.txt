@@ -18,5 +18,8 @@ seaborn
 spacy==2.3.5
 
 torch==2.0.0
-
+pylibjpeg
+pylibjpeg-libjpeg
+pylibjpeg-openjpeg
+pylibjpeg-rle
 
