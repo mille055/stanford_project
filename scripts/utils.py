@@ -15,12 +15,16 @@ from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 import os, sys, glob, re
-import numpy as np, pandas as pd
 from joblib import dump, load
 from fastai.basics import delegates
 from fastcore.parallel import parallel
 from fastcore.utils import gt
 from fastcore.foundation import L
+import sklearn
+from sklearn.model_selection import train_test_split
+
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, plot_confusion_matrix, ConfusionMatrixDisplay
+from sklearn.linear_model import LogisticRegression
 
 ### local imports ###
 from config import file_dict, abd_label_dict, classes, column_lists, feats
