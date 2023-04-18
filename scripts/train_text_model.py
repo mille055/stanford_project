@@ -58,7 +58,7 @@ def load_text_data(train_csv, val_csv, test_csv):
 
 
 
-def train_text_log_model(train_data, val_data, test_data, senttrans_model=senttrans_model):
+def train_text_log_model(train_data, val_data, test_data, senttrans_model=sentence_encoder):
     X_train = train_data['SeriesDescription']
     y_train = train_data['label']
     
@@ -126,6 +126,7 @@ def get_NLP_inference(model, filenames, device=device, classes=classes):
     probs = []
 
     for filename in filenames:
+        print(filename)
         try:
             ds = pydicom.dcmread(filename)
             description = ds.SeriesDescription
@@ -139,14 +140,13 @@ def get_NLP_inference(model, filenames, device=device, classes=classes):
             prob = model.predict_proba(description_encoded.reshape(1, -1))  # Use description_encoded and reshape to a 2D array
             probs.append(prob)
 
-            preds_np = np.array(preds)  # Convert preds to a NumPy array
-            probs_np = np.array(probs).squeeze()  # Convert probs to a NumPy array
-
-
         except Exception as e:
             print(f"Error processing file {filename}: {e}")
 
-    
+    preds_np = np.array(preds)  # Convert preds to a NumPy array
+    probs_np = np.array(probs).squeeze()  # Convert probs to a NumPy array
+
+
     return preds_np, probs_np
 
 
