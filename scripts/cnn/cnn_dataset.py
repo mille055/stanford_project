@@ -24,8 +24,8 @@ class ImgDataset(Dataset):
 
         img_file = self.data_df.file_info[idx]
         #if in colab, changing path
-        rel = os.path.relpath(img_file, source)
-        img_file_new = os.path.join(dest,rel)
+        # rel = os.path.relpath(img_file, source)
+        # img_file = os.path.join(dest,rel)
         
         #print('getting file', img_file)
         ds = pydicom.dcmread(img_file)
@@ -35,15 +35,13 @@ class ImgDataset(Dataset):
         img = img[np.newaxis]
         img = torch.from_numpy(np.asarray(img))
         
-        #print(img.dtype, img.shape)
-        
-        
         if self.transform:
             img = self.transform(img)
         #print('after transform', img.dtype, img.shape)
             
         x = img
         labl = self.data_df.label[idx]
-        y = torch.tensor(labl, dtype = torch.float32)
-        #print(x,y)
+        adjusted_label = classes.index(labl)
+        y = torch.tensor(adjusted_label, dtype=torch.long)  # Use torch.long instead of torch.float32 
+        
         return (x,y)
