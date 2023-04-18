@@ -24,9 +24,59 @@ import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
-import monai
-from monai.data import DataLoader, ImageDataset
-from monai.transforms import AddChannel, Compose, RandRotate90, Resize, ScaleIntensity, EnsureType
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+  # custom datasest - gets the image data using pydicom.dcmread and transforms
+# also gets label from the label column and merges classes 2-5 which are all flavors
+# arterial into a single 'arterial' label as label 2
+
+class ImgDataset(Dataset):
+    def __init__(self, df, transform=None):
+        self.data_df = df
+        self.datafileslist = df.file_info
+        self.labels = df.label
+        self.transform = transform
+        
+        
+    def __len__(self):
+        return self.data_df.shape[0]
+    
+    def __getitem__(self, idx):
+        source = file_dict['img_data_dir_local']
+        dest = file_dict['img_data_dir_colab']
+
+        img_file = self.data_df.file_info[idx]
+        #if in colab, changing path
+        #rel = os.path.relpath(img_file, source)
+        #img_file_new = os.path.join(dest,rel)
+        
+        #print('getting file', img_file)
+        ds = pydicom.dcmread(img_file)
+        img = np.array(ds.pixel_array, dtype=np.float32)
+        #img = img/255.
+        #img = cv2.resize(img, (224,224))
+        img = img[np.newaxis]
+        img = torch.from_numpy(np.asarray(img))
+        
+        #print(img.dtype, img.shape)
+        
+        
+        if self.transform:
+            img = self.transform(img)
+        #print('after transform', img.dtype, img.shape)
+            
+        x = img
+        labl = self.data_df.label[idx]
+      
+        # pool the arterial phase into a single label
+        if labl in [2,3,4,5]: 
+          labl=2
+        y = torch.tensor(labl, dtype = torch.float32)
+        #print(x,y)
+        return (x,y)
+
 
 
 def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
@@ -145,6 +195,32 @@ def test_pix_model(model,test_loader,device):
     return test_acc,recall_vals
 
 
+def image_to_tensor(filepath, device=device):
+    # Define the transformations to match the ones used during training/evaluation of the test dataset
+#     test_transform = transforms.Compose([
+#         transforms.ToPILImage(),
+#         transforms.Resize(299),
+#         transforms.CenterCrop(299),
+#         transforms.Grayscale(num_output_channels=3),
+#         transforms.ToTensor(),
+#         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalize the image using the same mean and std values as during training
+# ])
+
+    # Load an image and apply the transformations
+    #image = Image.open(filepath)
+    ds = pydicom.dcmread(filepath)
+    img = np.array(ds.pixel_array, dtype=np.float32)
+    img = img[np.newaxis]
+    img = torch.from_numpy(np.asarray(img))
+    input_tensor = data_transforms['test'](img)
+
+    # Add a batch dimension to the input tensor
+    input_tensor = input_tensor.unsqueeze(0)
+    print('changing input_tensor to shape', input_tensor.shape)
+    # Move the input tensor to the appropriate device
+    input_tensor = input_tensor.to(device)
+
+    return input_tensor
 
 
 def main():

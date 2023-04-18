@@ -6,7 +6,7 @@ from pydicom.dataset import Dataset as DcmDataset
 from pydicom.tag import BaseTag as DcmTag
 from pydicom.multival import MultiValue as DcmMultiValue
 from pydicom.datadict import keyword_for_tag
-
+import matplotlib.pyplot as plt
 from pathlib import Path
 from torch.optim import lr_scheduler
 import torch.backends.cudnn as cudnn
