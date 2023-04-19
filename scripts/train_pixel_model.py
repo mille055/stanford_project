@@ -26,7 +26,7 @@ from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
-from config import data_transforms
+from config import data_transforms, classes
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -38,7 +38,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 class ImgDataset(Dataset):
     def __init__(self, df, transform=None):
         self.data_df = df
-        self.datafileslist = df.file_info
+        self.datafileslist = df.fname
         self.labels = df.label
         self.transform = transform
         
@@ -224,6 +224,53 @@ def image_to_tensor(filepath, device=device):
     input_tensor = input_tensor.to(device)
 
     return input_tensor
+
+def get_pixel_preds_and_probs(model, filelist, classes=classes, device=device):
+    model = model.to(device)
+    # Turn autograd off
+    with torch.no_grad():
+        model.eval()
+
+    preds = []
+    probs = []
+    
+    count = 0
+    for file in filelist:
+        #print('on item ', count, file)
+        
+        each_tensor = image_to_tensor(file)
+        #visualization of a batch of images
+        each_tensor = each_tensor.to(device)
+        #print('shape of each_tensor is', each_tensor.shape)
+        # Feed inputs through model to get raw scores
+        logits = model.forward(each_tensor)
+        
+        
+        prob = torch.softmax(logits, dim=1)
+        prob = prob.detach().cpu().numpy()
+        #print(prob, prob.shape)
+        # Get discrete predictions using argmax
+        pred = classes[np.argmax(prob)]
+        # Add predictions and actuals to lists
+        preds.append(pred)
+        probs.append(prob)
+        
+       
+
+        count+= 1
+    # Convert lists to numpy arrays
+    predictions_array = np.array(preds).flatten()
+    probabilities_array = np.array(probs).squeeze()
+
+    # Print the predictions and probabilities arrays
+    #print("Predictions array:", predictions_array)
+    #print("Probabilities array:", probabilities_array)
+
+
+    return predictions_array, probabilities_array
+
+
+
 
 
 def main():

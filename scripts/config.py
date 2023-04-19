@@ -77,6 +77,7 @@ feats = ['MRAcquisitionType', 'AngioFlag', 'SliceThickness', 'RepetitionTime',
 column_lists = {
     'keep': [
         'fname',
+        'file_info',
         # Patient info
         'patientID',
         'PatientID',
