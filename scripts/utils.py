@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import pydicom
+from datetime import datetime
 
 from pydicom.dataset import Dataset as DcmDataset
 from pydicom.tag import BaseTag as DcmTag
