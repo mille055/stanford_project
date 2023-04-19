@@ -92,6 +92,7 @@ column_lists = {
         'contrast',
         'plane',
         'series_num',
+        'series',
         # Image info and features
         'InstanceNumber',
         #'ImageOrientationPatient',
