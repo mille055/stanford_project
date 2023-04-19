@@ -26,6 +26,8 @@ from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
 
+from config import data_transforms
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
