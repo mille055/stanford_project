@@ -101,8 +101,8 @@ def train_text_log_model(train_data, val_data, test_data, senttrans_model=senten
 
 
     #export model
-    txt_model_filename = "../models/text_model"+ datetime.now().strftime('%Y%m%d') + ".st"
-    pickle.dump(logreg_model, open(txt_model_filename, 'wb'))
+    #txt_model_filename = "../models/text_model"+ datetime.now().strftime('%Y%m%d') + ".st"
+    #pickle.dump(logreg_model, open(txt_model_filename, 'wb'))
 
     return train_preds, train_probs, train_acc, val_preds, val_probs, val_acc, test_preds, test_probs, test_acc, logreg_model
 

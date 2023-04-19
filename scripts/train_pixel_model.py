@@ -14,6 +14,7 @@ import configparser
 import pandas as pd
 import sklearn
 from sklearn.model_selection import train_test_split
+import pydicom
 
 import torch
 import torch.nn as nn

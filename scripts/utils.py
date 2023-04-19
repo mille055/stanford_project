@@ -614,7 +614,8 @@ def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = 
     plt.figure(figsize=(25, 25))
     plt.tight_layout()
     #ConfusionMatrixDisplay(cm, display_labels=class_text_labels).plot(xticks_rotation = 'vertical', cmap='Blues')
-    plt.savefig("../assets/FigCM_"+fn+datetime.today().strftime('%Y%m%d')+".tif",dpi=300, bbox_inches = 'tight')     
+    if saveflag:
+        plt.savefig("../assets/FigCM_"+fn+datetime.today().strftime('%Y%m%d')+".tif",dpi=300, bbox_inches = 'tight')     
 
     return cm      
 

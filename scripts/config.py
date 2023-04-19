@@ -83,11 +83,15 @@ column_lists = {
         # Study info
         'StudyInstanceUID',
         'StudyID',
+        'exam',
         # Series info
         'SeriesInstanceUID',
         'SeriesNumber',
         'SeriesDescription',
         'AcquisitionNumber',
+        'contrast',
+        'plane',
+        'series_num',
         # Image info and features
         'InstanceNumber',
         #'ImageOrientationPatient',
