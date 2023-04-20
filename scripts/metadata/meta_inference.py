@@ -54,8 +54,9 @@ def meta_inference(df, model, feature_list=feats):
 
 
 # to get inference on a row of the dataframe, currently requires to have been preprocessed
-def get_meta_probs(row, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
+def get_meta_inference(row, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
     X = (row[features]).values.reshape(1,-1)
+    pred = model.predict(X)
     probs = model.predict_proba(X)
 
-    return probs
+    return pred, probs

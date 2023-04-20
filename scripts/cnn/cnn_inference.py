@@ -73,7 +73,8 @@ def image_to_tensor(filepath, transforms = data_transforms, device=device):
 
     # Add a batch dimension to the input tensor
     input_tensor = input_tensor.unsqueeze(0)
-    print('changing input_tensor to shape', input_tensor.shape)
+    #print('changing input_tensor to shape', input_tensor.shape)
+    
     # Move the input tensor to the appropriate device
     input_tensor = input_tensor.to(device)
 
