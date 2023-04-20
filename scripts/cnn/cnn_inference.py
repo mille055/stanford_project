@@ -10,11 +10,12 @@ from torchvision import datasets, models, transforms
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 #local imports
-from cnn_model import CustomResNet50
-from cnn_data_loaders import get_data_loaders, data_transforms
+from .cnn_model import CustomResNet50
+from .cnn_data_loaders import get_data_loaders, data_transforms
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import classes
 from utils import create_datasets
 
@@ -88,7 +89,7 @@ def pixel_inference(model, filelist, classes=classes, device=device):
     probs = []
     
     count = 0
-    
+
     if isinstance(filelist, str):
         filelist = [filelist]
     for file in filelist:

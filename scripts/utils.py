@@ -598,6 +598,11 @@ def train_setup_abdomen_cross(df, cols=['patientID','exam','series'], need_prepr
         print(scores)
     #return train, val, y, y_names
 
+# adds the preds and probs to select rows from the original data frame (patient and study info)
+def make_results_df(preds, probs, true, df):
+    return pd.DataFrame({'preds': preds, 'true': true, 'probs': [row.tolist() for row in probs], 'patientID': df['patientID'], 'series_description': df['SeriesDescription'], 'contrast': df['contrast'], 'plane': df['plane']  })
+
+
     
 def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = True):
    

@@ -120,7 +120,7 @@ def list_incorrect_text_predictions(ytrue, ypreds, series_desc):
     return y_incorrect_list, y_incorrect_list_label
 
 
-def get_NLP_inference(model, filenames, device=device, classes=classes):
+def get_nlp_inference(model, filenames, device=device, classes=classes):
     
     senttrans_model = SentenceTransformer(sentence_encoder, device=device)
     preds = []

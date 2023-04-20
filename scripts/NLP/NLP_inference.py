@@ -36,6 +36,7 @@ from config import abd_label_dict, val_list, train_val_split_percent, random_see
 from config import sentence_encoder, series_description_column
 from utils import shorten_df, plot_and_save_cm, prepare_df
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def get_NLP_inference(model, filenames, device=device, classes=classes):
     
@@ -43,8 +44,8 @@ def get_NLP_inference(model, filenames, device=device, classes=classes):
     preds = []
     probs = []
 
-    if isinstance(filelist, str):
-        filelist = [filelist]
+    if isinstance(filenames, str):
+        filenames = [filenames]
 
     for filename in filenames:
         print(filename)
