@@ -10,43 +10,26 @@ import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
-import time, copy
+import time, copy, os
 
 
 # local imports
 from config import classes
 from cnn.cnn_model import CustomResNet50
 from cnn.cnn_model import CustomResNet50
-from cnn.cnn_data_loaders import get_data_loaders, dataset_sizes
+from cnn.cnn_data_loaders import get_data_loaders
 from cnn.cnn_dataset import ImgDataset
+from utils import *
 
 # Determine the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Instantiate the custom model
-num_classes = len(classes)
-model = CustomResNet50(num_classes)
-model = model.to(device)  # Move the model to the appropriate device
 
-# Get the data loaders
-batch_size = 64
-train_loader, val_loader, test_loader, dataset_sizes = get_data_loaders(batch_size)
-
-# Define the training loop
-for inputs, targets in train_loader:
-    inputs, targets = inputs.to(device), targets.to(device)  # Move the input data to the appropriate device
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-# Decay LR by a factor of 0.1 every 7 epochs
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
- 
-
-def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_cnn_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
-    dataloaders = {'train': train_loader, 'val': val_loader, 'test': test_loader}
 
     for epoch in range(num_epochs):
         print(f'Epoch {epoch}/{num_epochs - 1}')
@@ -63,15 +46,11 @@ def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
             running_corrects = 0
 
             # Iterate over data.
-            batch_num = 0
             for inputs, labels in dataloaders[phase]:
-                print('batch ', batch_num)
-                batch_num= batch_num + 1
                 inputs = inputs.to(device)
                 labels = labels.type(torch.LongTensor)
                 labels = labels.to(device)
-                
-                
+
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
@@ -93,8 +72,8 @@ def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
             if phase == 'train':
                 scheduler.step()
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            epoch_loss = running_loss / len(dataloaders[phase].dataset)
+            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
 
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
@@ -112,3 +91,44 @@ def train_pix_model(model, criterion, optimizer, scheduler, num_epochs=25):
     # load best model weights
     model.load_state_dict(best_model_wts)
     return model
+
+
+
+
+
+
+def main():
+    # Train, val, test need to be imported
+    data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
+    train_datafile = os.path.join(data_path, 'trainfiles.csv')
+    val_datafile = os.path.join(data_path, 'valfiles.csv')
+    test_datafile = os.path.join(data_path, 'testfiles.csv')
+    train, val, test = create_datasets(train_datafile, val_datafile, test_datafile)
+
+    # Instantiate the custom model
+    num_classes = len(classes)
+    model = CustomResNet50(num_classes)
+    model = model.to(device)  # Move the model to the appropriate device
+
+    # Get the data loaders
+    batch_size = 64
+    train_loader, val_loader, test_loader, dataset_sizes = get_data_loaders(train, val, test, batch_size)
+    dataloaders = {'train': train_loader, 'val': val_loader, 'test': test_loader}
+
+    # Define loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+    # Decay LR by a factor of 0.1 every 7 epochs
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+
+    # Train the model
+    trained_model = train_cnn_model(model, dataloaders, criterion, optimizer, exp_lr_scheduler, num_epochs=25)
+
+    # Save the trained model if needed
+    save_filename = "pixel_model"+ datetime.now().strftime('%Y%m%d') + ".pth"
+    torch.save(trained_model.state_dict(), save_filename)
+
+if __name__ == "__main__":
+    main()
+

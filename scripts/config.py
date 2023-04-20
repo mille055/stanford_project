@@ -20,6 +20,7 @@ file_dict = {
 'labels_file': '../data/cmm_labels.txt'
 }
 
+
 #validation split
 val_list =  [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66] #using same train/val/test split as in the original split based on the metadata classifier
 random_seed = 42

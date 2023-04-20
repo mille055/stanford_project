@@ -10,7 +10,7 @@ from config import file_dict, classes
 class ImgDataset(Dataset):
     def __init__(self, df, transform=None):
         self.data_df = df
-        self.datafileslist = df.file_info
+        self.datafileslist = df.fname
         self.labels = df.label
         self.transform = transform
         
@@ -22,7 +22,7 @@ class ImgDataset(Dataset):
         source = file_dict['img_data_dir_local']
         dest = file_dict['img_data_dir_colab']
 
-        img_file = self.data_df.file_info[idx]
+        img_file = self.data_df.fname[idx]
         #if in colab, changing path
         # rel = os.path.relpath(img_file, source)
         # img_file = os.path.join(dest,rel)

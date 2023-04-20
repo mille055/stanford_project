@@ -619,6 +619,24 @@ def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = 
 
     return cm      
 
+def create_datasets(train_datafile, val_datafile, test_datafile):
+    # reads in the dataframes from csv
+    train_full = pd.read_csv(train_datafile)
+    val_full = pd.read_csv(val_datafile)
+    test_full = pd.read_csv(test_datafile)
+
+    # selects the middle image from each series for further evaluation
+    train = shorten_df(train_full)
+    val = shorten_df(val_full)
+    test = shorten_df(test_full)
+
+    # changes to the dataframe including adding contrast and computed plane columns
+    train_df = prepare_df(train)
+    val_df = prepare_df(val)
+    test_df = prepare_df(test)
+
+    return train_df, val_df, test_df
+
 
 # #grid search for hyperparameters for the metadata model
 # def train_fit_parameter_trial(train, y, features, fname='model-run.skl'):
