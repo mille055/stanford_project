@@ -32,7 +32,8 @@ class CustomDataset(Dataset):
         x1 = torch.tensor(self.dataframe.iloc[idx]['meta_probs'], dtype=torch.float32)
         x2 = torch.tensor(self.dataframe.iloc[idx]['pixel_probs'], dtype=torch.float32)
         x3 = torch.tensor(self.dataframe.iloc[idx]['nlp_probs'], dtype=torch.float32)
-        label = torch.tensor(self.dataframe.iloc[idx]['label'], dtype=torch.long)
+        
+        label = torch.tensor(self.dataframe.iloc[idx]['label'].apply(lambda x: classes.index(x)), dtype=torch.long)
 
         return x1, x2, x3, label
 
