@@ -16,7 +16,7 @@ import time, copy, os
 # local imports
 from config import classes
 from cnn.cnn_model import CustomResNet50
-from cnn.cnn_model import CustomResNet50
+from cnn.cnn_inference import test_pix_model, pixel_inference
 from cnn.cnn_data_loaders import get_data_loaders
 from cnn.cnn_dataset import ImgDataset
 from utils import *
@@ -124,6 +124,15 @@ def main():
 
     # Train the model
     trained_model = train_cnn_model(model, dataloaders, criterion, optimizer, exp_lr_scheduler, num_epochs=25)
+
+    # Evaluate the  model on the test dataset
+
+    preds, probs = pixel_inference(test.fname.tolist())
+    true = test.true
+    accuracy = np.sum(preds==true)/len(true)
+    print('Accuracy on the test dataset is ', np.round(accuracy, 3))
+    #results = make_results_df(preds, true, test)
+
 
     # Save the trained model if needed
     save_filename = "cnn_model"+ datetime.now().strftime('%Y%m%d') + ".pth"
