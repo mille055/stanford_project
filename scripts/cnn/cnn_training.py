@@ -126,7 +126,7 @@ def main():
     trained_model = train_cnn_model(model, dataloaders, criterion, optimizer, exp_lr_scheduler, num_epochs=25)
 
     # Save the trained model if needed
-    save_filename = "pixel_model"+ datetime.now().strftime('%Y%m%d') + ".pth"
+    save_filename = "cnn_model"+ datetime.now().strftime('%Y%m%d') + ".pth"
     torch.save(trained_model.state_dict(), save_filename)
 
 if __name__ == "__main__":
