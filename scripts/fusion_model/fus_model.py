@@ -55,3 +55,31 @@ class FusionModel(nn.Module):
             #self.fusion_layer.weight = nn.Parameter(self.model_container.fusion_model.fusion_layer.weight)
         x = self.fusion_layer(x)
         return x
+    
+    ### adding this back into the FusionModel
+    def get_fusion_inference(self, row, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
+        # get metadata preds,probs
+        pred1, prob1 = get_meta_inference(row, self.model_container.metadata_model, features)
+        prob1_tensor = torch.tensor(prob1, dtype=torch.float32).squeeze()
+        print(pred1)
+
+        # get cnn preds, probs
+        pred2, prob2 = pixel_inference(self.model_container.cnn_model, [row.fname], classes=classes)
+        prob2_tensor = torch.tensor(prob2, dtype=torch.float32)
+        print(pred2)
+
+        # get nlp preds, probs...if statement because thinking about assessing both ways
+        if include_nlp:
+            pred3, prob3 = get_NLP_inference(self.model_container.nlp_model, [row.fname], device, classes=classes)
+            prob3_tensor = torch.tensor(prob3, dtype=torch.float32)
+            print(pred3)
+            fused_output = self.forward(prob1_tensor, prob2_tensor, prob3_tensor)
+        else:
+            fused_output = self.forward(prob1_tensor, prob2_tensor)
+
+        predicted_class = classes[torch.argmax(fused_output, dim=0).item()]
+        confidence_score = torch.max(torch.softmax(fused_output, dim=0)).item()
+
+        troubleshoot_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
+
+        return predicted_class, confidence_score, troubleshoot_df

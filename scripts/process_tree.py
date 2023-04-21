@@ -74,11 +74,7 @@ class Processor:
         self.fusion_model = fusion_model
         self.troubleshoot_df = None
 
-    def process_batch(self, df):
-        df1 = df.copy()
-        batch = df1.groupby('patientID').apply(self.process_patient)
-        return batch
-
+    
     def pipeline_new_studies(self):
         _, df = get_dicoms(self.data_dir)
         df1 = df.copy()
@@ -95,6 +91,12 @@ class Processor:
 
         processed_frame = self.process_batch(df1)
         return processed_frame
+
+
+    def process_batch(self, df):
+        df1 = df.copy()
+        batch = df1.groupby('patientID').apply(self.process_patient)
+        return batch
 
     def process_patient(self, patient_df):
         processed_exams = patient_df.groupby('exam').apply(self.process_exam)
@@ -114,7 +116,7 @@ class Processor:
         # Get the middle image
         middle_image = sorted_series.iloc[middle_index]
 
-        predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference(middle_image)
+        predicted_series_class, predicted_series_confidence, ts_df = self.fusion_model.get_fusion_inference(middle_image)
 
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
