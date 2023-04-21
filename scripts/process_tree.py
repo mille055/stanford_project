@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-#from fusion_model.fus_inference import get_fusion_inference
+from fusion_model.fus_inference import get_fusion_inference
 from fusion_model.fus_model import FusionModel
 from model_container import ModelContainer
 import pydicom
@@ -114,13 +114,15 @@ class Processor:
         # Get the middle image
         middle_image = sorted_series.iloc[middle_index]
 
-        predicted_series_class, predicted_series_confidence, ts_df = self.fusion_model.get_fusion_inference(middle_image)
+        predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference(middle_image)
 
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         
         if self.troubleshoot_df == None:
+            print('creating the ts df')
             self.troubleshoot_df = ts_df
+            print('ts_df is ', ts_df)
         else:
             self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
@@ -202,13 +204,14 @@ def write_labels_into_dicom(series_group, label_num, conf_num, path):
 
 
 def main():
-    old_data_site = '/volumes/cm7/processed/'
+    old_data_site = '/volumes/cm7/start_folder/'
     destination_site = '/volumes/cm7/newly_processed/'
     model_container = ModelContainer()
     fusion_model = FusionModel(model_container = model_container, num_classes=19)
    
     processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
-
+    new_processed_df = processor.pipeline_new_studies()
+   
 
 if __name__ == "__main__":
     main()

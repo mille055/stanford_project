@@ -6,7 +6,7 @@ import pydicom
 
 from config import file_dict, classes
 
-
+# Custom dataset for the pixel-based CNN model. Gets pixel data and transforms it, and also the labels
 class ImgDataset(Dataset):
     def __init__(self, df, transform=None):
         self.data_df = df

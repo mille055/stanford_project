@@ -21,7 +21,19 @@ from utils import create_datasets
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-def test_pix_model(model,test_loader,device):
+# this will use the test dataset to assess the pixel-based model
+def test_pix_model(model,test_loader,device=device):
+    '''
+    Assesses the pixel_based CNN model over the test dataset. 
+    Input: 
+        model(model): the trained model being assessed
+        test_loader(data_loader): facilitates loading in the test dataset
+        device(cpu or gpu)
+
+    Output:
+        test_acc(float): accuracy over the test dataset
+        recall_vals(list[floats]): the recall values for each class
+    '''
     model = model.to(device)
     # Turn autograd off
     with torch.no_grad():
@@ -53,7 +65,7 @@ def test_pix_model(model,test_loader,device):
         
         # Recall for each class
         recall_vals = []
-        for i in range(10):
+        for i in range(len(classes)):
             class_idx = np.argwhere(y_true==i)
             total = len(class_idx)
             correct = np.sum(test_preds[class_idx]==i)
@@ -63,6 +75,7 @@ def test_pix_model(model,test_loader,device):
     return test_acc,recall_vals
 
 
+# gets a tensor for a single image given by its filename
 def image_to_tensor(filepath, transforms = data_transforms, device=device):
     
     ds = pydicom.dcmread(filepath)
