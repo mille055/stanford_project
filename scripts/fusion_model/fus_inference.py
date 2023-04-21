@@ -4,7 +4,7 @@ import os
 import torch
 import pickle
 
-from fusion_model.fus_model import FusionModel, PartialFusionModel
+from fusion_model.fus_model import FusionModel
 from cnn.cnn_inference import pixel_inference, load_pixel_model
 from metadata.meta_inference import get_meta_inference
 from NLP.NLP_inference import get_NLP_inference, load_NLP_model

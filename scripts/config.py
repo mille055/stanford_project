@@ -19,6 +19,7 @@ file_dict = {
 'series_description_model_file': './stored_assets/series_description_model_file.pkl',
 'labels_file': '../data/cmm_labels.txt'
 }
+
 model_paths = {'cnn': '../models/pixel_model_041623.pth', 'nlp': '../models/text_model20230415.st', 'meta': '../models/meta_04152023.skl', 'fusion': '../models/fusion_model041623.pkl', 'fusion_no_nlp': '../models/meta_and_pixel_fusion_model041623.pkl' }
 
 #validation split

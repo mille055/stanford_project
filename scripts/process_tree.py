@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 import os
-from fusion_model.fus_inference import get_fusion_inference
+#from fusion_model.fus_inference import get_fusion_inference
+from fusion_model.fus_model import FusionModel
+from model_container import ModelContainer
 import pydicom
 from utils import *
 from config import model_paths
@@ -65,10 +67,12 @@ from config import model_paths
     
 
 class Processor:
-    def __init__(self, data_dir, destination_folder, write_labels=True):
+    def __init__(self, data_dir, destination_folder, write_labels=True, fusion_model=None):
         self.data_dir = data_dir
         self.destination_folder = destination_folder
         self.write_labels = write_labels
+        self.fusion_model = fusion_model
+        self.troubleshoot_df = None
 
     def process_batch(self, df):
         df1 = df.copy()
@@ -110,17 +114,22 @@ class Processor:
         # Get the middle image
         middle_image = sorted_series.iloc[middle_index]
 
-        predicted_series_class, predicted_series_confidence = get_fusion_inference(middle_image)
+        predicted_series_class, predicted_series_confidence, ts_df = self.fusion_model.get_fusion_inference(middle_image)
 
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
+        
+        if self.troubleshoot_df == None:
+            self.troubleshoot_df = ts_df
+        else:
+            self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         #save_path = f'/volumes/cm7/processed/modified/{series_df.patientID}/{series_df.exam}/{series_df["series"]}/'
 
         # Define the save path relative to data_dir
-        relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
-        save_path = os.path.join(data_dir, destination_folder, os.path.dirname(relative_path))
-
+        #relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
+        #save_path = os.path.join(data_dir, destination_folder, os.path.dirname(relative_path))
+        save_path = self.destination_folder
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
@@ -195,7 +204,10 @@ def write_labels_into_dicom(series_group, label_num, conf_num, path):
 def main():
     old_data_site = '/volumes/cm7/processed/'
     destination_site = '/volumes/cm7/newly_processed/'
-    processor = Processor(old_data_site, destination_site, write_labels=True)
+    model_container = ModelContainer()
+    fusion_model = FusionModel(model_container = model_container, num_classes=19)
+   
+    processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
 
 
 if __name__ == "__main__":
