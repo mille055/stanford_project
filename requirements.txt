@@ -15,7 +15,6 @@ fastai
 pydicom==2.1.2
 
 seaborn 
-spacy==2.3.5
 
 pylibjpeg
 pylibjpeg-libjpeg
