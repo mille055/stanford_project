@@ -60,3 +60,8 @@ def get_meta_inference(row, model, features=feats_to_keep): #model_list, feature
     probs = model.predict_proba(X)
 
     return pred, probs
+
+def load_meta_model(model_path):
+    with open(model_path, 'rb') as file:
+        meta_model = pickle.load(file)
+    return meta_model

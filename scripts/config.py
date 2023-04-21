@@ -7,7 +7,7 @@ import pandas as pd
   ### locations of assets ###
 file_dict = {
 'img_data_dir_colab':  '/content/gdrive/MyDrive/WW_MRI_abd2/split/',
-'img_data_dir_local': 'volumes/cm7/Abdominal_MRI_dataset_split/',
+'img_data_dir_local': '/volumes/cm7/Abdominal_MRI_dataset_split/',
 'txt_data_dir':  '../data/',
 'test_datafile': '../data/X_test02282023.pkl',
 'train_datafile': '../data/X_train02282023.pkl',
@@ -19,7 +19,7 @@ file_dict = {
 'series_description_model_file': './stored_assets/series_description_model_file.pkl',
 'labels_file': '../data/cmm_labels.txt'
 }
-
+model_paths = {'cnn': '../models/pixel_model_041623.pth', 'nlp': '../models/text_model20230415.st', 'meta': '../models/meta_04152023.skl', 'fusion': '../models/fusion_model041623.pkl', 'fusion_no_nlp': '../models/meta_and_pixel_fusion_model041623.pkl' }
 
 #validation split
 val_list =  [41, 84, 14, 25, 76, 47,62,0,55,63,101,18,81,3,4,95,66] #using same train/val/test split as in the original split based on the metadata classifier

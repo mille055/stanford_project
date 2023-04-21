@@ -39,6 +39,12 @@ from utils import shorten_df, plot_and_save_cm, prepare_df
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+def load_NLP_model(nlp_path):
+    with open(nlp_path, 'rb') as file:
+        NLP_model = pickle.load(file)
+
+    return NLP_model
+
 def get_NLP_inference(model, filenames, device=device, classes=classes):
     
     senttrans_model = SentenceTransformer(sentence_encoder, device=device)
