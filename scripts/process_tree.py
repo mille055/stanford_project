@@ -115,7 +115,7 @@ class Processor:
         #    self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         # makes a new folder given by the destination_folder if it does not yet exist
-        relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
+        relative_path = os.path.relpath(series_df.fname.iloc[0], self.data_dir)
         save_path = os.path.join(self.destination_folder, os.path.dirname(relative_path))
         
         if not os.path.exists(save_path):

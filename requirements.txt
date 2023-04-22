@@ -11,6 +11,7 @@ fastcore==1.3.19
 fastprogress==1.0.0
 fastrelease==0.1.11
 fastai
+Flask
 
 pydicom==2.1.2
 
