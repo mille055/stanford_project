@@ -39,7 +39,7 @@ class FusionModel(nn.Module):
             if include_nlp:
                 weights_path = self.model_container.fusion_weights_path
             else:
-                weights_path = self.model_container.partial_fusion_model_path
+                weights_path = self.model_container.partial_fusion_weights_path
             
             self.load_weights(weights_path)
 
@@ -95,7 +95,7 @@ class FusionModel(nn.Module):
         confidence_score = torch.max(torch.softmax(fused_output, dim=1)).item()
 
         print(f"Lengths - meta_probs: {len(prob1)}, pixel_probs: {len(prob2)}, nlp_probs: {len(prob3)}")
-        #troubleshoot_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
-        troubleshoot_df = None
+        troubleshoot_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': [prob1], 'pixel_preds': pred2, 'pixel_probs': [prob2], 'nlp_preds': pred3, 'nlp_probs': [prob3], 'SeriesD': row.SeriesDescription})
+        #troubleshoot_df = None
 
         return predicted_class, confidence_score, troubleshoot_df
