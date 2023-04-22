@@ -115,14 +115,16 @@ class Processor:
             self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         # makes a new folder given by the destination_folder if it does not yet exist
-        save_path = self.destination_folder
+        relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
+        save_path = os.path.join(destination_folder, os.path.dirname(relative_path))
+        
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
         # writes labels into the DIOM metadata if write_labels is true 
         if self.write_labels:
             #print('writing new data into', save_path)
-            write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
+            self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
                             conf_num=np.round(predicted_series_confidence, 3), path=save_path)
 
         return sorted_series
