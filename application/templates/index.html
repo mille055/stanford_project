@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abdominal MRI Series Classifier</title>
+
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3s2lho4rh55rcBGzo" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBud7M4N8M4ksNnXf9CSxXbEHN4DZzLlG2E1rdw0U2Vf0y8j" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <h1 class="phone-size:index-heading-ps lg:index-heading-lg cd-headline type letters">Abdominal MRI Series Classifier</h1>
+        <h2 class="mb-4">AIPI540 Project</h2>
+        <p>By Your Name</p>
+        <h3 class="my-4">Select a folder and process images</h3>
+        <form action="{{ url_for('process_images') }}" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input class="form-control" type="file" name="folder" webkitdirectory directory>
+            </div>
+            <button class="btn btn-primary" type="submit">Process</button>
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
