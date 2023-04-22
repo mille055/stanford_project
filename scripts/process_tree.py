@@ -9,76 +9,52 @@ from utils import *
 from config import model_paths
 
 
-
-# def process_batch(df, data_dir, destination_folder, write_labels=True):
-
-#     df1 = df.copy()
-#     #print('In batch, columns are: ', df1.columns)
-#     batch = df1.groupby('patientID').apply(lambda x: process_patient(x, data_dir, destination_folder, write_labels))
-    
-#     # print('writing labels into dicom in location ', dest_name)
-#     # for filename in batch.fname:
-
-#     return batch
-
-# def process_patient(patient_df, data_dir, destination_folder, write_labels):
-#     processed_exams = patient_df.groupby('exam').apply(lambda x: process_exam(x, data_dir, destination_folder, write_labels))
-#     return processed_exams
-
-
-# def process_exam(exam_df, data_dir, destination_folder, write_labels):
-#     # Group exam data by series and apply the process_series function
-#     processed_series = exam_df.groupby('series').apply(lambda x: process_series(x, data_dir, destination_folder, write_labels))
-
-#     #result = pd.concat(processed_series)
-#     result = processed_series
-#     return result
-    
-# def process_series(series_df, data_dir, destination_folder, write_labels, selection_fraction=0.5):
-#     # Sort the dataframe by file_info (or another relevant column)
-#     sorted_series = series_df.sort_values(by='fname')
-
-#     # Find the middle image index
-#     middle_index = int(len(sorted_series) * selection_fraction)
-
-#     # Get the middle image
-#     middle_image = sorted_series.iloc[middle_index]
-
-#     predicted_series_class, predicted_series_confidence = get_fusion_inference(middle_image)
-
-#     sorted_series['predicted_class'] = predicted_series_class
-#     sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
-
-#     #save_path = f'/volumes/cm7/processed/modified/{series_df.patientID}/{series_df.exam}/{series_df["series"]}/'
-
-#      # Define the save path relative to data_dir
-#     relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
-#     save_path = os.path.join(data_dir, destination_folder, os.path.dirname(relative_path))
-
-#     if not os.path.exists(save_path):
-#         os.makedirs(save_path)
-
-#     if write_labels:
-#         #print('writing new data into', save_path)
-#         write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-#                             conf_num=np.round(predicted_series_confidence, 3), path=save_path)
-
-#     return sorted_series
     
 
 class Processor:
-    def __init__(self, data_dir, destination_folder, write_labels=True, fusion_model=None):
+    '''
+    Class which contains code to process a batch one or many DICOM studies contained within
+    a folder. It creates and returns a dataframe containing the DICOM metadata and the 
+    predicted class for each series (typically several images of the same type traversing the 
+    anatomy within a study, a study typically has several and a patient may have one or more studies), 
+    as well as the confidence in the prediction (the probability). In addition to creating the
+    dataset, the prediction and confidence values will also be written into the DICOM metadata
+    in Unknown tags (0011)(1010) and (0011)(1011) that can be used to select the appropriate series
+    for a processed examination.  Because images in a certain series are tyipcally of the same 
+    type, this classifies at the level of the series rather than the individual image.
+
+    Input: 
+        data_dir(str): path to the studies being processed
+        destination_foder(str): path to the folder where the proessed images will be written
+        write_labels(bool): by default true; whether to write the labels into the DICOM metadata
+            and store the new images
+        overwrite(bool): whether to process images that already have information in these tags, 
+            typically due to prior processing
+        fusion_model(model): the classifier model which incorporates the various subcomponents
+            (metadata RandomForest, pixel CNN, and textual description NLP models) in fusion
+            model that is a single fully connected layer.
+    Output: If pipeline_new_studies is run, it will return the processed dataframe
+    
+    '''
+    def __init__(self, data_dir, destination_folder, write_labels=True, overwrite = False, fusion_model=None):
         self.data_dir = data_dir
         self.destination_folder = destination_folder
         self.write_labels = write_labels
         self.fusion_model = fusion_model
         self.troubleshoot_df = None
+        self.overwrite = overwrite
 
     
+    # The overall active component which preprocesses the dataframe and calls the cascade
+    # of actions to process the folder and its subdirectories which are typically 
+    # organized by patient, then by study, then by series. The return is the processed
+    # dataframe
     def pipeline_new_studies(self):
+        # looks for dicom files and loads them into a dataframe
         _, df = get_dicoms(self.data_dir)
         df1 = df.copy()
-        ## manipulate df prior to evaluation
+        
+        ## prepare df prior to evaluation
         df1 = expand_filename(df1, ['blank', 'filename', 'series', 'exam', 'patientID'])
         df1.drop(columns='blank', inplace=True)
         df1['file_info']=df1.fname
@@ -86,26 +62,34 @@ class Processor:
         df1['contrast'] = df1.apply(detect_contrast, axis=1)
         df1['plane'] = df1.apply(compute_plane, axis=1)
         df1['series_num'] = df1.series.apply(lambda x: str(x).split('_')[-1])
-        #print('columns before preprocess are', df1.columns)
+
+        ## gets the features from the metadata for the RF model
         df1 = preprocess(df1)
 
         processed_frame = self.process_batch(df1)
         return processed_frame
 
-
+    # at the top of the cascade, acts on the entire batch by calling function for each patient
     def process_batch(self, df):
         df1 = df.copy()
         batch = df1.groupby('patientID').apply(self.process_patient)
         return batch
 
+    # at the next level of the cascade, acts on a patient by processing each exam
     def process_patient(self, patient_df):
         processed_exams = patient_df.groupby('exam').apply(self.process_exam)
         return processed_exams
 
+    # at the next level of the cascade, acts on an exam by processing each series
     def process_exam(self, exam_df):
         processed_series = exam_df.groupby('series').apply(self.process_series)
         return processed_series
 
+    # since all the images in a series are typically of the same type, performs
+    # the classification at the series level. Gets the middle image from each series
+    # and performs the classification for the 3 modalities and the fusion model based
+    # on the middle image given prior results of the pixel CNN classifier showing good
+    # results on this strategy
     def process_series(self, series_df, selection_fraction=0.5):
         # Sort the dataframe by file_info (or another relevant column)
         sorted_series = series_df.sort_values(by='fname')
@@ -116,27 +100,26 @@ class Processor:
         # Get the middle image
         middle_image = sorted_series.iloc[middle_index]
 
+        # Gets classification from the fusion model
         predicted_series_class, predicted_series_confidence, ts_df = self.fusion_model.get_fusion_inference(middle_image)
-
+        # Writes the predictions into the dataframe
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         
-        #if self.troubleshoot_df == None:
-        #    print('creating the ts df')
-        #    self.troubleshoot_df = ts_df
-        #    print('ts_df is ', ts_df)
-        #else:
-        #    self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
+        # Trying to compare the internal models for troubleshooting
+        if self.troubleshoot_df == None:
+            print('creating the ts df')
+            self.troubleshoot_df = ts_df
+            print('ts_df is ', ts_df)
+        else:
+            self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
-        #save_path = f'/volumes/cm7/processed/modified/{series_df.patientID}/{series_df.exam}/{series_df["series"]}/'
-
-        # Define the save path relative to data_dir
-        #relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
-        #save_path = os.path.join(data_dir, destination_folder, os.path.dirname(relative_path))
+        # makes a new folder given by the destination_folder if it does not yet exist
         save_path = self.destination_folder
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
+        # writes labels into the DIOM metadata if write_labels is true 
         if self.write_labels:
             #print('writing new data into', save_path)
             write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
@@ -146,63 +129,37 @@ class Processor:
     
 
 
-def write_labels_into_dicom(series_group, label_num, conf_num, path):
-    #print('writing labels', label_num)
-    for dicom_file in series_group.fname.tolist():
-        filename = os.path.basename(dicom_file)
-        ds = dcmread(dicom_file, no_pixels=False)
+    def write_labels_into_dicom(self, series_group, label_num, conf_num, path):
+        #print('writing labels', label_num)
+        for dicom_file in series_group.fname.tolist():
+            filename = os.path.basename(dicom_file)
+            ds = dcmread(dicom_file, no_pixels=False)
 
-        private_creator_tag = pydicom.tag.Tag(0x0011, 0x0010)
-        custom_tag1 = pydicom.tag.Tag(0x0011, 0x1010)
-        custom_tag2 = pydicom.tag.Tag(0x0011, 0x1011)
+            private_creator_tag = pydicom.tag.Tag(0x0011, 0x0010)
+            custom_tag1 = pydicom.tag.Tag(0x0011, 0x1010)
+            custom_tag2 = pydicom.tag.Tag(0x0011, 0x1011)
 
-        # Check if private creator and custom tags already exist
-        if private_creator_tag not in ds or custom_tag1 not in ds or custom_tag2 not in ds:
-            # Create and add private creator element
-            private_creator = pydicom.DataElement(private_creator_tag, 'LO', 'PredictedClassInfo')
-            ds[private_creator_tag] = private_creator
+            # Check if private creator and custom tags already exist; if overwrite, then proceed anyways
+            if (private_creator_tag not in ds or custom_tag1 not in ds or custom_tag2 not in ds) or self.overwrite:
+                # Create and add private creator element
+                private_creator = pydicom.DataElement(private_creator_tag, 'LO', 'PredictedClassInfo')
+                ds[private_creator_tag] = private_creator
 
-            # Create and add custom private tags
-            data_element1 = pydicom.DataElement(custom_tag1, 'IS', str(label_num))
-            data_element1.private_creator = 'PredictedClassInfo'
-            data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
-            data_element2.private_creator = 'PredictedClassInfo'
-            ds[custom_tag1] = data_element1
-            ds[custom_tag2] = data_element2
+                # Create and add custom private tags
+                data_element1 = pydicom.DataElement(custom_tag1, 'IS', str(label_num))
+                data_element1.private_creator = 'PredictedClassInfo'
+                data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
+                data_element2.private_creator = 'PredictedClassInfo'
+                ds[custom_tag1] = data_element1
+                ds[custom_tag2] = data_element2
+
+                modified_file_path = os.path.join(path, filename)
+                ds.save_as(modified_file_path)
+            else: # no overwrite and tags already exist
+                print(f"Custom tags already exist in {dicom_file}, skipping this file.")
 
             modified_file_path = os.path.join(path, filename)
-            ds.save_as(modified_file_path)
-        else:
-            print(f"Custom tags already exist in {dicom_file}, skipping this file.")
-
-        modified_file_path = os.path.join(path, filename)
-        ds.save_as(modified_file_path)  
-
-
-# def pipeline_new_image_df(data_dir, dest_name='modified', write_labels = True):
-#     # create the df of image data    
-#     _, df = get_dicoms(data_dir)
-#     df1 = df.copy()
-#     ## manipulate df prior to evaluation
-#     df1 = expand_filename(df1, ['blank', 'filename', 'series', 'exam', 'patientID'])
-#     df1.drop(columns='blank', inplace=True)
-#     df1['file_info']=df1.fname
-#     df1['img_num'] = df1.file_info.apply(extract_image_number)
-#     df1['contrast'] = df1.apply(detect_contrast, axis=1)
-#     df1['plane'] = df1.apply(compute_plane, axis=1)
-#     df1['series_num'] = df1.series.apply(lambda x: str(x).split('_')[-1])
-#     #print('columns before preprocess are', df1.columns)
-
-#     df1 = preprocess(df1)
-#    # print('after preprocessin exam is in columns?', ('exam' in df1.columns))
-#     #print('after preprocessing series is in columns?', ('series' in df1.columns))
-#     #process the batch of studies
-#     processor = Processor(data_dir, destination_folder)
-#     processed_frame = processor.pipeline_new_image_df()
-    
-#     processed_frame = process_batch(df1, data_dir, dest_name, write_labels)
-
-#     return processed_frame
+            ds.save_as(modified_file_path)  
 
 
 def main():
