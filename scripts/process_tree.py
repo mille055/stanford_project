@@ -116,7 +116,7 @@ class Processor:
 
         # makes a new folder given by the destination_folder if it does not yet exist
         relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
-        save_path = os.path.join(destination_folder, os.path.dirname(relative_path))
+        save_path = os.path.join(self.destination_folder, os.path.dirname(relative_path))
         
         if not os.path.exists(save_path):
             os.makedirs(save_path)
