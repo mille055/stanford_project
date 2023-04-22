@@ -33,7 +33,7 @@ class CustomDataset(Dataset):
         x2 = torch.tensor(self.dataframe.iloc[idx]['pixel_probs'], dtype=torch.float32)
         x3 = torch.tensor(self.dataframe.iloc[idx]['nlp_probs'], dtype=torch.float32)
         
-        label = torch.tensor(self.dataframe.iloc[idx]['label'].apply(lambda x: classes.index(x)), dtype=torch.long)
+        label = torch.tensor(self.dataframe.iloc[idx]['true'], dtype=torch.long)
 
         return x1, x2, x3, label
 
@@ -58,13 +58,14 @@ def train_fusion_model(model, train_loader, val_loader, test_loader, device, opt
             if include_nlp:
                 x3 = x3.to(device)
                 outputs = model(x1, x2, x3)
+                #print(outputs.shape)
             else:
-                outputs = model(x1, x2)
+                outputs = model(x1, x2, x3=None)
+                #print(outputs.shape)
 
 
             optimizer.zero_grad()
 
-            outputs = model(x1, x2, x3)
             _, preds = torch.max(outputs, 1)
             loss = loss_fn(outputs, labels)
 
@@ -87,15 +88,31 @@ def train_fusion_model(model, train_loader, val_loader, test_loader, device, opt
         running_corrects = 0
 
         with torch.no_grad():
-            for x1, x2, x3, labels in val_loader:
-                x1, x2, x3, labels = x1.to(device), x2.to(device), x3.to(device), labels.to(device)
+        #     for x1, x2, x3, labels in val_loader:
+        #         x1, x2, x3, labels = x1.to(device), x2.to(device), x3.to(device), labels.to(device)
 
-                outputs = model(x1, x2, x3)
+        #         outputs = model(x1, x2, x3)
+        #         _, preds = torch.max(outputs, 1)
+        #         loss = loss_fn(outputs, labels)
+
+        #         running_loss += loss.item() * x1.size(0)
+        #         running_corrects += torch.sum(preds == labels.data)
+
+            for x1, x2, x3, labels in val_loader:
+                x1, x2, labels = x1.to(device), x2.to(device), labels.to(device)
+                if include_nlp:
+                    x3 = x3.to(device)
+                    outputs = model(x1, x2, x3)
+                
+                else:
+                    outputs = model(x1, x2, x3=None)
                 _, preds = torch.max(outputs, 1)
                 loss = loss_fn(outputs, labels)
 
                 running_loss += loss.item() * x1.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+                running_corrects += torch.sum(preds == labels.data)    
+
+
 
             epoch_loss = running_loss / len(val_loader.dataset)
             epoch_acc = running_corrects.double() / len(val_loader.dataset)

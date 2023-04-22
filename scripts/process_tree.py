@@ -121,12 +121,12 @@ class Processor:
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         
-        if self.troubleshoot_df == None:
-            print('creating the ts df')
-            self.troubleshoot_df = ts_df
-            print('ts_df is ', ts_df)
-        else:
-            self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
+        #if self.troubleshoot_df == None:
+        #    print('creating the ts df')
+        #    self.troubleshoot_df = ts_df
+        #    print('ts_df is ', ts_df)
+        #else:
+        #    self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         #save_path = f'/volumes/cm7/processed/modified/{series_df.patientID}/{series_df.exam}/{series_df["series"]}/'
 
@@ -137,7 +137,7 @@ class Processor:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        if write_labels:
+        if self.write_labels:
             #print('writing new data into', save_path)
             write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
                             conf_num=np.round(predicted_series_confidence, 3), path=save_path)
