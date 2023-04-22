@@ -107,12 +107,12 @@ class Processor:
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         
         # Trying to compare the internal models for troubleshooting
-        if self.troubleshoot_df == None:
-            print('creating the ts df')
-            self.troubleshoot_df = ts_df
-            print('ts_df is ', ts_df)
-        else:
-            self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
+        #if self.troubleshoot_df == None:
+        #    print('creating the ts df')
+        #    self.troubleshoot_df = ts_df
+        #    print('ts_df is ', ts_df)
+        #else:
+        #    self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         # makes a new folder given by the destination_folder if it does not yet exist
         relative_path = os.path.relpath(series_df.fname.iloc[0], data_dir)
@@ -167,12 +167,16 @@ class Processor:
 def main():
     old_data_site = '/volumes/cm7/start_folder/'
     destination_site = '/volumes/cm7/newly_processed/'
+    
+    # get the models
     model_container = ModelContainer()
     fusion_model = FusionModel(model_container = model_container, num_classes=19)
-   
+    
+    # instantiate the processor class for action on the DICOM images
     processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
     new_processed_df = processor.pipeline_new_studies()
-   
+    print(new_processed_df)
+    new_processed_df.to_pickle('../data/newly_processed_cases.pkl')
 
 if __name__ == "__main__":
     main()
