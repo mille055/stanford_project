@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pydicom
 from datetime import datetime
-
+import pickle
 from pydicom.dataset import Dataset as DcmDataset
 from pydicom.tag import BaseTag as DcmTag
 from pydicom.multival import MultiValue as DcmMultiValue
@@ -87,22 +87,11 @@ def as_dict(self: DcmDataset, filt=True, split_multi=False):
     return res
 DcmDataset.as_dict = as_dict
 
-# def _dcm2dict(fn, excl_private=False, **kwargs):
-#     ds = fn.dcmread(**kwargs)
-#     if excl_private: ds.remove_private_tags()
-#     return ds.as_dict(**kwargs)
 
 def dcm2dict(fn, excl_private=False, **kwargs):
     ds = dcmread(fn, **kwargs)
     if excl_private: ds.remove_private_tags()
     return ds.as_dict(**kwargs)
-
-# def dcm2dict2(dcm_file, excl_private = False, **kwargs):
-#     dcm_data = dcmread(dcm_file, **kwargs)
-#     if excl_private: dcm_data.remove_private_tags()
-#     dcm_dict = {keyword_for_tag(tag): dcm_data.get(tag) for tag in dcm_data.keys()}
-#     return dcm_dict
-
 
 
 @delegates(parallel)
@@ -110,10 +99,6 @@ def from_dicoms(cls, fns, n_workers=0, **kwargs):
     return pd.DataFrame(parallel(dcm2dict, fns, n_workers=n_workers, **kwargs))
 pd.DataFrame.from_dicoms = classmethod(from_dicoms)
 
-# def _from_dicoms(cls, fns):
-#     dicts = [dcm2dict(fn) for fn in fns]  # Process the files sequentially
-#     return pd.DataFrame(dicts)
-# pd.DataFrame.from_dicoms = classmethod(_from_dicoms)
 
 def get_series_fp(fn): return Path(fn).parent
 
@@ -186,43 +171,7 @@ def detect_contrast(row):
 
 
 
-def _find_seq(sd):
-    if _t1.search(sd):
-        if _spgr.search(sd): return 'spgr'
-        if _t1_in.search(sd): return 'in phase'
-        if _t1_out.search(sd): return 'opposed phase'
-        if _water.search(sd): return 'dixon water'
-        if _fat.search(sd): return 'dixon fat'    
-        if _pv.search(sd): return 'portal venous'
-        if _eq.search(sd): return 'equilibrium'
-        if _art.search(sd): return 'early dynamic'
-        if _delayed.search(sd): return 'hepatobiliary'
-        else: return 't1'
-    if _t1_in.search(sd): return 'in phase'
-    if _t1_out.search(sd): return 'opposed phase'
-    if _water.search(sd): return 'dixon water'
-    if _fat.search(sd): return 'dixon fat'    
-    if _pv.search(sd): return 'portal venous'
-    if _eq.search(sd): return 'equilibrium'
-    if _art.search(sd): return 'early dynamic'
-    if _delayed.search(sd): return 'hepatobiliary'
-#    if _spgr.search(sd): return 'spgr'
-    if _t2.search(sd):
-        if _flair.search(sd): return 'flair'
-        elif _swi.search(sd): return 'swi'
-        else: return 't2'
-    if _flair.search(sd): return 'flair'
-    if _swi.search(sd): return 'swi'
-    if _dwi.search(sd): return 'dwi'
-    if _adc.search(sd): return 'dwi'
-    if _eadc.search(sd): return 'dwi'
-    if _mra.search(sd): return 'mra'
-    if _loc.search(sd): return 'loc'
-    if _other.search(sd): return 'other'
-    return 'unknown'
-
-
-
+# for preprocessing for metadata model
 def _make_col_binary(df, col):
     s = df[col].isna()
     if any(s):
@@ -231,6 +180,7 @@ def _make_col_binary(df, col):
         targ = df.loc[0, col]
         df[col] = df[col].apply(lambda x: 0 if x == targ else 1)
 
+# for preprocessing for metadata model
 def make_binary_cols(df, cols):
     df1 = df.copy()
     for col in cols:
@@ -241,12 +191,22 @@ def make_binary_cols(df, cols):
             _make_col_binary(df1,col)
     return df1
 
-def rescale_cols(df, cols):
+# for preprocessing for metadata model
+def rescale_cols(df, cols, scaler=None):
     df1 = df.copy()
-    scaler = MinMaxScaler()
-    df1[cols] = scaler.fit_transform(df1[cols])
-    return df1.fillna(0)
+    if not scaler:
+        scaler = MinMaxScaler()
+        df1[cols] = scaler.fit_transform(df1[cols])
+        with open('../models/metadata_scaler.pkl', 'wb') as f:
+            pickle.dump(scaler, f)
+    else:
+        if len(cols) != scaler.n_features_in_:
+            raise ValueError(f"Number of columns in the DataFrame ({len(cols)}) does not match the number of features the scaler was trained on ({scaler.n_features_in_}).")
+        df1[cols] = scaler.transform(df1[cols])
 
+    return df1.fillna(0), scaler
+
+# for preprocessing for metadata model
 def get_dummies(df, cols=column_lists['dummies'], prefix=column_lists['d_prefixes']):
     df1 = df.copy()
     for i, col in enumerate(cols):
@@ -265,7 +225,7 @@ def labels_from_file(label_path, column_names):
 
     return label_df
 
-def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+def preprocess(df, scaler=None, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
    #Preprocess metadata for Random Forest classifier to predict sequence type
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
@@ -287,45 +247,31 @@ def preprocess(df, keep= column_lists['keep'], dummies= column_lists['dummies'],
     
     # Only rescale columns that are in the DataFrame
     rescale = [col for col in rescale if col in df1.columns]
-    df1 = rescale_cols(df1, rescale)
+    df1, scaler = rescale_cols(df1, rescale)
     
     for f in feats:
         if f not in df1.columns:
             df1[f] = 0
             
+    return df1, scaler
+
+def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+    # Preprocess new data as before, but only for columns that are in both df and keep
+    df1 = df[[col for col in keep if col in df.columns]]
+    # ...
+
+    # After preprocessing, add any missing columns from the training data
+    for col in keep:
+        if col not in df1.columns:
+            # Add missing column with default value (0 or mean value from scaler)
+            if col in scaler.mean_:
+                default_value = scaler.mean_[col]
+            else:
+                default_value = 0
+            df1[col] = default_value
+
     return df1
 
-
-
-# def preprocess2(df, keep=column_lists['keep'], dummies=column_lists['dummies'], d_prefixes=column_lists['d_prefixes'], binarize=column_lists['binarize'], rescale=column_lists['rescale']):
-#     "Preprocess metadata for Random Forest classifier to predict sequence type"
-#     print("Preprocessing metadata for Random Forest classifier.")
-#     df1 = exclude_other(df)
-#     print(f"Have received {df1.shape[0]} entries.")
-    
-#     # Only keep columns that are both in the DataFrame and the 'keep' list
-#     df1 = df1[[col for col in keep if col in df1.columns]]
-    
-#     if 'PixelSpacing' in df1.columns and df1['PixelSpacing'].any:
-#         df1['PixelSpacing'] = df1['PixelSpacing'].apply(lambda x: x[0])
-    
-#     # Only get dummies for columns that are in the DataFrame
-#     dummies = [col for col in dummies if col in df1.columns]
-#     df1 = get_dummies(df1, dummies, d_prefixes)
-    
-#     # Only make binary columns for columns that are in the DataFrame
-#     binarize = [col for col in binarize if col in df1.columns]
-#     df1 = make_binary_cols(df1, binarize)
-    
-#     # Only rescale columns that are in the DataFrame
-#     rescale = [col for col in rescale if col in df1.columns]
-#     df1 = rescale_cols(df1, rescale)
-    
-#     for f in feats:
-#         if f not in df1.columns:
-#             df1[f] = 0
-            
-#     return df1
 
 
 def convert_labels_from_file(label_df):
@@ -375,9 +321,6 @@ def train_setup_abdomen(df, cols=['patientID','exam','series'], preproc=False, n
  
     length = df1.shape[0]
 
-    #gkf = GroupKFold(n_splits=5)
-    #for train_set, val_set in gkf.split(df1, groups=df1['patientID']):
-    #    train, val = df1.loc[train_set], df1.loc[val_set]
    
     train_set, val_set = next(GroupShuffleSplit(test_size=.20, n_splits=1, random_state = 42).split(df1, groups=df1['patientID']))
 
@@ -387,34 +330,7 @@ def train_setup_abdomen(df, cols=['patientID','exam','series'], preproc=False, n
  
     return train, val, y, y_names
 
-# def _get_meta_preds(clf, df, features, y_names=_y_names):
-#     y_pred = clf.predict(df[features])
-#     y_prob = clf.predict_proba(df[features])
-#     preds = pd.Series(y_names.take(y_pred))
-#     probas = pd.Series([y_prob[i][pred] for i, pred in enumerate(y_pred)])
-#     return pd.DataFrame({'seq_pred': preds, 'pred_proba': probas})
 
-# def predict_from_df(df, features=_features, thresh=0.8, model_path=_model_path, clf=None, **kwargs):
-#     "Predict series from `df[features]` at confidence threshold `p >= thresh`"
-#     if 'plane' not in df.columns:
-#         df1 = preprocess(df)
-#         labels = extract_labels(df1)
-#         df1 = df1.join(labels[['plane', 'contrast', 'seq_label']])
-#     else:
-#         df1 = df.copy()
-#     if clf:
-#         model_path = None
-#     else:
-#         clf = load(model_path)    
-#     df1 = df1.join(_get_preds(clf, df1, features, **kwargs))
-#     filt = df1['pred_proba'] < thresh
-#     df1['seq_pred'][filt] = 'unknown'
-#     return df1
-
-# def predict_from_folder(path, **kwargs):
-#     "Read DICOMs into a `pandas.DataFrame` from `path` then predict series"
-#     _, df = get_dicoms(path)
-#     return predict_from_df(df, **kwargs)
 
 # class Finder():
 #     "A class for finding DICOM files of a specified sequence type from a specific ."
@@ -539,13 +455,11 @@ def prepare_df(df):
     return merged
 
 
-
-def pool_arterial_labels(df, label_col='label'):
-    df1 = df.copy()
-    df1[label_col] = df1[label_col].apply(lambda x: 2 if x in [2,3,4,5] else x)
-    return df1
-
-
+# was just used once to pool the labels 2-5 into 2 (arterial phase) and then label file rewritten and no longer used
+# def pool_arterial_labels(df, label_col='label'):
+#     df1 = df.copy()
+#     df1[label_col] = df1[label_col].apply(lambda x: 2 if x in [2,3,4,5] else x)
+#     return df1
 
         
 #visualization of a batch of images
@@ -646,39 +560,4 @@ def create_datasets(train_datafile, val_datafile, test_datafile):
     return train_df, val_df, test_df
 
 
-# #grid search for hyperparameters for the metadata model
-# def train_fit_parameter_trial(train, y, features, fname='model-run.skl'):
-#     "Train a Random Forest classifier on `train[features]` and `y`, then save to `fname` and return."
-#     clf = RandomForestClassifier(n_jobs=2, random_state=0)
-#     clf.fit(train[features], y)
-#     print('Parameters currently in use:\n')
-#     pprint(clf.get_params())
-    
-    
-#     # Number of trees in random forest
-#     n_estimators = [int(x) for x in np.linspace(start = 20, stop = 500, num = 20)]
-#     # Number of features to consider at every split
-#     max_features = ['auto', 'sqrt']
-#     # Maximum number of levels in tree
-#     max_depth = [int(x) for x in np.linspace(10, 660, num = 10)]
-#     max_depth.append(None)
-#     # Minimum number of samples required to split a node
-#     min_samples_split = [2, 5, 10, 20]
-#     # Minimum number of samples required at each leaf node
-#     min_samples_leaf = [2, 4, 8]
-#     # Method of selecting samples for training each tree
-#     bootstrap = [True, False]
-#     random_grid = {'n_estimators': n_estimators,
-#                'max_features': max_features,
-#                'max_depth': max_depth,
-#                'min_samples_split': min_samples_split,
-#                'min_samples_leaf': min_samples_leaf,
-#                'bootstrap': bootstrap}
-    
-#     clf_random = RandomizedSearchCV(estimator = clf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=0, n_jobs = -1)
-#     clf_random.fit(train[features], y)
-#     opt_clf = clf_random.best_estimator_
-#     pprint(clf_random.best_params_)
-#     pickle.dump(opt_clf, open(fname, 'wb'))
-#     #dump(clf_random, fname)
-#     return opt_clf
+
