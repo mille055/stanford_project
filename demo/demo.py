@@ -159,7 +159,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             if not predicted_type: 
                 print('selected image', image_path)
                 single_image_df = pd.DataFrame.from_dicoms([image_path])
-                single_image_df = preprocess(single_image_df, model_container.metadata_scaler)
+                single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
                 print(single_image_df)
                 predicted_series_class, predicted_series_confidence, ts_df = fusion_model.get_fusion_inference(single_image_df)
                 predicted_type = abd_label_dict[str(predicted_series_class)]

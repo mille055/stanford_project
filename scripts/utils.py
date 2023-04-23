@@ -204,16 +204,19 @@ def rescale_cols(df, cols, scaler=None, fit_scaler=False, save_scaler=False):
             with open('../models/metadata_scaler.pkl', 'wb') as f:
                 pickle.dump(scaler, f)
     else:   
-        # Find the intersection of the DataFrame columns and the columns the scaler was trained on
-        common_cols = [col for col in cols if col in scaler.feature_names_in_]
+        temp_df = pd.DataFrame(columns=scaler.columns)
+        for col in scaler.columns:
+            if col in df1.columns:
+                temp_df[col] = df1[col]
+            else:
+                temp_df[col] = 0
 
-        if len(common_cols) == 0:
-             raise ValueError("There are no common columns between the DataFrame and the columns the scaler was trained on.")
+        transformed_temp_df = scaler.transform(temp_df)
 
-        df1[common_cols] = scaler.transform(df1[common_cols])
-
-
-    return df1.fillna(0), scaler
+        for i, col in enumerate(cols):
+            df1[col] = transformed_temp_df[:, i]
+    
+    return df1, scaler
 
 # for preprocessing for metadata model
 def get_dummies(df, cols=column_lists['dummies'], prefix=column_lists['d_prefixes']):
