@@ -247,7 +247,7 @@ def preprocess(df, scaler=None, keep= column_lists['keep'], dummies= column_list
     
     # Only rescale columns that are in the DataFrame
     rescale = [col for col in rescale if col in df1.columns]
-    df1, scaler = rescale_cols(df1, rescale)
+    df1, scaler = rescale_cols(df1, rescale, scaler)
     
     for f in feats:
         if f not in df1.columns:
