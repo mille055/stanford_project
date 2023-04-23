@@ -90,10 +90,10 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 (dicom_df["exam"] == selected_exam) &
                 (dicom_df["series"] == selected_series)
             ]["file_path"].tolist()
-            #st.write(selected_images)
-            #st.write(selected_images.sort())
+            st.write(selected_images)
+            st.write(selected_images.sort())
             # Sort images within each series by filename
-            selected_images.sort(key=lambda x: os.path.basename(x))
+            #selected_images.sort(key=lambda x: os.path.basename(x))
 
             
 
@@ -138,9 +138,6 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
 
                 return normalize_array(image)
 
-            # Move the window level and image scroll controls below the image
-            window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
-            window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
 
 
             with st.container():
@@ -160,7 +157,10 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 except Exception as e:
                     pass
             
-            
+            # Move the window level and image scroll controls below the image
+            window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
+            window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
+
 
             # for idx, image_file in enumerate(selected_images):
             #     with cols[idx % 4]:

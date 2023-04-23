@@ -9,11 +9,20 @@ import numpy as np
 from PIL import Image
 from glob import glob
 
-# import scripts
-# from  scripts.process_tree import Processor 
-# from  scripts.fusion_model.fus_model import FusionModel # Import your machine learning model function
-# from  scripts.config import *
-# from scripts.model_container import ModelContainer
+import sys
+sys.path.append("../scripts/")
+from  process_tree import Processor 
+from  fusion_model.fus_model import FusionModel # Import your machine learning model function
+from  config import *
+from  model_container import ModelContainer
+
+#get instances of model for call to process
+model_container = ModelContainer()
+fusion_model = FusionModel(model_container = model_container, num_classes=19)
+
+# instantiate the processor class for action on the DICOM images
+#processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
+#new_processed_df = processor.pipeline_new_studies()
 
 st.set_page_config(page_title="Abdominal MRI Series Classifier", layout="wide")
 
@@ -90,18 +99,52 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 (dicom_df["exam"] == selected_exam) &
                 (dicom_df["series"] == selected_series)
             ]["file_path"].tolist()
-            st.write(selected_images)
-            st.write(selected_images.sort())
+            
             # Sort images within each series by filename
             #selected_images.sort(key=lambda x: os.path.basename(x))
 
-            
 
             st.subheader("Selected Study Images")
             cols = st.columns(4)
 
+            # Move the window level and image scroll controls below the image
+            window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
+            window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
+
             
             image_idx = st.select_slider("View an image", options=range(len(selected_images)), value=0)
+            
+            
+            def apply_window_level(image, window_center, window_width):
+                min_value = window_center - window_width // 2
+                max_value = window_center + window_width // 2
+                image = np.clip(image, min_value, max_value)
+                return image
+
+            def normalize_array(arr):
+                arr_min, arr_max = arr.min(), arr.max()
+                return (arr - arr_min) * 255 / (arr_max - arr_min)
+
+           
+
+            with st.container():
+            
+                image_file = selected_images[image_idx]
+                try:
+                    dcm_data = pydicom.dcmread(image_file)
+                    image = dcm_data.pixel_array
+                    image = apply_window_level(image, window_center, window_width)
+                    image = Image.fromarray(normalize_array(image))  # Scale the values to 0-255 and convert to uint8
+                    #image = Image.fromarray(dcm_data.pixel_array)
+                    image = image.convert("L")
+                    st.image(image, caption=os.path.basename(image_file), use_column_width = True)
+                    # dcm_data = pydicom.dcmread(image_file)
+                    # image = Image.fromarray(dcm_data.pixel_array)
+                    # image = apply_window_level(image, window_center, window_width)
+                    # image = image.convert("L")
+                    # st.image(image, caption=os.path.basename(image_file), use_column_width=True)
+                except Exception as e:
+                    pass
             
             dcm_data = pydicom.dcmread(selected_images[image_idx])
             predicted_type = get_predicted_type(dcm_data)
@@ -127,47 +170,8 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     # Display the predicted label
                     st.write(f"Predicted Type: {predicted_type}")
 
-            def apply_window_level(image, window_center, window_width):
-                min_value = window_center - window_width // 2
-                max_value = window_center + window_width // 2
-                image = np.clip(image, min_value, max_value)
 
-                def normalize_array(arr):
-                    arr_min, arr_max = arr.min(), arr.max()
-                    return (arr - arr_min) * 255 / (arr_max - arr_min)
-
-                return normalize_array(image)
-
-
-
-            with st.container():
-            
-                image_file = selected_images[image_idx]
-                try:
-                    dcm_data = pydicom.dcmread(image_file)
-                    image = dcm_data.pixel_array
-                    image = apply_window_level(image, window_center, window_width)
-                    image = Image.fromarray(np.uint8(image))  # Scale the values to 0-255 and convert to uint8
-                    st.image(image, caption=os.path.basename(image_file), use_column_width = True)
-                    # dcm_data = pydicom.dcmread(image_file)
-                    # image = Image.fromarray(dcm_data.pixel_array)
-                    # image = apply_window_level(image, window_center, window_width)
-                    # image = image.convert("L")
-                    # st.image(image, caption=os.path.basename(image_file), use_column_width=True)
-                except Exception as e:
-                    pass
-            
-            # Move the window level and image scroll controls below the image
-            window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
-            window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
-
-
-            # for idx, image_file in enumerate(selected_images):
-            #     with cols[idx % 4]:
-            #         dcm_data = pydicom.dcmread(image_file)
-            #         image = Image.fromarray(dcm_data.pixel_array)
-            #         image = image.convert("L")  # Convert the image to grayscale mode
-            #         st.image(image, caption=os.path.basename(image_file), use_column_width=True)
+          
         else:
             st.warning("No DICOM files found in the folder.")
 else:
@@ -175,7 +179,12 @@ else:
 
 
 
-# 
+  # for idx, image_file in enumerate(selected_images):
+            #     with cols[idx % 4]:
+            #         dcm_data = pydicom.dcmread(image_file)
+            #         image = Image.fromarray(dcm_data.pixel_array)
+            #         image = image.convert("L")  # Convert the image to grayscale mode
+            #         st.image(image, caption=os.path.basename(image_file), use_column_width=True)
 
 # def apply_window_level(image, window_center, window_width):
 #     min_value = window_center - window_width // 2
