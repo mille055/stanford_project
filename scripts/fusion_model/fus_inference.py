@@ -12,6 +12,7 @@ from metadata.meta_inference import get_meta_inference
 from NLP.NLP_inference import get_NLP_inference, load_NLP_model
 from config import feats_to_keep, classes, model_paths
 from model_container import ModelContainer
+from utils import *
 
 
 
@@ -95,8 +96,9 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
     # Extract metadata from the DICOM file
     metadata_dict = {}
     for key, value in dcm_data.items():
-        metadata_dict[dcm_data.data_element(key).name] = value.value
-
+        data_element = dcm_data.data_element(key)
+        if data_element is not None:
+            metadata_dict[data_element.name] = value.value
     # Convert metadata to a DataFrame
     metadata_df = pd.DataFrame(metadata_dict, index=[0])
 

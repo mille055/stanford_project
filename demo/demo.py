@@ -13,6 +13,7 @@ import sys
 sys.path.append("../scripts/")
 from  process_tree import Processor 
 from  fusion_model.fus_model import FusionModel # Import your machine learning model function
+from fusion_model.fus_inference import  get_fusion_inference_from_file
 from  config import *
 from  model_container import ModelContainer
 
@@ -142,6 +143,14 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             # read in the dicom data for the current images and see if there are labels in the DICOM metadata
             dcm_data = pydicom.dcmread(selected_images[image_idx])
             predicted_type, meta_prediction, cnn_prediction, nlp_prediction = get_predicted_type(dcm_data)
+            if not predicted_type: 
+                print('selected image', selected_images[image_idx])
+                predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference_from_file(selected_images[image_idx], model_container)
+                predicted_type = abd_label_dict[str(predicted_series_class)]
+                prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]
+                cnn_prediction = abd_label_dict[str(ts_df['pixel_preds'])]
+                nlp_prediction = abd_label_dict[str(ts_df['nlp_preds'])]
+
 
             with st.container():
             
