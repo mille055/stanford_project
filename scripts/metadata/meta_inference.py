@@ -42,6 +42,7 @@ def calc_feature_importances(model,feat_names,num_to_show):
     return RF_ranking
 
 def meta_inference(df, scaler, model, feature_list=feats):
+    # get the features from the preprocessed dataframe (which is the first entity sent by preprocess)
     X = preprocess(df, scaler=scaler)[0][feature_list]
     y = df.label
     preds = model.predict(X)
