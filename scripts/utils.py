@@ -269,7 +269,7 @@ def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= col
         if f not in df1.columns:
             df1[f] = 0
             
-    return df1, scaler
+    return df1.fillna(0), scaler
 
 # def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
 #     # Preprocess new data as before, but only for columns that are in both df and keep
