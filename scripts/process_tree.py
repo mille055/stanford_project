@@ -107,7 +107,7 @@ class Processor:
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         ## adding the submodel info
         sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
-        sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['cnn_probs']
+        sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
         sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
         submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['cnn_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
         submodel_preds_string = "'".join(map(str, submodel_preds_list))
@@ -171,8 +171,8 @@ class Processor:
 
 
 def main():
-    old_data_site = '/volumes/cm7/start_folder/'
-    destination_site = '/volumes/cm7/newly_processed/'
+    old_data_site = '/volumes/cm7/source042323/'
+    destination_site = '/volumes/cm7/testing_additions042323/'
     
     # get the models
     model_container = ModelContainer()
@@ -182,7 +182,7 @@ def main():
     processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
     new_processed_df = processor.pipeline_new_studies()
     print(new_processed_df)
-    new_processed_df.to_pickle('../data/newly_processed_cases.pkl')
+    new_processed_df.to_pickle('../data/newly_processed_cases042323.pkl')
 
 if __name__ == "__main__":
     main()
