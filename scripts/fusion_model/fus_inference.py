@@ -22,33 +22,6 @@ model_container_instance = ModelContainer()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# def get_fusion_inference(row, models = model_container_instance, device=device,features=feats_to_keep, num_classes=len(classes)):
-#     #meta_data, pixel_data, text_data = extract_data_for_models(row)
-    
-#     pred1, prob1 = get_meta_inference(row, model_container_instance.metadata_model, features) 
-#     prob1_tensor = torch.tensor(prob1, dtype=torch.float32).squeeze()
-#     #print(f'shape of prob1_tensor is {prob1_tensor.shape}')
-    
-#     pred2, prob2 = pixel_inference(model_container_instance.cnn_model, [row.fname], classes=classes)
-#     prob2_tensor = torch.tensor(prob2, dtype=torch.float32)
-#     #print(f'shape of prob2_tensor is {prob2_tensor.shape}')
-    
-    
-#     pred3, prob3 = get_NLP_inference(model_container_instance.nlp_model, [row.fname], device, classes=classes)
-#     prob3_tensor = torch.tensor(prob3, dtype=torch.float32)
-#     #print(f'shape of prob3_tensor is {prob3_tensor.shape}')
-    
-#     # choose fusion model and instantiate
-#     fusion_model = model_container_instance.fusion_model
-
-#     # Pass the tensors through the FusionModel
-#     fused_output=  fusion_model(prob1_tensor, prob2_tensor, prob3_tensor)
-    
-#     # Get the predicted class and confidence score
-#     predicted_class = classes[torch.argmax(fused_output, dim=0).item()]
-#     confidence_score = torch.max(torch.softmax(fused_output, dim=0)).item()
-    
-#     return predicted_class, confidence_score
 
 def get_fusion_inference(row, model_container, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
     # unpack the models
@@ -93,15 +66,20 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
         print(f"Invalid DICOM file: {file_path}")
         return None, None, None
 
+    
     # Extract metadata from the DICOM file
     metadata_dict = {}
-    for key, value in dcm_data.items():
-        data_element = dcm_data.data_element(key)
+    for data_element in dcm_data:
         if data_element is not None:
-            metadata_dict[data_element.name] = value.value
+            print(f"Adding data element: {data_element.name}")
+            metadata_dict[data_element.name] = [data_element.value]
+        else:
+            print(f"Skipping None data element for tag: {data_element.tag}")    
     # Convert metadata to a DataFrame
     metadata_df = pd.DataFrame(metadata_dict, index=[0])
 
+
+    print('metadataframe before preprocessing:', metadata_df.head())
     # Preprocess the metadata using the preprocess function
     preprocessed_metadata, _ = preprocess(metadata_df, scaler=model_container.metadata_scaler, is_new_data=True)
     

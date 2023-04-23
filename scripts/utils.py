@@ -204,13 +204,13 @@ def rescale_cols(df, cols, scaler=None, fit_scaler=False, save_scaler=False):
             with open('../models/metadata_scaler.pkl', 'wb') as f:
                 pickle.dump(scaler, f)
     else:   
-        # # Find the intersection of the DataFrame columns and the columns the scaler was trained on
-        # common_cols = [col for col in cols if col in scaler.feature_names_in_]
+        # Find the intersection of the DataFrame columns and the columns the scaler was trained on
+        common_cols = [col for col in cols if col in scaler.feature_names_in_]
 
-        # if len(common_cols) == 0:
-        #     raise ValueError("There are no common columns between the DataFrame and the columns the scaler was trained on.")
+        if len(common_cols) == 0:
+             raise ValueError("There are no common columns between the DataFrame and the columns the scaler was trained on.")
 
-        df1[cols] = scaler.transform(df1[cols])
+        df1[common_cols] = scaler.transform(df1[common_cols])
 
 
     return df1.fillna(0), scaler

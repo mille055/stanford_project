@@ -15,6 +15,7 @@ from  process_tree import Processor
 from  fusion_model.fus_model import FusionModel # Import your machine learning model function
 from fusion_model.fus_inference import  get_fusion_inference_from_file
 from  config import *
+from utils import *
 from  model_container import ModelContainer
 
 #get instances of model for call to process
@@ -141,11 +142,26 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     return 0
                 
             # read in the dicom data for the current images and see if there are labels in the DICOM metadata
-            dcm_data = pydicom.dcmread(selected_images[image_idx])
+            image_path = selected_images[image_idx]
+            # Convert to string if necessary
+            if not isinstance(image_path, str):
+                image_path = str(image_path)            
+
+            # Check if it's a valid file path
+            if os.path.isfile(image_path):
+                print(f"{image_path} is a valid file path.")
+            else:
+                print(f"{image_path} is not a valid file path.")
+            
+            dcm_data = pydicom.dcmread(image_path)
             predicted_type, meta_prediction, cnn_prediction, nlp_prediction = get_predicted_type(dcm_data)
+
             if not predicted_type: 
-                print('selected image', selected_images[image_idx])
-                predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference_from_file(selected_images[image_idx], model_container)
+                print('selected image', image_path)
+                single_image_df = pd.DataFrame.from_dicoms([image_path])
+                single_image_df = preprocess(single_image_df, model_container.metadata_scaler)
+                print(single_image_df)
+                predicted_series_class, predicted_series_confidence, ts_df = fusion_model.get_fusion_inference(single_image_df)
                 predicted_type = abd_label_dict[str(predicted_series_class)]
                 prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]
                 cnn_prediction = abd_label_dict[str(ts_df['pixel_preds'])]
