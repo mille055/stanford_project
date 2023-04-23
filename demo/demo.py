@@ -156,16 +156,17 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             dcm_data = pydicom.dcmread(image_path)
             predicted_type, meta_prediction, cnn_prediction, nlp_prediction = get_predicted_type(dcm_data)
 
-            if not predicted_type: 
-                print('selected image', image_path)
-                single_image_df = pd.DataFrame.from_dicoms([image_path])
-                single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
-                print(single_image_df)
-                predicted_series_class, predicted_series_confidence, ts_df = fusion_model.get_fusion_inference(single_image_df)
-                predicted_type = abd_label_dict[str(predicted_series_class)]
-                prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]
-                cnn_prediction = abd_label_dict[str(ts_df['pixel_preds'])]
-                nlp_prediction = abd_label_dict[str(ts_df['nlp_preds'])]
+            # if not predicted_type: 
+            #     print('selected image', image_path)
+            #     single_image_df = pd.DataFrame.from_dicoms([image_path])
+            #     print('printing what is sent to fus_inference', [str(single_image_df.fname)])
+            #     single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
+            #     st.dataframe(single_image_df)
+            #     predicted_series_class, predicted_series_confidence, ts_df = fusion_model.get_fusion_inference(single_image_df)
+            #     predicted_type = abd_label_dict[str(predicted_series_class)]
+            #     prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]
+            #     cnn_prediction = abd_label_dict[str(ts_df['pixel_preds'])]
+            #     nlp_prediction = abd_label_dict[str(ts_df['nlp_preds'])]
 
 
             with st.container():

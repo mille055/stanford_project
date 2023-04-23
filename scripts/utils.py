@@ -199,24 +199,14 @@ def rescale_cols(df, cols, scaler=None, fit_scaler=False, save_scaler=False):
         
     if fit_scaler:
         df1[cols] = scaler.fit_transform(df1[cols])
-        scaler.columns = cols # store the column names
+        #scaler.columns = cols # store the column names
         if save_scaler == True:
             with open('../models/metadata_scaler.pkl', 'wb') as f:
                 pickle.dump(scaler, f)
     else:   
-        temp_df = pd.DataFrame(columns=scaler.columns)
-        for col in scaler.columns:
-            if col in df1.columns:
-                temp_df[col] = df1[col]
-            else:
-                temp_df[col] = 0
-
-        transformed_temp_df = scaler.transform(temp_df)
-
-        for i, col in enumerate(cols):
-            df1[col] = transformed_temp_df[:, i]
+        df1[cols]= scaler.transform(df[cols])
     
-    return df1, scaler
+    return df1.fillna(0), scaler
 
 # for preprocessing for metadata model
 def get_dummies(df, cols=column_lists['dummies'], prefix=column_lists['d_prefixes']):
@@ -259,7 +249,7 @@ def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= col
     
     # Only rescale columns that are in the DataFrame. If not training, hopefully have scaler and send, and do not fit_scaler
     if is_new_data and scaler is not None:
-        rescale_columns = [col for col in scaler.columns if col in df1.columns]
+        rescale_columns = [col for col in scaler.feature_names_in_ if col in df1.columns]
     else:
         rescale_columns = [col for col in rescale if col in df1.columns]
 
@@ -269,7 +259,7 @@ def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= col
         if f not in df1.columns:
             df1[f] = 0
             
-    return df1.fillna(0), scaler
+    return df1, scaler
 
 # def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
 #     # Preprocess new data as before, but only for columns that are in both df and keep
