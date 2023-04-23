@@ -88,7 +88,7 @@ class FusionModel(nn.Module):
     ## Output is the predicted class, the confidence score (probability of the class prediction), and a 
     def get_fusion_inference(self, row, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
         # get metadata preds,probs
-        pred1, prob1 = get_meta_inference(row, self.model_container.metadata_model, features)
+        pred1, prob1 = get_meta_inference(row, self.mdoel_container.scaler, self.model_container.metadata_model, features)
         prob1_tensor = torch.tensor(prob1, dtype=torch.float32).squeeze().unsqueeze(0)
         
 

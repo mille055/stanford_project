@@ -9,6 +9,7 @@ class ModelContainer:
         self.cnn_model = load_pixel_model(model_paths['cnn'])
         self.nlp_model = self.load_model(model_paths['nlp'])
         self.metadata_model = self.load_model(model_paths['meta'])
+        self.metadata_scaler = self.load_model(model_paths['scaler'])
         
         # was having problems with circular calls, so just storing the path to the weights for the fusion model here
         self.fusion_weights_path = model_paths['fusion']
