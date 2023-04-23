@@ -41,10 +41,10 @@ def calc_feature_importances(model,feat_names,num_to_show):
     plt.show()
     return RF_ranking
 
+# this version is for the dataset with labels and can assess accuracy, etc
 def meta_inference(df, scaler, model, feature_list=feats_to_keep):
     # get the features from the preprocessed dataframe (which is the first entity sent by preprocess)
     X = (preprocess(df, scaler=scaler)[0])[feature_list]
-    print(X, X.columns)
     y = df.label
     preds = model.predict(X)
     probs = model.predict_proba(X)
@@ -55,7 +55,7 @@ def meta_inference(df, scaler, model, feature_list=feats_to_keep):
 
 
 # to get inference on a row of the dataframe that does not necessarily have labels, currently requires to have been preprocessed
-def get_meta_inference(row, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
+def get_meta_inference(row, scaler, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
     X = (row[features]).values.reshape(1,-1)
     pred = model.predict(X)
     probs = model.predict_proba(X)
