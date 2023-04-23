@@ -22,6 +22,20 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
    
 class FusionModel(nn.Module):
+    '''
+    Class fusion model is the main model for inference, incorporating the submodels meta_model (dicom metadata), cnn_model (pixel-based classifier), nlp_model (nlp of text of SeriesDescription)
+    It adds the submodels and the saved weights for the fusion model through the ModelContainer class. 
+    Input:
+        model_container(ModelContainer class): contains the submodels and the saved weights for the fusion model
+        pretrained(bool): If pretrained, brings in the weights of the saved model for inference. Set False for training of the model
+        num_classes(int): Number of classes, which in this case is 19. This pulls from the config file the classes list and default is the length of the classes list
+        features(list[str]): list of the features to use in the metadata model, which by default is the feats_to_keep from config
+        classes(list[str]): list of the classes, from config
+        include_nlp(bool): Defaults to yes, a way to configure the fusion model to use just the metadata and cnn models without the nlp or all three models
+    Output: 
+        The model itself, the results from a forward pass of the model, or the outputs of get_fusion_inference which returns the class, the confidence score, and a dataframe row of the 
+        predictions based on the submodels
+    '''
     def __init__(self, model_container, pretrained=True, num_classes=len(classes), features=feats_to_keep, classes=classes, include_nlp=True):
         super(FusionModel, self).__init__()
         self.classes = classes
@@ -70,7 +84,8 @@ class FusionModel(nn.Module):
         x = self.fusion_layer(x)
         return x
 
-    ### adding this back into the FusionModel
+    ## The main way to get an inference of the fusion model prediction on a single row of the dataframe. 
+    ## Output is the predicted class, the confidence score (probability of the class prediction), and a 
     def get_fusion_inference(self, row, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
         # get metadata preds,probs
         pred1, prob1 = get_meta_inference(row, self.model_container.metadata_model, features)
