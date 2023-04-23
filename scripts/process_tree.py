@@ -109,7 +109,7 @@ class Processor:
         sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
         sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
         sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
-        submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['cnn_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
+        submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
         submodel_preds_string = "'".join(map(str, submodel_preds_list))
         ## going to also add the ts_df dataframe which contains the submodel preds/probs
         # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
