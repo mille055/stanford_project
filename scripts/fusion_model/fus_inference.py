@@ -55,7 +55,7 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     cnn_model = model_container.cnn_model
     nlp_model = model_container.nlp_model
     fusion_model = model_container.fusion_model
-    scaler = model_container.scaler
+    scaler = model_container.metadata_scaler
 
     # get metadata preds,probs
     pred1, prob1 = get_meta_inference(row, scaler, metadata_model, features)
@@ -101,7 +101,7 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
     metadata_df = pd.DataFrame(metadata_dict, index=[0])
 
     # Preprocess the metadata using the preprocess function
-    preprocessed_metadata, _ = preprocess(metadata_df, scaler=model_container.scaler, is_new_data=True)
+    preprocessed_metadata, _ = preprocess(metadata_df, scaler=model_container.metadata_scaler, is_new_data=True)
     
     # Get the preprocessed row
     row = preprocessed_metadata.iloc[0]
