@@ -200,7 +200,7 @@ def rescale_cols(df, cols, scaler=None, fit_scaler=False, save_scaler=False):
     if fit_scaler:
         df1[cols] = scaler.fit_transform(df1[cols])
         scaler.columns = cols # store the column names
-        if save_scaler = True:
+        if save_scaler == True:
             with open('../models/metadata_scaler.pkl', 'wb') as f:
                 pickle.dump(scaler, f)
     else:   
