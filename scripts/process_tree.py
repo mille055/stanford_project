@@ -127,7 +127,7 @@ class Processor:
         if self.write_labels:
             #print('writing new data into', save_path)
             self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-                            conf_num=np.round(predicted_series_confidence, 3), subtring = submodel_preds_string, path=save_path)
+                            conf_num=np.round(predicted_series_confidence, 3), substring = submodel_preds_string, path=save_path)
 
         return sorted_series
     
