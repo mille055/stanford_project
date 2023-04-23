@@ -50,7 +50,7 @@ def get_predicted_type(dcm_data):
                 pass
         return prediction, prediction_meta, prediction_cnn, prediction_nlp
     else:
-        return None
+        return None, None, None, None
 
 @st.cache_resource
 def load_dicom_data(folder):
@@ -72,7 +72,8 @@ def load_dicom_data(folder):
                         }
                     )
                 except Exception as e:
-                    st.warning(f"Error reading DICOM file {file}: {e}")
+                    with st.exception("Exception"):
+                        st.error(f"Error reading DICOM file {file}: {e}")
 
     return pd.DataFrame(data)
 
@@ -156,12 +157,16 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                         draw = ImageDraw.Draw(image)
                         text = f"Predicted Type: {predicted_type}"
                         draw.text((10, 10), text, fill="white")  # You can adjust the position (10, 10) as needed
-                        textm = f'Metadata prediction: {meta_prediction}'
-                        draw.text((15, 20), textm, fill="white")
-                        textc = f'Pixel-based CNN prediction: {cnn_prediction}'
-                        draw.text((15, 30), textc, fill="white")
-                        textn = f'Text-based NLP prediction: {nlp_prediction}'
-                        draw.text((15, 30), textn, fill="white")
+                        
+                        if meta_prediction:
+                            textm = f'Metadata prediction: {meta_prediction}'
+                            draw.text((15, 50), textm, fill="white")
+                        if cnn_prediction:
+                            textc = f'Pixel-based CNN prediction: {cnn_prediction}'
+                            draw.text((15, 100), textc, fill="white")
+                        if nlp_prediction:
+                            textn = f'Text-based NLP prediction: {nlp_prediction}'
+                            draw.text((15, 150), textn, fill="white")
                     else:
                         draw = ImageDraw.Draw(image)
                         text = f'No prediction yet'
