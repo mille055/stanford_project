@@ -177,22 +177,26 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     pass
             
             
-            # If the image is already processed, show the predicted type above the image
-            if predicted_type:
-                st.write(f"Predicted Type: {predicted_type}")
+            # # If the image is already processed, show the predicted type above the image
+            # if predicted_type:
+            #     st.write(f"Predicted Type: {predicted_type}")
 
-            # If the image is not processed, show the button to process the examination in the sidebar
-            else:
-                predicted_type = 'not implemented yet'
-                # Display the predicted label
-                st.write(f"Predicted Type: {predicted_type}")
+            # # If the image is not processed, show the button to process the examination in the sidebar
+            # else:
+            #     predicted_type = 'not implemented yet'
+            #     # Display the predicted label
+            #     st.write(f"Predicted Type: {predicted_type}")
 
-                process_images = st.sidebar.button("Process Images")
-                if process_images:
-                    processor = Processor(selected_folder, selected_folder, fusion_model=fusion_model, overwrite = True, write_labels=True)
-                    new_processed_df = processor.pipeline_new_studies()
+            #     process_images = st.sidebar.button("Process Images")
+            #     if process_images:
+            #         processor = Processor(selected_folder, selected_folder, fusion_model=fusion_model, overwrite = True, write_labels=True)
+            #         new_processed_df = processor.pipeline_new_studies()
                 
-                   
+            # Now going to show the button all the time, rather than conditionally
+            process_images = st.sidebar.button("Process Images")
+            if process_images:
+                processor = Processor(selected_folder, selected_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
+                new_processed_df = processor.pipeline_new_studies()
           
         else:
             st.warning("No DICOM files found in the folder.")
