@@ -109,7 +109,7 @@ class FusionModel(nn.Module):
         predicted_class = classes[torch.argmax(fused_output, dim=1).item()]
         confidence_score = torch.max(torch.softmax(fused_output, dim=1)).item()
 
-        print(f"Lengths - meta_probs: {len(prob1)}, pixel_probs: {len(prob2)}, nlp_probs: {len(prob3)}")
+        #print(f"Lengths - meta_probs: {len(prob1)}, pixel_probs: {len(prob2)}, nlp_probs: {len(prob3)}")
         troubleshoot_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': [prob1], 'pixel_preds': pred2, 'pixel_probs': [prob2], 'nlp_preds': pred3, 'nlp_probs': [prob3], 'SeriesD': row.SeriesDescription})
         #troubleshoot_df = None
 
