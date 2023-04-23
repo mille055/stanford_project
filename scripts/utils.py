@@ -199,16 +199,17 @@ def rescale_cols(df, cols, scaler=None, fit_scaler=False):
         
     if fit_scaler:
         df1[cols] = scaler.fit_transform(df1[cols])
-        with open('../models/metadata_scaler1.pkl', 'wb') as f:
+        scaler.columns = cols # store the column names
+        with open('../models/metadata_scaler.pkl', 'wb') as f:
             pickle.dump(scaler, f)
     else:
-        # Find the intersection of the DataFrame columns and the columns the scaler was trained on
-        common_cols = [col for col in cols if col in scaler.feature_names_in_]
+        # # Find the intersection of the DataFrame columns and the columns the scaler was trained on
+        # common_cols = [col for col in cols if col in scaler.feature_names_in_]
 
-        if len(common_cols) == 0:
-            raise ValueError("There are no common columns between the DataFrame and the columns the scaler was trained on.")
+        # if len(common_cols) == 0:
+        #     raise ValueError("There are no common columns between the DataFrame and the columns the scaler was trained on.")
 
-        df1[common_cols] = scaler.transform(df1[common_cols])
+        df1[cols] = scaler.transform(df1[cols])
 
 
     return df1.fillna(0), scaler
@@ -253,9 +254,13 @@ def preprocess(df, scaler=None, is_new_data = True, keep= column_lists['keep'], 
     df1 = make_binary_cols(df1, binarize)
     
     # Only rescale columns that are in the DataFrame. If not training, hopefully have scaler and send, and do not fit_scaler
-    rescale_columns = [col for col in rescale if col in df1.columns]
+    if is_new_data and scaler is not None:
+        rescale_columns = [col for col in scaler.columns if col in df1.columns]
+    else:
+        rescale_columns = [col for col in rescale if col in df1.columns]
+
     df1, scaler = rescale_cols(df1, rescale_columns, scaler, fit_scaler=not is_new_data)
-    
+
     for f in feats:
         if f not in df1.columns:
             df1[f] = 0
