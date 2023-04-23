@@ -22,3 +22,4 @@ pylibjpeg-libjpeg
 pylibjpeg-openjpeg
 pylibjpeg-rle
 
+azure-storage-blob

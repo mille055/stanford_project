@@ -6,7 +6,7 @@ import streamlit as st
 import SimpleITK as sitk
 import glob
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from glob import glob
 
 import sys
@@ -72,7 +72,7 @@ def load_dicom_data(folder):
 start_folder = "/volumes/cm7/start_folder"
 
 if os.path.exists(start_folder) and os.path.isdir(start_folder):
-    folder = st.sidebar.selectbox("Select a folder:", os.listdir(start_folder), index=0)
+    folder = st.sidebar.selectbox("Select a source folder:", os.listdir(start_folder), index=0)
     selected_folder = os.path.join(start_folder, folder)
 
     if os.path.exists(selected_folder) and os.path.isdir(selected_folder):
@@ -101,7 +101,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             ]["file_path"].tolist()
             
             # Sort images within each series by filename
-            #selected_images.sort(key=lambda x: os.path.basename(x))
+            selected_images.sort(key=lambda x: os.path.basename(x))
 
 
             st.subheader("Selected Study Images")
@@ -126,6 +126,8 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 return (arr - arr_min) * 255 / (arr_max - arr_min)
 
            
+            dcm_data = pydicom.dcmread(selected_images[image_idx])
+            predicted_type = get_predicted_type(dcm_data)
 
             with st.container():
             
@@ -137,6 +139,14 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     image = Image.fromarray(normalize_array(image))  # Scale the values to 0-255 and convert to uint8
                     #image = Image.fromarray(dcm_data.pixel_array)
                     image = image.convert("L")
+                    if predicted_type:
+                        draw = ImageDraw.Draw(image)
+                        text = f"Predicted Type: {predicted_type}"
+                        draw.text((10, 10), text, fill="white")  # You can adjust the position (10, 10) as needed
+                    else:
+                        draw = ImageDraw.Draw(image)
+                        text = f'No prediction yet'
+                        draw.text((10,10), text, fill='white')
                     st.image(image, caption=os.path.basename(image_file), use_column_width = True)
                     # dcm_data = pydicom.dcmread(image_file)
                     # image = Image.fromarray(dcm_data.pixel_array)
@@ -146,17 +156,21 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 except Exception as e:
                     pass
             
-            dcm_data = pydicom.dcmread(selected_images[image_idx])
-            predicted_type = get_predicted_type(dcm_data)
-
+            
             # If the image is already processed, show the predicted type above the image
             if predicted_type:
                 st.write(f"Predicted Type: {predicted_type}")
 
             # If the image is not processed, show the button to process the examination in the sidebar
             else:
+                predicted_type = 'not implemented yet'
+                # Display the predicted label
+                st.write(f"Predicted Type: {predicted_type}")
+
                 process_images = st.sidebar.button("Process Images")
                 if process_images:
+                    processor = Processor(selected_folder, selected_folder, fusion_model=fusion_model, overwrite = True, write_labels=True)
+                    new_processed_df = processor.pipeline_new_studies()
                 # Call your model to process the study
                 # Replace with the appropriate function call
                 # predicted_type = classify_series(selected_images)
@@ -166,10 +180,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 #     dcm_data = pydicom.dcmread(image_file)
                 #     predicted_type = dcm_data[0x0010, 0x1010].value
                 #     # dcm_data.save_as(image_file)
-                    predicted_type = 'not implemented yet'
-                    # Display the predicted label
-                    st.write(f"Predicted Type: {predicted_type}")
-
+                   
 
           
         else:
