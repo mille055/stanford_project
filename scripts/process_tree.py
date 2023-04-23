@@ -105,14 +105,16 @@ class Processor:
         # Writes the predictions into the dataframe
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
+        ## adding the submodel info
+        sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
+        sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['cnn_probs']
+        sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
+        submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['cnn_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
+        submodel_preds_string = "'".join(map(str, submodel_preds_list))
+        ## going to also add the ts_df dataframe which contains the submodel preds/probs
+        # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
+        # sorted_series = pd.concat([sorted_series, ts_df_repeated], axis=1)
         
-        # Trying to compare the internal models for troubleshooting
-        #if self.troubleshoot_df == None:
-        #    print('creating the ts df')
-        #    self.troubleshoot_df = ts_df
-        #    print('ts_df is ', ts_df)
-        #else:
-        #    self.troubleshoot_df = pd.concat([self.troubleshoot_df, ts_df], ignore_index=True)
 
         # makes a new folder given by the destination_folder if it does not yet exist
         relative_path = os.path.relpath(series_df.fname.iloc[0], self.data_dir)
@@ -125,13 +127,13 @@ class Processor:
         if self.write_labels:
             #print('writing new data into', save_path)
             self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-                            conf_num=np.round(predicted_series_confidence, 3), path=save_path)
+                            conf_num=np.round(predicted_series_confidence, 3), subs = submodel_preds_string, path=save_path)
 
         return sorted_series
     
 
 
-    def write_labels_into_dicom(self, series_group, label_num, conf_num, path):
+    def write_labels_into_dicom(self, series_group, label_num, conf_num, substring, path):
         #print('writing labels', label_num)
         for dicom_file in series_group.fname.tolist():
             filename = os.path.basename(dicom_file)
@@ -140,6 +142,7 @@ class Processor:
             private_creator_tag = pydicom.tag.Tag(0x0011, 0x0010)
             custom_tag1 = pydicom.tag.Tag(0x0011, 0x1010)
             custom_tag2 = pydicom.tag.Tag(0x0011, 0x1011)
+            custom_tag3 = pydicom.tag.Tag(0x0011, 0x1012)
 
             # Check if private creator and custom tags already exist; if overwrite, then proceed anyways
             if (private_creator_tag not in ds or custom_tag1 not in ds or custom_tag2 not in ds) or self.overwrite:
@@ -152,8 +155,11 @@ class Processor:
                 data_element1.private_creator = 'PredictedClassInfo'
                 data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
                 data_element2.private_creator = 'PredictedClassInfo'
+                data_element3 = pydicom.DataElement(custom_tag3, 'LO', substring)
+                data_element3.private_creator = 'PredictedClassInfo'
                 ds[custom_tag1] = data_element1
                 ds[custom_tag2] = data_element2
+                ds[custom_tag3] = data_element3
 
                 modified_file_path = os.path.join(path, filename)
                 ds.save_as(modified_file_path)
