@@ -34,7 +34,21 @@ st.write("Chad Miller")
 # Function to check if the image has been processed and return the value in the DICOM tag (0010, 1010)
 def get_predicted_type(dcm_data):
     if (0x0011, 0x1010) in dcm_data:
-        return abd_label_dict[str(dcm_data[0x0011, 0x1010].value)]['short']  # this gets the numeric label written into the DICOM and converts to text description
+        prediction =  abd_label_dict[str(dcm_data[0x0011, 0x1010].value)]['short']  # this gets the numeric label written into the DICOM and converts to text description
+        # if there are submodel predictions
+        prediction_meta = None
+        prediction_cnn = None
+        prediction_nlp = None
+        if (0x0011, 0x1012) in dcm_data:
+            substring = dcm_data[0x0011, 0x1012].value
+            sublist = substring.split(',')
+            try:
+                prediction_meta = abd_label_dict[sublist[0]]['short']
+                prediction_cnn = abd_label_dict[sublist[1]]['short']
+                prediction_nlp = abd_label_dict[sublist[2]]['short']
+            except Exception as e:
+                pass
+        return prediction, prediction_meta, prediction_cnn, prediction_nlp
     else:
         return None
 
@@ -126,7 +140,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 
             # read in the dicom data for the current images and see if there are labels in the DICOM metadata
             dcm_data = pydicom.dcmread(selected_images[image_idx])
-            predicted_type = get_predicted_type(dcm_data)
+            predicted_type, meta_prediction, cnn_prediction, nlp_prediction = get_predicted_type(dcm_data)
 
             with st.container():
             
@@ -142,6 +156,12 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                         draw = ImageDraw.Draw(image)
                         text = f"Predicted Type: {predicted_type}"
                         draw.text((10, 10), text, fill="white")  # You can adjust the position (10, 10) as needed
+                        textm = f'Metadata prediction: {meta_prediction}'
+                        draw.text((15, 20), textm, fill="white")
+                        textc = f'Pixel-based CNN prediction: {cnn_prediction}'
+                        draw.text((15, 30), textc, fill="white")
+                        textn = f'Text-based NLP prediction: {nlp_prediction}'
+                        draw.text((15, 30), textn, fill="white")
                     else:
                         draw = ImageDraw.Draw(image)
                         text = f'No prediction yet'
