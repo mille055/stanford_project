@@ -192,12 +192,14 @@ def make_binary_cols(df, cols):
     return df1
 
 # for preprocessing for metadata model
-def rescale_cols(df, cols, scaler=None):
+def rescale_cols(df, cols, scaler=None, fit_scaler=False):
     df1 = df.copy()
     if not scaler:
         scaler = MinMaxScaler()
+        
+    if fit_scaler:
         df1[cols] = scaler.fit_transform(df1[cols])
-        with open('../models/metadata_scaler.pkl', 'wb') as f:
+        with open('../models/metadata_scaler1.pkl', 'wb') as f:
             pickle.dump(scaler, f)
     else:
         if len(cols) != scaler.n_features_in_:
@@ -225,7 +227,7 @@ def labels_from_file(label_path, column_names):
 
     return label_df
 
-def preprocess(df, scaler=None, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+def preprocess(df, scaler=None, is_new_data = True, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
    #Preprocess metadata for Random Forest classifier to predict sequence type
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
@@ -245,9 +247,9 @@ def preprocess(df, scaler=None, keep= column_lists['keep'], dummies= column_list
     binarize = [col for col in binarize if col in df1.columns]
     df1 = make_binary_cols(df1, binarize)
     
-    # Only rescale columns that are in the DataFrame
-    rescale = [col for col in rescale if col in df1.columns]
-    df1, scaler = rescale_cols(df1, rescale, scaler)
+    # Only rescale columns that are in the DataFrame. If not training, hopefully have scaler and send, and do not fit_scaler
+    rescale_columns = [col for col in rescale if col in df1.columns]
+    df1, scaler = rescale_cols(df1, rescale_columns, scaler, fit_scaler=not is_new_data)
     
     for f in feats:
         if f not in df1.columns:
@@ -255,22 +257,26 @@ def preprocess(df, scaler=None, keep= column_lists['keep'], dummies= column_list
             
     return df1, scaler
 
-def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
-    # Preprocess new data as before, but only for columns that are in both df and keep
-    df1 = df[[col for col in keep if col in df.columns]]
-    # ...
+# def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+#     # Preprocess new data as before, but only for columns that are in both df and keep
+#     df1 = exclude_other(df)
+#     print(f"Have received {df1.shape[0]} entries.")
 
-    # After preprocessing, add any missing columns from the training data
-    for col in keep:
-        if col not in df1.columns:
-            # Add missing column with default value (0 or mean value from scaler)
-            if col in scaler.mean_:
-                default_value = scaler.mean_[col]
-            else:
-                default_value = 0
-            df1[col] = default_value
+#     df1 = df[[col for col in keep if col in df.columns]]
+    
+#     # After preprocessing, add any missing columns from the training data
+#     for col in keep:
+#         if col not in df1.columns:
+#             # Add missing column with default value (0 or mean value from scaler)
+#             #if col in scaler.mean_:
+#             #    default_value = scaler.mean_[col]
+#             #else:
+#             #    default_value = 0
+#             default_value = 0
+            
+#             df1[col] = default_value
 
-    return df1
+#     return df1
 
 
 
