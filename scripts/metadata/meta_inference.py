@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold, GroupKFold, cross_val_score, cross_va
 
 import matplotlib.pyplot as plt  
 from sklearn.metrics import precision_recall_fscore_support as score
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, plot_confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, ConfusionMatrixDisplay
 from pprint import pprint
 import pickle
 

@@ -14,7 +14,7 @@ import sys
 from random import shuffle
 import sklearn
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, plot_confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, ConfusionMatrixDisplay
 from sklearn.linear_model import LogisticRegression
 
 import torch
