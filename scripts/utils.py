@@ -247,14 +247,11 @@ def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= col
     binarize = [col for col in binarize if col in df1.columns]
     df1 = make_binary_cols(df1, binarize)
     
-    # Only rescale columns that are in the DataFrame. If not training, hopefully have scaler and send, and do not fit_scaler
-    if is_new_data and scaler is not None:
-        rescale_columns = [col for col in scaler.feature_names_in_ if col in df1.columns]
-    else:
-        rescale_columns = [col for col in rescale if col in df1.columns]
+    rescale_columns = [col for col in rescale if col in df1.columns]
 
     df1, scaler = rescale_cols(df1, rescale_columns, scaler, fit_scaler=not is_new_data, save_scaler=save_scaler)
-    #print('after rescaling step, the number of columns are', len(df1.columns))
+    
+    
     for f in feats:
         if f not in df1.columns:
             df1[f] = 0
