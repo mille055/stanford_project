@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import KFold, GroupKFold, cross_val_score, cross_validate, GroupShuffleSplit, RandomizedSearchCV, GridSearchCV
-
+from sklearn.utils.validation import check_is_fitted
 import matplotlib.pyplot as plt  
 from sklearn.metrics import precision_recall_fscore_support as score
 from pprint import pprint
@@ -54,13 +54,15 @@ def meta_inference(df, scaler, model, feature_list=feats_to_keep):
     return preds, probs, y, acc
 
 
-# to get inference on a row of the dataframe that does not necessarily have labels
+# to get inference on a row of the dataframe that does not necessarily have labels, but which has already been preprocessed
 def get_meta_inference(row, scaler, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
-    #X = row.loc[:,features].values.reshape(1,-1)
-    #print("Row:", row)
-    #print("Features:", features)
-    #X, sc = preprocess(row, scaler)
-    X = X[features].values.reshape(1,-1)
+    try: 
+            check_is_fitted(scaler)
+            print('This scaler is alrady fitted.')
+    except NotFittedError:
+            print('This scaler is not fitted.')
+
+    X = (row[features]).values.reshape(1,-1)
     
     pred = model.predict(X)
     probs = model.predict_proba(X)

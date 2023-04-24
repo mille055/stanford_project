@@ -26,7 +26,7 @@ from sklearn.model_selection import train_test_split
 
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score, ConfusionMatrixDisplay
 from sklearn.linear_model import LogisticRegression
-
+from sklearn.utils.validation import check_is_fitted
 ### local imports ###
 from config import file_dict, abd_label_dict, classes, column_lists, feats
 from config import val_list, train_val_split_percent, random_seed, data_transforms
@@ -249,6 +249,12 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
     
     rescale_columns = [col for col in rescale if col in df1.columns]
 
+    if scaler:
+        try: 
+            check_is_fitted(scaler)
+            print('This scaler is alrady fitted.')
+        except NotFittedError:
+            print('This scaler is not fitted.')
     df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler)
     
     
