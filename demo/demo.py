@@ -9,6 +9,9 @@ import numpy as np
 from PIL import Image, ImageDraw
 from glob import glob
 
+
+from demo_utils import get_predicted_type, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
+
 import sys
 sys.path.append("../scripts/")
 from  process_tree import Processor 
@@ -22,6 +25,12 @@ from  model_container import ModelContainer
 model_container = ModelContainer()
 fusion_model = FusionModel(model_container = model_container, num_classes=19)
 
+# the place to find the image data
+start_folder = "/volumes/cm7/start_folder"
+
+# the place to put processed image data
+dest_folder = "volumes/cm7/start_folder"
+
 # instantiate the processor class for action on the DICOM images
 #processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
 #new_processed_df = processor.pipeline_new_studies()
@@ -33,59 +42,12 @@ st.subheader("AIPI540 Project, Spring 2023")
 st.write("Chad Miller")
 
 
-# Function to check if the image has been processed and return the value in the DICOM tag (0010, 1010)
-def get_predicted_type(dcm_data):
-    if (0x0011, 0x1010) in dcm_data:
-        prediction =  abd_label_dict[str(dcm_data[0x0011, 0x1010].value)]['short']  # this gets the numeric label written into the DICOM and converts to text description
-        # if there are submodel predictions
-        prediction_meta = None
-        prediction_cnn = None
-        prediction_nlp = None
-        if (0x0011, 0x1012) in dcm_data:
-            substring = dcm_data[0x0011, 0x1012].value
-            sublist = substring.split(',')
-            try:
-                prediction_meta = abd_label_dict[sublist[0]]['short']
-                prediction_cnn = abd_label_dict[sublist[1]]['short']
-                prediction_nlp = abd_label_dict[sublist[2]]['short']
-            except Exception as e:
-                pass
-        return prediction, prediction_meta, prediction_cnn, prediction_nlp
-    else:
-        return None, None, None, None
-
-@st.cache_resource
-def load_dicom_data(folder):
-    # function for getting the dicom images within the subfolders of the selected root folder
-    # assumes the common file structure of folder/patient/exam/series/images
-    data = []
-    for root, _, files in os.walk(folder):
-        for file in files:
-            if file.lower().endswith(".dcm"):
-                try:
-                    dcm_file_path = os.path.join(root, file)
-                    dcm_data = pydicom.dcmread(dcm_file_path)
-                    data.append(
-                        {
-                            "patient": dcm_data.PatientName,
-                            "exam": dcm_data.StudyDescription,
-                            "series": dcm_data.SeriesDescription,
-                            "file_path": dcm_file_path,
-                        }
-                    )
-                except Exception as e:
-                    with st.exception("Exception"):
-                        st.error(f"Error reading DICOM file {file}: {e}")
-
-    return pd.DataFrame(data)
-
-# the place to find the image data
-start_folder = "/volumes/cm7/start_folder"
-
 # check for dicom images within the subtree and build selectors for patient, exam, series
 if os.path.exists(start_folder) and os.path.isdir(start_folder):
     folder = st.sidebar.selectbox("Select a source folder:", os.listdir(start_folder), index=0)
     selected_folder = os.path.join(start_folder, folder)
+
+
 
     # if there are dicom images somewhere in the tree
     if os.path.exists(selected_folder) and os.path.isdir(selected_folder):
@@ -127,19 +89,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             
             image_idx = st.select_slider("View an image", options=range(len(selected_images)), value=0)
             
-            # for adjusting the W/L of the displayed image
-            def apply_window_level(image, window_center, window_width):
-                min_value = window_center - window_width // 2
-                max_value = window_center + window_width // 2
-                image = np.clip(image, min_value, max_value)
-                return image
-
-            def normalize_array(arr):
-                arr_min, arr_max = arr.min(), arr.max()
-                if arr_max != arr_min:
-                    return (arr - arr_min) * 255 / (arr_max - arr_min)
-                else:
-                    return 0
+            
                 
             # read in the dicom data for the current images and see if there are labels in the DICOM metadata
             image_path = selected_images[image_idx]
@@ -219,11 +169,21 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             #         new_processed_df = processor.pipeline_new_studies()
                 
             # Now going to show the button all the time, rather than conditionally
+            
+
+
+
+
+
             process_images = st.sidebar.button("Process Images")
             if process_images:
-                processor = Processor(selected_folder, selected_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
+                processor = Processor(selected_folder, dest_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
                 new_processed_df = processor.pipeline_new_studies()
           
+            get_inference = st.button("Get Inference")
+            if get_inference:
+                predicted_type, prediction_meta, cnn_prediction, nlp_prediction = get_single_image_inference(image_path, model_container, fusion_model)
+
         else:
             st.warning("No DICOM files found in the folder.")
 else:
