@@ -35,9 +35,9 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     fusion_model = FusionModel(model_container=model_container, num_classes=len(classes), include_nlp=include_nlp)
     # Load the weights
     if include_nlp:
-        weights_path = self.model_container.fusion_weights_path
+        weights_path = model_container.fusion_weights_path
     else:
-        weights_path = self.model_container.partial_fusion_weights_path
+        weights_path = model_container.partial_fusion_weights_path
         
     fusion_model.load_weights(weights_path)
 
