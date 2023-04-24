@@ -66,7 +66,7 @@ class Processor:
             scaler = pickle.load(file)
 
         ## gets the features from the metadata for the RF model
-        df1 = preprocess(df1, scaler)
+        df1, _ = preprocess(df1, scaler)
 
         processed_frame = self.process_batch(df1)
         return processed_frame
