@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw
 from glob import glob
 
 
-from demo_utils import get_predicted_type, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
+from demo_utils import check_prediction_tag, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
 
 import sys
 sys.path.append("../scripts/")
@@ -104,7 +104,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 print(f"{image_path} is not a valid file path.")
             
             dcm_data = pydicom.dcmread(image_path)
-            predicted_type, meta_prediction, cnn_prediction, nlp_prediction = get_predicted_type(dcm_data)
+            predicted_type, meta_prediction, cnn_prediction, nlp_prediction  = check_prediction_tag(dcm_data)
 
             # if not predicted_type: 
             #     print('selected image', image_path)
@@ -182,9 +182,12 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
           
             get_inference = st.button("Get Inference For This Image")
             if get_inference:
-                st.write(image_path)
+                # st.write(image_path)
                 predicted_type, prediction_meta, cnn_prediction, nlp_prediction = get_single_image_inference(image_path, model_container, fusion_model)
-
+                st.write('Predicted type: ', predicted_type)
+                st.write('Metatdata prediction:', prediction_meta)
+                st.write('Pixel CNN prediction:', cnn_prediction)
+                st.write('Text-based prediction:', nlp_prediction)
         else:
             st.warning("No DICOM files found in the folder.")
 else:

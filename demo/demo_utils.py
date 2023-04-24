@@ -21,7 +21,7 @@ from  model_container import ModelContainer
 
 
 # Function to check if the image has been processed and return the value in the DICOM tag (0010, 1010)
-def get_predicted_type(dcm_data):
+def check_prediction_tag(dcm_data):
     if (0x0011, 0x1010) in dcm_data:
         prediction =  abd_label_dict[str(dcm_data[0x0011, 0x1010].value)]['short']  # this gets the numeric label written into the DICOM and converts to text description
         # if there are submodel predictions
@@ -86,11 +86,16 @@ def get_single_image_inference(image_path, model_container, fusion_model):
     # single_image_df = pd.DataFrame.from_dicoms([image_path])
     # print('getting file', single_image_df.fname.iloc[0])
     # single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
-    predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference_from_file(image_path, model_container)
+    scaler = model_container.metadata_scaler
     
-    predicted_type = abd_label_dict[str(predicted_series_class)]
-    prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]
-    cnn_prediction = abd_label_dict[str(ts_df['pixel_preds'])]
-    nlp_prediction = abd_label_dict[str(ts_df['nlp_preds'])]
+    img_df = pd.DataFrame.from_dicoms([image_path])
+    img_df, _ = preprocess(img_df, scaler)
+
+    predicted_series_class, predicted_series_confidence, submodel_df = fusion_model.get_fusion_inference(img_df)
+    
+    predicted_type = abd_label_dict[str(predicted_series_class)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
+    prediction_meta = abd_label_dict[str(submodel_df['meta_preds'].values.tolist()[0])]['short'] #abd_label_dict[str(submodel_df['meta_preds'])]['short']
+    cnn_prediction = abd_label_dict[str(submodel_df['pixel_preds'].values.tolist()[0])]['short']
+    nlp_prediction = abd_label_dict[str(submodel_df['nlp_preds'].values.tolist()[0])]['short']
     
     return predicted_type, prediction_meta, cnn_prediction, nlp_prediction

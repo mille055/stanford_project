@@ -49,13 +49,13 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     print(pred1)
 
     # get cnn preds, probs
-    pred2, prob2 = pixel_inference(cnn_model, [row.fname], classes=classes)
+    pred2, prob2 = pixel_inference(cnn_model, row['fname'].values.tolist()[0], classes=classes)
     prob2_tensor = torch.tensor(prob2, dtype=torch.float32)
     print(pred2)
 
     # get nlp preds, probs...if statement because thinking about assessing both ways
     if include_nlp:
-        pred3, prob3 = get_NLP_inference(nlp_model, [row.fname], device, classes=classes)
+        pred3, prob3 = get_NLP_inference(nlp_model, row['fname'].values.tolist()[0], device, classes=classes)
         prob3_tensor = torch.tensor(prob3, dtype=torch.float32)
         print(pred3)
         fused_output = fusion_model(prob1_tensor, prob2_tensor, prob3_tensor)
@@ -65,7 +65,7 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     predicted_class = classes[torch.argmax(fused_output, dim=1).item()]
     confidence_score = torch.max(torch.softmax(fused_output, dim=1)).item()
 
-    submodel_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
+    submodel_df = pd.DataFrame.from_dict({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
 
     return predicted_class, confidence_score, submodel_df
 
@@ -82,29 +82,9 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
     # Load the weights
     fusion_model.load_weights(model_container.fusion_weights_path)
 
-
-    # Read the DICOM file
-    # try:
-    #     dcm_data = dcmread(file_path)
-    # except InvalidDicomError:
-    #     print(f"Invalid DICOM file: {file_path}")
-    #     return None, None, None
     
     my_df = pd.DataFrame.from_dicoms([file_path])
-   
-    # Extract metadata from the DICOM file
-    # metadata_dict = {}
-    # for data_element in dcm_data:
-    #     if data_element is not None:
-    #         print(f"Adding data element: {data_element.name}")
-    #         metadata_dict[data_element.name] = [data_element.value]
-    #     else:
-    #         print(f"Skipping None data element for tag: {data_element.tag}")    
-    # # Convert metadata to a DataFrame
-    # metadata_df = pd.DataFrame(metadata_dict, index=[0])
 
-
-    print('metadataframe before preprocessing:', my_df.head())
     # Preprocess the metadata using the preprocess function
     preprocessed_metadata, _ = preprocess(my_df, scaler=model_container.metadata_scaler)
     
