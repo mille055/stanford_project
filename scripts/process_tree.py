@@ -62,9 +62,11 @@ class Processor:
         df1['contrast'] = df1.apply(detect_contrast, axis=1)
         df1['plane'] = df1.apply(compute_plane, axis=1)
         df1['series_num'] = df1.series.apply(lambda x: str(x).split('_')[-1])
+        with open(model_paths['scaler'], 'rb') as file:
+            scaler = pickle.load(file)
 
         ## gets the features from the metadata for the RF model
-        df1 = preprocess(df1)
+        df1 = preprocess(df1, scaler)
 
         processed_frame = self.process_batch(df1)
         return processed_frame
