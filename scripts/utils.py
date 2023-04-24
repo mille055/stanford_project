@@ -236,6 +236,11 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
     # Only keep columns that are both in the DataFrame and the 'keep' list
     df1 = df1[[col for col in keep if col in df1.columns]]
     
+    # for everything that is missing from the feature list set to zeros
+    for f in feats:
+        if f not in df1.columns:
+            df1[f] = 0
+
     if 'PixelSpacing' in df1.columns and df1['PixelSpacing'].any:
         df1['PixelSpacing'] = df1['PixelSpacing'].apply(lambda x: x[0])
     
@@ -258,9 +263,6 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
     df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler)
     
     
-    for f in feats:
-        if f not in df1.columns:
-            df1[f] = 0
             
     return df1, scaler
 
