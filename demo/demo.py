@@ -180,8 +180,9 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 processor = Processor(selected_folder, dest_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
                 new_processed_df = processor.pipeline_new_studies()
           
-            get_inference = st.button("Get Inference")
+            get_inference = st.button("Get Inference For This Image")
             if get_inference:
+                st.write(image_path)
                 predicted_type, prediction_meta, cnn_prediction, nlp_prediction = get_single_image_inference(image_path, model_container, fusion_model)
 
         else:

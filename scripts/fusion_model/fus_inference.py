@@ -5,6 +5,7 @@ import torch
 import pickle
 import pydicom
 from pydicom.errors   import InvalidDicomError
+from pathlib import Path
 
 from fusion_model.fus_model import FusionModel
 from cnn.cnn_inference import pixel_inference, load_pixel_model
@@ -63,19 +64,23 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
     metadata_model = model_container.metadata_model
     cnn_model = model_container.cnn_model
     nlp_model = model_container.nlp_model
-    fusion_model = FusionModel(model_container)
-    fusion_model.load_weights(model_container.fusion_weights_path)
     scaler = model_container.metadata_scaler
    
-   
+   # Create FusionModel instance
+    fusion_model = FusionModel(model_container=model_container, num_classes=19)
+    # Load the weights
+    fusion_model.load_weights(model_container.fusion_weights_path)
+
+
     # Read the DICOM file
     try:
-        dcm_data = pydicom.dcmread(file_path)
+        dcm_data = dcmread(file_path)
     except InvalidDicomError:
         print(f"Invalid DICOM file: {file_path}")
         return None, None, None
-
     
+    my_df = pd.DataFrame.from_dicoms(file_path)
+    print(my_df, my_df.columns)
     # Extract metadata from the DICOM file
     metadata_dict = {}
     for data_element in dcm_data:
@@ -90,7 +95,7 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
 
     print('metadataframe before preprocessing:', metadata_df.head())
     # Preprocess the metadata using the preprocess function
-    preprocessed_metadata, _ = preprocess(metadata_df, scaler=model_container.metadata_scaler, is_new_data=True)
+    preprocessed_metadata, _ = preprocess(my_df, scaler=model_container.metadata_scaler)
     
     # Get the preprocessed row
     row = preprocessed_metadata.iloc[0]

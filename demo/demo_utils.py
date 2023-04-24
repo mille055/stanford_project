@@ -83,9 +83,10 @@ def normalize_array(arr):
         return 0
     
 def get_single_image_inference(image_path, model_container, fusion_model):
-    single_image_df = pd.DataFrame.from_dicoms([image_path])
-    single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
-    predicted_series_class, predicted_series_confidence, ts_df = fusion_model.get_fusion_inference(single_image_df)
+    # single_image_df = pd.DataFrame.from_dicoms([image_path])
+    # print('getting file', single_image_df.fname.iloc[0])
+    # single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
+    predicted_series_class, predicted_series_confidence, ts_df = get_fusion_inference_from_file(image_path, model_container)
     
     predicted_type = abd_label_dict[str(predicted_series_class)]
     prediction_meta = abd_label_dict[str(ts_df['meta_preds'])]

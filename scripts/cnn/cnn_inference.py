@@ -77,7 +77,7 @@ def test_pix_model(model,test_loader,device=device):
 
 # gets a tensor for a single image given by its filename
 def image_to_tensor(filepath, transforms = data_transforms, device=device):
-    
+    print('Getting file from ', filepath)
     ds = pydicom.dcmread(filepath)
     img = np.array(ds.pixel_array, dtype=np.float32)
     img = img[np.newaxis]
