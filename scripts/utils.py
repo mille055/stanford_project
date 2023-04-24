@@ -192,17 +192,17 @@ def make_binary_cols(df, cols):
     return df1
 
 # for preprocessing for metadata model
-def rescale_cols(df, cols, scaler=None, fit_scaler=False, save_scaler=False):
+def rescale_cols(df, cols, scaler=None, need_fit_scaler=False):
     df1 = df.copy()
     if not scaler:
         scaler = MinMaxScaler()
         
-    if fit_scaler:
+    if need_fit_scaler:
         df1[cols] = scaler.fit_transform(df1[cols])
-        #scaler.columns = cols # store the column names
-        if save_scaler == True:
-            with open('../models/metadata_scaler.pkl', 'wb') as f:
-                pickle.dump(scaler, f)
+        
+        with open('../models/metadata_scaler.pkl', 'wb') as f:
+            pickle.dump(scaler, f)
+    
     else:   
         df1[cols]= scaler.transform(df[cols])
     
@@ -227,7 +227,7 @@ def labels_from_file(label_path, column_names):
 
     return label_df
 
-def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
+def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep= column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
    #Preprocess metadata for Random Forest classifier to predict sequence type
     print("Preprocessing metadata for Random Forest classifier.")
     df1 = exclude_other(df)
@@ -249,7 +249,7 @@ def preprocess(df, scaler=None, is_new_data = True, save_scaler=False, keep= col
     
     rescale_columns = [col for col in rescale if col in df1.columns]
 
-    df1, scaler = rescale_cols(df1, rescale_columns, scaler, fit_scaler=not is_new_data, save_scaler=save_scaler)
+    df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler, save_scaler=save_scaler)
     
     
     for f in feats:

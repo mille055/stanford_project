@@ -60,17 +60,6 @@ class FusionModel(nn.Module):
     def load_weights(self, weights_path):
         self.load_state_dict(torch.load(weights_path))
 
-    # def forward(self, x1, x2, x3=None):
-    #     #if x3 is not None:
-    #     if self.include_nlp:
-    #         x = torch.cat((x1, x2, x3), dim=1)
-            
-    #     else:
-    #         x = torch.cat((x1, x2), dim=1)
-    #         #self.fusion_layer.weight = nn.Parameter(self.model_container.fusion_model.fusion_layer.weight)
-        
-    #     x = self.fusion_layer(x)
-    #     return x
     
     def forward(self, x1, x2, x3):
         

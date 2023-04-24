@@ -56,7 +56,11 @@ def meta_inference(df, scaler, model, feature_list=feats_to_keep):
 
 # to get inference on a row of the dataframe that does not necessarily have labels, currently requires to have been preprocessed
 def get_meta_inference(row, scaler, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
-    X = row.loc[:,features].values.reshape(1,-1)
+    #X = row.loc[:,features].values.reshape(1,-1)
+    #print("Row:", row)
+    #print("Features:", features)
+    X = row[features].values.reshape(1,-1)
+    
     pred = model.predict(X)
     probs = model.predict_proba(X)
 
