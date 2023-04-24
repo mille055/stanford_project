@@ -1,5 +1,5 @@
 import pydicom
-import os
+import os, re
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
@@ -85,9 +85,16 @@ def normalize_array(arr):
         return 0
     
 def get_single_image_inference(image_path, model_container, fusion_model):
-    # single_image_df = pd.DataFrame.from_dicoms([image_path])
-    # print('getting file', single_image_df.fname.iloc[0])
-    # single_image_df, _ = preprocess(single_image_df, model_container.metadata_scaler)
+    '''
+    Gets a set of inference predicted class and confidence score for the overall fusion model and for the submodels
+    Inputs: 
+        image_path(str): path to the image
+        model_container(class): ModelContainer class which contains the models and/or their weights and the scaler for the metadata features
+        fusion_model(class): FusionModel class which contains the fusion model and the function to get inference
+    Outputs: 
+        predictions (str) and confidence (float) for the various classifiers
+   '''
+    
     scaler = model_container.metadata_scaler
     
     img_df = pd.DataFrame.from_dicoms([image_path])
@@ -105,3 +112,14 @@ def get_single_image_inference(image_path, model_container, fusion_model):
     nlp_confidence = np.round(np.max(submodel_df['nlp_probs'].values.tolist()[0]), 2)
 
     return predicted_type, predicted_confidence, meta_prediction, meta_confidence, cnn_prediction, cnn_confidence, nlp_prediction, nlp_confidence
+
+
+def extract_number_from_filename(filename):
+    # Extract numbers from the filename using a regular expression
+    numbers = re.findall(r'\d+', os.path.basename(filename))
+    if numbers:
+        # Return the last number in the list if there are any numbers found
+        return int(numbers[-1])
+    else:
+        # Return -1 if no numbers are found in the filename
+        return -1
