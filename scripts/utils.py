@@ -249,7 +249,7 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
     
     rescale_columns = [col for col in rescale if col in df1.columns]
 
-    df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler, save_scaler=save_scaler)
+    df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler)
     
     
     for f in feats:
