@@ -59,7 +59,7 @@ def get_meta_inference(row, scaler, model, features=feats_to_keep): #model_list,
     #X = row.loc[:,features].values.reshape(1,-1)
     #print("Row:", row)
     #print("Features:", features)
-    X = preprocess(row)
+    #X, sc = preprocess(row, scaler)
     X = X[features].values.reshape(1,-1)
     
     pred = model.predict(X)
