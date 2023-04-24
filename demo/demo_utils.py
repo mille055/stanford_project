@@ -53,12 +53,14 @@ def load_dicom_data(folder):
                 try:
                     dcm_file_path = os.path.join(root, file)
                     dcm_data = pydicom.dcmread(dcm_file_path)
+                    label, _, _, _ = check_prediction_tag(dcm_data)
                     data.append(
                         {
                             "patient": dcm_data.PatientName,
                             "exam": dcm_data.StudyDescription,
                             "series": dcm_data.SeriesDescription,
                             "file_path": dcm_file_path,
+                            "label": label
                         }
                     )
                 except Exception as e:

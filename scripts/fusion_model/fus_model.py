@@ -82,13 +82,13 @@ class FusionModel(nn.Module):
         
 
         # get cnn preds, probs
-        pred2, prob2 = pixel_inference(self.model_container.cnn_model, row['fname'].values.tolist()[0], classes=classes)
+        pred2, prob2 = pixel_inference(self.model_container.cnn_model, row['fname'], classes=classes)
         prob2_tensor = torch.tensor(prob2, dtype=torch.float32).unsqueeze(0)
         
 
         # get nlp preds, probs...if statement because thinking about assessing both ways
         if include_nlp:
-            pred3, prob3 = get_NLP_inference(self.model_container.nlp_model, row['fname'].values.tolist()[0], device, classes=classes)
+            pred3, prob3 = get_NLP_inference(self.model_container.nlp_model, row['fname'], device, classes=classes)
             prob3_tensor = torch.tensor(prob3, dtype=torch.float32).unsqueeze(0)
             fused_output = self.forward(prob1_tensor, prob2_tensor, prob3_tensor)
             

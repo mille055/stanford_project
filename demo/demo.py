@@ -29,7 +29,7 @@ fusion_model = FusionModel(model_container = model_container, num_classes=19)
 start_folder = "/volumes/cm7/start_folder"
 
 # the place to put processed image data
-dest_folder = "volumes/cm7/start_folder"
+destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 
 # instantiate the processor class for action on the DICOM images
 #processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
@@ -47,7 +47,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
     folder = st.sidebar.selectbox("Select a source folder:", os.listdir(start_folder), index=0)
     selected_folder = os.path.join(start_folder, folder)
 
-
+    #dest_folder = st.sidebar.input("Select a destination folder")
 
     # if there are dicom images somewhere in the tree
     if os.path.exists(selected_folder) and os.path.isdir(selected_folder):
@@ -77,6 +77,8 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             
             # Sort images within each series by filename
             selected_images.sort(key=lambda x: os.path.basename(x))
+
+            #selected_class = st.selectbox("Find series type within this study", classes)
 
 
             st.subheader("Selected Study Images")
@@ -177,7 +179,10 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
 
             process_images = st.sidebar.button("Process Images")
             if process_images:
-                processor = Processor(selected_folder, dest_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
+                if not destination_folder:
+                    destination_folder = start_folder
+                processor = Processor(selected_folder, destination_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
+
                 new_processed_df = processor.pipeline_new_studies()
           
             get_inference = st.button("Get Inference For This Image")
