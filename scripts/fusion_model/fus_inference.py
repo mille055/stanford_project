@@ -53,12 +53,20 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     predicted_class = classes[torch.argmax(fused_output, dim=0).item()]
     confidence_score = torch.max(torch.softmax(fused_output, dim=0)).item()
 
-    troubleshoot_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
+    submodel_df = pd.DataFrame({'meta_preds': pred1, 'meta_probs': prob1, 'pixel_preds': pred2, 'pixel_probs': prob2, 'nlp_preds': pred3, 'nlp_probs': prob3, 'SeriesD': row.SeriesDescription})
 
-    return predicted_class, confidence_score, troubleshoot_df
+    return predicted_class, confidence_score, submodel_df
 
 # def get_fusion_inference(self, row, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
 def get_fusion_inference_from_file(file_path, model_container, classes=classes, features=feats_to_keep, device=device, include_nlp=True):
+    # unpack the models
+    metadata_model = model_container.metadata_model
+    cnn_model = model_container.cnn_model
+    nlp_model = model_container.nlp_model
+    fusion_model = model_container.fusion_model
+    scaler = model_container.metadata_scaler
+   
+   
     # Read the DICOM file
     try:
         dcm_data = pydicom.dcmread(file_path)
