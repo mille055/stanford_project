@@ -190,11 +190,11 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             get_inference = st.button("Get Inference For This Image")
             if get_inference:
                 # st.write(image_path)
-                predicted_type, prediction_meta, cnn_prediction, nlp_prediction = get_single_image_inference(image_path, model_container, fusion_model)
-                st.write('Predicted type: ', predicted_type)
-                st.write('Metatdata prediction:', prediction_meta)
-                st.write('Pixel CNN prediction:', cnn_prediction)
-                st.write('Text-based prediction:', nlp_prediction)
+                predicted_type, predicted_confidence, prediction_meta, meta_confidence, cnn_prediction, cnn_confidence, nlp_prediction, nlp_confidence = get_single_image_inference(image_path, model_container, fusion_model)
+                st.write(f'Predicted type: {predicted_type}, confidence score: {predicted_confidence:.2f}')
+                st.write(f'Metatdata prediction:  {prediction_meta}, {meta_confidence:.2f}')
+                st.write(f'Pixel CNN prediction: {cnn_prediction}, {cnn_confidence:.2f}')
+                st.write(f'Text-based prediction: {nlp_prediction}, {nlp_confidence:.2f}')
         else:
             st.warning("No DICOM files found in the folder.")
 else:

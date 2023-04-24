@@ -96,8 +96,12 @@ def get_single_image_inference(image_path, model_container, fusion_model):
     predicted_series_class, predicted_series_confidence, submodel_df = fusion_model.get_fusion_inference(img_df)
     
     predicted_type = abd_label_dict[str(predicted_series_class)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
-    prediction_meta = abd_label_dict[str(submodel_df['meta_preds'].values.tolist()[0])]['short'] #abd_label_dict[str(submodel_df['meta_preds'])]['short']
+    predicted_confidence = np.round(predicted_series_confidence, 2)
+    meta_prediction = abd_label_dict[str(submodel_df['meta_preds'].values.tolist()[0])]['short'] #abd_label_dict[str(submodel_df['meta_preds'])]['short']
+    meta_confidence = np.round(np.max(submodel_df['meta_probs'].values.tolist()[0]), 2)
     cnn_prediction = abd_label_dict[str(submodel_df['pixel_preds'].values.tolist()[0])]['short']
+    cnn_confidence = np.round(np.max(submodel_df['pixel_probs'].values.tolist()[0]), 2)
     nlp_prediction = abd_label_dict[str(submodel_df['nlp_preds'].values.tolist()[0])]['short']
-    
-    return predicted_type, prediction_meta, cnn_prediction, nlp_prediction
+    nlp_confidence = np.round(np.max(submodel_df['nlp_probs'].values.tolist()[0]), 2)
+
+    return predicted_type, predicted_confidence, meta_prediction, meta_confidence, cnn_prediction, cnn_confidence, nlp_prediction, nlp_confidence
