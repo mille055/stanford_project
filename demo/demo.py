@@ -21,15 +21,6 @@ from  config import *
 from utils import *
 from  model_container import ModelContainer
 
-#get instances of model for call to process
-model_container = ModelContainer()
-fusion_model = FusionModel(model_container = model_container, num_classes=19)
-
-# the place to find the image data
-start_folder = "/volumes/cm7/start_folder"
-
-# the place to put processed image data
-destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 
 # instantiate the processor class for action on the DICOM images
 #processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
@@ -40,6 +31,17 @@ st.set_page_config(page_title="Abdominal MRI Series Classifier", layout="wide")
 st.title("Abdominal MRI Series Classifier")
 st.subheader("AIPI540 Project, Spring 2023")
 st.write("Chad Miller")
+
+
+#get instances of model for call to process
+model_container = ModelContainer()
+fusion_model = FusionModel(model_container = model_container, num_classes=19)
+
+# the place to find the image data
+start_folder = "/volumes/cm7/start_folder"
+
+# the place to put processed image data
+destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 
 
 # check for dicom images within the subtree and build selectors for patient, exam, series
