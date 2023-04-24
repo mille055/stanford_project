@@ -28,7 +28,7 @@ def get_fusion_inference(row, model_container, classes=classes, features=feats_t
     metadata_model = model_container.metadata_model
     cnn_model = model_container.cnn_model
     nlp_model = model_container.nlp_model
-    fusion_model = model_container.fusion_model
+    fusion_model = FusionModel.load_weights(model_container.fusion_weights_path)
     scaler = model_container.metadata_scaler
 
     # get metadata preds,probs
@@ -63,7 +63,7 @@ def get_fusion_inference_from_file(file_path, model_container, classes=classes, 
     metadata_model = model_container.metadata_model
     cnn_model = model_container.cnn_model
     nlp_model = model_container.nlp_model
-    fusion_model = model_container.fusion_model
+    fusion_model = FusionModel.load_weights(model_container.fusion_weights_path)
     scaler = model_container.metadata_scaler
    
    
