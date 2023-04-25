@@ -267,123 +267,14 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
             
     return df1, scaler
 
-# def preprocess_new_data(df, scaler, keep=column_lists['keep'], dummies= column_lists['dummies'], d_prefixes= column_lists['d_prefixes'], binarize= column_lists['binarize'], rescale= column_lists['rescale']):
-#     # Preprocess new data as before, but only for columns that are in both df and keep
-#     df1 = exclude_other(df)
-#     print(f"Have received {df1.shape[0]} entries.")
-
-#     df1 = df[[col for col in keep if col in df.columns]]
-    
-#     # After preprocessing, add any missing columns from the training data
-#     for col in keep:
-#         if col not in df1.columns:
-#             # Add missing column with default value (0 or mean value from scaler)
-#             #if col in scaler.mean_:
-#             #    default_value = scaler.mean_[col]
-#             #else:
-#             #    default_value = 0
-#             default_value = 0
-            
-#             df1[col] = default_value
-
-#     return df1
-
-
-
-def convert_labels_from_file(label_df):
-    labels=label_df.copy()
-    labels['GT label'] = labels['label_code'].astype(str).apply(lambda x: abd_label_dict[x]['short'])
-    labels['GT plane'] = labels['label_code'].astype(str).apply(lambda x: abd_label_dict[x]['plane'])
-    labels['GT contrast'] = labels['label_code'].astype(str).apply(lambda x: abd_label_dict[x]['contrast'])
-    labels['patientID'] = labels['patientID'].astype(str)
-#    labels['Parent_folder'] = labels['fname'].astype(str).apply(lambda x: x.split('/')[0])
-#    labels['patientID'] = labels['fname'].astype(str).apply(lambda x: x.split('/')[1]).astype(int)
-#    labels['exam'] = labels['fname'].astype(str).apply(lambda x: x.split('/')[2])
-#    labels['series'] = labels['fname'].astype(str).apply(lambda x: x.split('/')[3])
-    
-    return labels
-
+# populates the components of the file path into separate columns in the dataframe
 def expand_filename_into_columns(df, cols):
     for iterator in range(len(cols)):
         df[cols[iterator]] = df['fname'].astype(str).apply(lambda x: x.split('/')[iterator])
     return df
 
-def train_setup(df, preproc=True):
-    "Extract labels for training data and return 'unknown' as test set"
-    if preproc:
-        df1 = preprocess(df)
-        labels = extract_labels(df1)
-        df1 = df1.join(labels[['plane', 'contrast', 'seq_label']])
-    else:
-        df1 = df.copy()
-    filt = df1['seq_label'] == 'unknown'
-    train = df1[~filt].copy().reset_index(drop=True)
-    test = df1[filt].copy().reset_index(drop=True)
-    y, y_names = pd.factorize(train['seq_label'])
-    return train, test, y, y_names
 
-def train_setup_abdomen(df, cols=['patientID','exam','series'], preproc=False, need_labels=False):
-
-    if preproc:
-        df1=preprocess(df)
-        
-    else:
-        df1=df.copy()
-    
-    if need_labels:
-
-        labels = extract_labels(df1)
-        df1 = df1.merge(labels, on=cols)
- 
-    length = df1.shape[0]
-
-   
-    train_set, val_set = next(GroupShuffleSplit(test_size=.20, n_splits=1, random_state = 42).split(df1, groups=df1['patientID']))
-
-    train = df1.iloc[train_set]
-    val = df1.iloc[val_set]
-    y, y_names = train['label_code'],train['GT label']
- 
-    return train, val, y, y_names
-
-
-
-# class Finder():
-#     "A class for finding DICOM files of a specified sequence type from a specific ."
-#     def __init__(self, path):
-#         self.root = path
-#         self.fns, self.dicoms = get_dicoms(self.root)
-#         self.dicoms = preprocess(self.dicoms)
-#         self.labels = extract_labels(self.dicoms)
-#         self.dicoms = self.dicoms.join(self.labels[['plane', 'contrast']])
-        
-#     def predict(self,  model_path=_model_path, features=_features, ynames=_y_names, **kwargs):
-#         try:
-#             self.clf = load(model_path)
-#         except FileNotFoundError as e:
-#             print("No model found. Try again by passing the `model_path` keyword argument.")
-#             raise
-#         self.features = features
-#         self.ynames = ynames
-#         preds = self.clf.predict(self.dicoms[features])
-#         self.preds = ynames.take(preds)
-#         self.probas = self.clf.predict_proba(self.dicoms[features])
-        
-#     def find(self, plane='ax', seq='t1', contrast=True, thresh=0.8, **kwargs):
-#         try:
-#             self.probas
-#         except AttributeError:
-#             print("Prediction not yet performed. Please run `Finder.predict()` and try again.")
-#             raise
-#         preds = np.argwhere(self.probas > 0.8)
-#         ind = preds[:, 0]
-#         pred_names = _y_names.take(preds[:, 1])
-#         df = pd.DataFrame(pred_names, index=ind, columns=['seq_pred'])
-#         df = self.dicoms[_output_columns].join(df)
-#         return df.query(f'plane == "{plane}" and seq_pred == "{seq}" and contrast == {int(contrast)}')
-    
-
-
+# excludes image types that are not part of this evaluation, such as the pelvis
 def exclude_other(df):
     if 'BodyPartExamined' not in df.columns: return df
     other = ['SPINE', 'CSPINE', 'PELVIS', 'PROSTATE']
@@ -394,6 +285,7 @@ def exclude_other(df):
     filt2 = df2.SOPClassUID == "MR Image Storage"
     return df2[filt2].reset_index(drop=True)  
 
+# loads a previously pickled dataset including the train and test dataframes
 def load_pickled_dataset(train_file, test_file):
   with open(train_file, 'rb') as f:
     train_df = pickle.load(f)
@@ -402,6 +294,8 @@ def load_pickled_dataset(train_file, test_file):
 
   return train_df, test_df
 
+# for some of the previous versions of the csv files, the val set was within the train set and there are certain ones trying to keep 
+# consistent across the various models
 def create_val_dataset_from_csv(train_file, test_file, val=True, val_lists=val_list):
     train_df = pd.read_csv(train_file)
     test_df = pd.read_csv(test_file)
@@ -418,7 +312,7 @@ def create_val_dataset_from_csv(train_file, test_file, val=True, val_lists=val_l
     else: 
         return train_df, test_df
 
-
+# loading the train, val, and test dataframes from the csv files
 def load_datasets_from_csv(train_csv, val_csv, test_csv):
     train_df = pd.read_csv(train_csv)
     val_df = pd.read_csv(val_csv)
@@ -457,6 +351,7 @@ def mask_one_from_series(df, selection_fraction=0.5):
    
     return selected_rows
 
+# this gets the dicom images from the column of filenames, and adds contrast and plane information
 def prepare_df(df):
     df1 = df.copy()
     filenames = df1.file_info.tolist()
@@ -470,12 +365,6 @@ def prepare_df(df):
     
     return merged
 
-
-# was just used once to pool the labels 2-5 into 2 (arterial phase) and then label file rewritten and no longer used
-# def pool_arterial_labels(df, label_col='label'):
-#     df1 = df.copy()
-#     df1[label_col] = df1[label_col].apply(lambda x: 2 if x in [2,3,4,5] else x)
-#     return df1
 
         
 #visualization of a batch of images
@@ -502,34 +391,6 @@ def plot_and_save_cm(ytrue, ypreds, fname):
 
     return plt
 
-
-#explore train.fit and kgroupcross validation
-def train_setup_abdomen_cross(df, cols=['patientID','exam','series'], need_preproc=False, need_labels=False):
-
-    if need_preproc:
-        df1=preprocess(df)
-        
-    else:
-        df1=df.copy()
-    
-    if need_labels:
-
-        labels = extract_labels(df1)
-        df1 = df1.merge(labels, on=cols)
- 
-    length = df1.shape[0]
-
-    gkf = GroupKFold(n_splits=5)
-    for train_set, val_set in gkf.split(df1, groups=df1['patientID']):
-        #print(train_set, len(train_set), train_set.dtype)
-        #print(df1.iloc[train_set])
-        train_df, val = df1.iloc[train_set], df1.iloc[val_set]
-        y, y_names = train_df['label_code'],train_df['GT label']
-        
-        clf_gkf = train_fit(train_df, y, features=preproc._features, fname='cross_from_notebook.skl' )
-        scores = cross_validate(clf_gkf, train_df[preproc._features], y, scoring=['precision_macro', 'recall_macro'])
-        print(scores)
-    #return train, val, y, y_names
 
 # adds the preds and probs to select rows from the original data frame (patient and study info)
 def make_results_df(preds, probs, true, df):
