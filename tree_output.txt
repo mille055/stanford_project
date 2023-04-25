@@ -7,20 +7,6 @@
 │       ├── FigPixel20230322.png
 │       └── FigPixel20230322.tif
 ├── data
-│   ├── archive
-│   │   ├── MRI_abd_test.pkl
-│   │   ├── MRI_abd_train.pkl
-│   │   ├── X_test02282023.pkl
-│   │   ├── X_train02282023.pkl
-│   │   ├── fusion_test.pkl
-│   │   ├── fusion_test_old.pkl
-│   │   ├── fusion_train.pkl
-│   │   ├── fusion_train_old.pkl
-│   │   ├── fusion_val.pkl
-│   │   ├── fusion_val_old.pkl
-│   │   ├── testfiles_old.csv
-│   │   ├── trainfiles_old.csv
-│   │   └── val_dicom_data.pkl
 │   ├── cmm_labels.txt
 │   ├── fusion_test.pkl
 │   ├── fusion_train.pkl
@@ -33,24 +19,9 @@
 │   ├── trainfiles.csv
 │   └── valfiles.csv
 ├── demo
-│   ├── __pycache__
-│   │   └── demo_utils.cpython-38.pyc
 │   ├── demo.py
 │   └── demo_utils.py
 ├── models
-│   ├── archive
-│   │   ├── fusion_model_weights042223.pth
-│   │   ├── fusion_model_weights_new1.pth
-│   │   ├── fusion_model_weights_no_nlp042223.pth
-│   │   ├── fusion_saved_weights042123.pth
-│   │   ├── meta_04062023_optmodel.skl
-│   │   ├── meta_04142023.skl
-│   │   ├── metadata_scaler_not_sure.pkl
-│   │   ├── metadata_scaler_not_sure2.pkl
-│   │   ├── optmodel20230131MBreduced.pkl
-│   │   ├── optmodel20230228con.pkl
-│   │   ├── text_model20230331.st
-│   │   └── text_model20230418.st
 │   ├── fusion_model_weights042223.pth
 │   ├── fusion_model_weights042423.pth
 │   ├── fusion_model_weights_new.pth
@@ -75,45 +46,10 @@
 │   ├── NLP
 │   │   ├── NLP_inference.py
 │   │   ├── NLP_training.py
-│   │   ├── __intit__.py
-│   │   └── __pycache__
+│   │   └── __intit__.py
 │   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-38.pyc
-│   │   ├── config.cpython-310.pyc
-│   │   ├── config.cpython-311.pyc
-│   │   ├── config.cpython-37.pyc
-│   │   ├── config.cpython-38.pyc
-│   │   ├── config.cpython-39.pyc
-│   │   ├── model_container.cpython-311.pyc
-│   │   ├── model_container.cpython-38.pyc
-│   │   ├── process_tree.cpython-311.pyc
-│   │   ├── process_tree.cpython-38.pyc
-│   │   ├── train_meta_model.cpython-38.pyc
-│   │   ├── train_pixel_model.cpython-38.pyc
-│   │   ├── train_text_model.cpython-38.pyc
-│   │   ├── utils.cpython-310.pyc
-│   │   ├── utils.cpython-311.pyc
-│   │   ├── utils.cpython-37.pyc
-│   │   ├── utils.cpython-38.pyc
-│   │   └── utils.cpython-39.pyc
 │   ├── cnn
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── __init__.cpython-37.pyc
-│   │   │   ├── __init__.cpython-38.pyc
-│   │   │   ├── cnn_data_loaders.cpython-311.pyc
-│   │   │   ├── cnn_data_loaders.cpython-37.pyc
-│   │   │   ├── cnn_data_loaders.cpython-38.pyc
-│   │   │   ├── cnn_dataset.cpython-311.pyc
-│   │   │   ├── cnn_dataset.cpython-37.pyc
-│   │   │   ├── cnn_dataset.cpython-38.pyc
-│   │   │   ├── cnn_inference.cpython-311.pyc
-│   │   │   ├── cnn_inference.cpython-38.pyc
-│   │   │   ├── cnn_model.cpython-311.pyc
-│   │   │   ├── cnn_model.cpython-37.pyc
-│   │   │   └── cnn_model.cpython-38.pyc
 │   │   ├── cnn_data_loaders.py
 │   │   ├── cnn_dataset.py
 │   │   ├── cnn_inference.py
@@ -122,37 +58,17 @@
 │   ├── config.py
 │   ├── fusion_model
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── __init__.cpython-38.pyc
-│   │   │   ├── fus_inference.cpython-311.pyc
-│   │   │   ├── fus_inference.cpython-38.pyc
-│   │   │   ├── fus_model.cpython-311.pyc
-│   │   │   ├── fus_model.cpython-38.pyc
-│   │   │   ├── fus_training.cpython-311.pyc
-│   │   │   └── fus_training.cpython-38.pyc
 │   │   ├── fus_inference.py
 │   │   ├── fus_model.py
 │   │   ├── fus_model_old.py
 │   │   └── fus_training.py
 │   ├── metadata
 │   │   ├── __init__.py
-│   │   ├── __pycache__
-│   │   │   ├── __init__.cpython-311.pyc
-│   │   │   ├── __init__.cpython-38.pyc
-│   │   │   ├── meta_inference.cpython-311.pyc
-│   │   │   ├── meta_inference.cpython-38.pyc
-│   │   │   ├── meta_training.cpython-311.pyc
-│   │   │   └── meta_training.cpython-38.pyc
 │   │   ├── meta_inference.py
 │   │   └── meta_training.py
 │   ├── model_container.py
 │   ├── process_tree.py
-│   ├── test_dependencies.py
-│   ├── train_meta_model.py
-│   ├── train_pixel_model.py
-│   ├── train_text_model.py
 │   └── utils.py
 └── tree_output.txt
 
-19 directories, 137 files
+12 directories, 60 files
