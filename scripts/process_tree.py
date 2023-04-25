@@ -9,7 +9,6 @@ from utils import *
 from config import model_paths
 
 
-    
 
 class Processor:
     '''
@@ -36,14 +35,16 @@ class Processor:
     Output: If pipeline_new_studies is run, it will return the processed dataframe
     
     '''
-    def __init__(self, data_dir, destination_folder, write_labels=True, overwrite = False, fusion_model=None):
+    def __init__(self, data_dir, destination_folder, write_labels=True, overwrite = False, fusion_model=None, remoteflag = False, destblob = None, destclient = None):
         self.data_dir = data_dir
         self.destination_folder = destination_folder
         self.write_labels = write_labels
         self.fusion_model = fusion_model
         self.troubleshoot_df = None
         self.overwrite = overwrite
-
+        self.remoteflag = remoteflag
+        self.destblob = destblob
+        self.destclient = destclient
     
     # The overall active component which preprocesses the dataframe and calls the cascade
     # of actions to process the folder and its subdirectories which are typically 
