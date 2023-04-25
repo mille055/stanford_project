@@ -34,7 +34,7 @@ def calc_feature_importances(model,feat_names,num_to_show):
     RF_ranking['Feat Index'] = indices
     RF_ranking['Feature'] = ranked_feats
     RF_ranking['Importance'] = np.sort(importances)[::-1]
-    display(RF_ranking.iloc[:num_to_show,:])
+    #display(RF_ranking.iloc[:num_to_show,:])
 
     # Plot the importance value for each feature
     RF_ranking[:num_to_show][::-1].plot(x='Feature',y='Importance',kind='barh',figsize=(12,7),legend=False,title='RF Feature Importance')
