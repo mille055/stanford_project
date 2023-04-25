@@ -15,12 +15,12 @@ from demo_utils import extract_number_from_filename
 
 import sys
 sys.path.append("../scripts/")
-from  process_tree import Processor 
-from  fusion_model.fus_model import FusionModel # Import your machine learning model function
-from fusion_model.fus_inference import  get_fusion_inference_from_file
-from  config import *
-from utils import *
-from  model_container import ModelContainer
+from  scripts.process_tree import Processor 
+from  scripts.fusion_model.fus_model import FusionModel # Import your machine learning model function
+from scripts.fusion_model.fus_inference import  get_fusion_inference_from_file
+from  scripts.config import *
+from scripts.utils import *
+from  scripts.model_container import ModelContainer
 
 from azure.storage.blob import BlobServiceClient
 
