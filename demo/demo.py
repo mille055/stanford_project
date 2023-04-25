@@ -22,10 +22,16 @@ from  config import *
 from utils import *
 from  model_container import ModelContainer
 
+from azure.storage.blob import BlobServiceClient
 
-# instantiate the processor class for action on the DICOM images
-#processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
-#new_processed_df = processor.pipeline_new_studies()
+# connection_string = "your_connection_string"
+# container_name = "your_container_name"
+# local_file_path = "path/to/your/local/file"
+
+# blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+# container_client = blob_service_client.get_container_client(container_name)
+
+
 
 st.set_page_config(page_title="Abdominal MRI Series Classifier", layout="wide")
 
@@ -45,6 +51,7 @@ start_folder = "/volumes/cm7/start_folder"
 destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 
 
+selected_images = None
 # check for dicom images within the subtree and build selectors for patient, exam, series
 if os.path.exists(start_folder) and os.path.isdir(start_folder):
     folder = st.sidebar.selectbox("Select a source folder:", os.listdir(start_folder), index=0)
@@ -83,7 +90,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     st.write("The selected exam has no labels available in the DICOM tags.")
                     selected_label = None
 
-            source_selector = st.selectbox("Select source:", ["Series", "Predicted Type"])
+            source_selector = st.radio("Select source:", ["Series", "Predicted Type"])
 
             if source_selector == 'Series': 
 
@@ -106,21 +113,13 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             #selected_images.sort(key=lambda x: os.path.basename(x))
             if selected_images:
                 
-        
+                # Move the window level and image scroll controls below the image
+                # window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
+                # window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
+
                 selected_images.sort(key=lambda x: extract_number_from_filename(os.path.basename(x)))
                 image_idx = st.select_slider("View an image", options=range(len(selected_images)), value=0)
 
-
-            
-                # Move the window level and image scroll controls below the image
-                window_center = st.slider("Window Center", min_value=-1024, max_value=1024, value=0, step=1)
-                window_width = st.slider("Window Width", min_value=1, max_value=4096, value=4096, step=1)
-
-            
-            
-            
-            
-                
                 # read in the dicom data for the current images and see if there are labels in the DICOM metadata
                 image_path = selected_images[image_idx]
                 # Convert to string if necessary
@@ -136,15 +135,16 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                 dcm_data = pydicom.dcmread(image_path)
                 predicted_type, meta_prediction, cnn_prediction, nlp_prediction  = check_prediction_tag(dcm_data)
 
-        
-
+                window_width = st.sidebar.slider("Window Width", min_value=1, max_value=4096, value=2500, step=1)
+                window_center = st.sidebar.slider("Window Level", min_value=-1024, max_value=1024, value=0, step=1)
+                
                 with st.container():
             
                     image_file = selected_images[image_idx]
                     try:
                         dcm_data = pydicom.dcmread(image_file)
                         image = dcm_data.pixel_array
-                        image = apply_window_level(image, window_center, window_width)
+                        image = apply_window_level(image, window_center=window_center, window_width=window_width)
                         image = Image.fromarray(normalize_array(image))  # Scale the values to 0-255 and convert to uint8
                         #image = Image.fromarray(dcm_data.pixel_array)
                         image = image.convert("L")
