@@ -29,5 +29,7 @@
         "env.bak{,/**}",
         "venv.bak{,/**}",
         ".vscode{,/**}"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/a9f650e3-6805-4819-bc16-7fa6b26a98db/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/dicomclassact",
+    "appService.deploySubpath": "."
 }
