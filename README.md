@@ -28,8 +28,98 @@ Results from current model:
 
 
 ## How to install and use the repository code
+**1. Clone this repository**
+```
+git clone https://github.com/mille055/AIPI540_individual_project
+```
+**2. Install requirements:**
+```
+pip install -r requirements.txt
+```
+**3. Change directory to the demo and run the application**
+```
+streamlit run demo.py
+```
 
-[See the project structure](tree_output.txt)
+## Repository Structure
+```
+.
+├── README.md
+├── assets
+│   ├── FigCM_meta20230406.tif
+│   ├── FigPixel20230412.png
+│   └── figures
+│       ├── FigPixel20230322.png
+│       └── FigPixel20230322.tif
+├── data
+│   ├── cmm_labels.txt
+│   ├── fusion_test.pkl
+│   ├── fusion_train.pkl
+│   ├── fusion_val.pkl
+│   ├── newly_processed_cases.pkl
+│   ├── newly_processed_cases042323.pkl
+│   ├── newly_processed_cases042423.pkl
+│   ├── test_preds012723.csv
+│   ├── testfiles.csv
+│   ├── trainfiles.csv
+│   └── valfiles.csv
+├── demo
+│   ├── demo.py
+│   └── demo_utils.py
+├── models
+│   ├── fusion_model_weights042223.pth
+│   ├── fusion_model_weights042423.pth
+│   ├── fusion_model_weights_new.pth
+│   ├── fusion_model_weights_no_nlp042223.pth
+│   ├── fusion_model_weights_no_nlp042423.pth
+│   ├── fusion_model_weights_no_nlp_new.pth
+│   ├── meta_04152023.skl
+│   ├── metadata_scaler.pkl
+│   ├── pixel_model_041623.pth
+│   └── text_model20230415.st
+├── notebooks
+│   ├── AIPI540_IP_fusion_classifier.ipynb
+│   ├── AlterDicoms.ipynb
+│   ├── Main_abd02_28_2023.ipynb
+│   ├── Playing_with_text_labels.ipynb
+│   ├── Train_pixel_class.ipynb
+│   ├── Train_pixel_class2.ipynb
+│   ├── dependencies.ipynb
+│   └── trash.ipynb
+├── requirements.txt
+├── scripts
+│   ├── NLP
+│   │   ├── NLP_inference.py
+│   │   ├── NLP_training.py
+│   │   └── __intit__.py
+│   ├── __init__.py
+│   ├── cnn
+│   │   ├── __init__.py
+│   │   ├── cnn_data_loaders.py
+│   │   ├── cnn_dataset.py
+│   │   ├── cnn_inference.py
+│   │   ├── cnn_model.py
+│   │   └── cnn_training.py
+│   ├── config.py
+│   ├── fusion_model
+│   │   ├── __init__.py
+│   │   ├── fus_inference.py
+│   │   ├── fus_model.py
+│   │   ├── fus_model_old.py
+│   │   └── fus_training.py
+│   ├── metadata
+│   │   ├── __init__.py
+│   │   ├── meta_inference.py
+│   │   └── meta_training.py
+│   ├── model_container.py
+│   ├── process_tree.py
+│   └── utils.py
+└── tree_output.txt
+
+12 directories, 60 files
+
+```
+
 
 ## References:
 1.	Gauriau R, Bridge C, Chen L, Kitamura F, Tenenholtz NA, Kirsch JE, Andriole KP, Michalski MH, Bizzo BC: Using DICOM Metadata for Radiological Image Series Categorization: a Feasibility Study on Large Clinical Brain MRI Datasets,  Journal of Digital Imaging (2020) 33:747-762.
