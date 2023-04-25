@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 # Set the working directory to /app
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Make port 8501 available to the world outside this container
-EXPOSE 80
+EXPOSE 7000
 
 # Define environment variable
 ENV NAME World
