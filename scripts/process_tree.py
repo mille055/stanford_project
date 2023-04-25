@@ -184,7 +184,7 @@ def main():
     processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
     new_processed_df = processor.pipeline_new_studies()
     print(new_processed_df)
-    new_processed_df.to_pickle('../data/newly_processed_cases042323.pkl')
+    new_processed_df.to_pickle('../data/newly_processed_cases042423.pkl')
 
 if __name__ == "__main__":
     main()

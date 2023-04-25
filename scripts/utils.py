@@ -258,7 +258,7 @@ def preprocess(df, scaler=None, need_fit_scaler = False, save_scaler=False, keep
     if scaler:
         try: 
             check_is_fitted(scaler)
-            print('This scaler is alrady fitted.')
+            #print('This scaler is alrady fitted.')
         except NotFittedError:
             print('This scaler is not fitted.')
     df1, scaler = rescale_cols(df1, rescale_columns, scaler, need_fit_scaler)

@@ -58,7 +58,7 @@ def train_fit_parameter_trial(train, y, features, fname='../models/model-run.skl
     pickle.dump(opt_clf, open(fname, 'wb'))
     return opt_clf
 
-def train_meta_model(X, y, features, params, fname = 'trained_meta_model.skl'):
+def train_meta_model(X, y, features, params=RF_parameters, fname = 'trained_meta_model.skl'):
     clf = RandomForestClassifier(params)
     clf.fit(X[features], y)
     print('Parameters currently in use:\n')
