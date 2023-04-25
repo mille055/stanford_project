@@ -1,9 +1,6 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM python:3.9-slim
 
-
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install numpy
 
 # Set the working directory to /app
 WORKDIR /app
