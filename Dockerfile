@@ -21,4 +21,4 @@ EXPOSE 7000
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["streamlit", "run", "demo/demo_remote.py", "--server.port=7000", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "demo.py", "--server.port=7000", "--server.address=0.0.0.0"]
