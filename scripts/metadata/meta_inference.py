@@ -56,11 +56,11 @@ def meta_inference(df, scaler, model, feature_list=feats_to_keep):
 
 # to get inference on a row of the dataframe that does not necessarily have labels, but which has already been preprocessed
 def get_meta_inference(row, scaler, model, features=feats_to_keep): #model_list, feature_list=feats_to_keep):
-    try: 
-            check_is_fitted(scaler)
-            print('This scaler is alrady fitted.')
-    except NotFittedError:
-            print('This scaler is not fitted.')
+    # try: 
+    #         check_is_fitted(scaler)
+    #         # print('This scaler is alrady fitted.')
+    # except NotFittedError:
+    #         print('This scaler is not fitted.')
 
     X = (row[features]).values.reshape(1,-1)
     
