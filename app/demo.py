@@ -3,26 +3,26 @@ import os, re
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
-import SimpleITK as sitk
+#import SimpleITK as sitk
 import glob
 import numpy as np
 from PIL import Image, ImageDraw
 from glob import glob
 
 
-from demo_utils import check_prediction_tag, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
-from demo_utils import extract_number_from_filename
 
 import sys
-sys.path.append("../scripts/")
-from  process_tree import Processor 
-from  fusion_model.fus_model import FusionModel # Import your machine learning model function
-from fusion_model.fus_inference import  get_fusion_inference_from_file
-from  config import *
-from utils import *
-from  model_container import ModelContainer
 
-from azure.storage.blob import BlobServiceClient
+from scripts.demo_utils import check_prediction_tag, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
+from scripts.demo_utils import extract_number_from_filename
+from  scripts.process_tree import Processor 
+from  scripts.fusionmodel.fus_model import FusionModel # Import your machine learning model function
+from scripts.fusionmodel.fus_inference import  get_fusion_inference_from_file
+from  scripts.config import *
+from scripts.utils import *
+from  scripts.model_container import ModelContainer
+
+#from azure.storage.blob import BlobServiceClient
 
 # connection_string = "your_connection_string"
 # container_name = "your_container_name"
@@ -45,11 +45,12 @@ model_container = ModelContainer()
 fusion_model = FusionModel(model_container = model_container, num_classes=19)
 
 # the place to find the image data
-start_folder = "/volumes/cm7/start_folder"
+#start_folder = "/volumes/cm7/start_folder"
+start_folder = os.environ.get("SOURCE_DATA_PATH")
 
 # the place to put processed image data
-destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
-
+#destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
+destination_folder = os.environ.get("SOURCE_DATA_PATH")
 
 selected_images = None
 # check for dicom images within the subtree and build selectors for patient, exam, series
@@ -179,8 +180,8 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             process_images = st.sidebar.button("Process Images")
             if process_images:
                 if not destination_folder:
-                    destination_folder = start_folder
-                processor = Processor(selected_folder, destination_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
+                    destination_path = start_folder
+                processor = Processor(start_folder, destination_folder, fusion_model=fusion_model, overwrite=True, write_labels=True)
 
                 new_processed_df = processor.pipeline_new_studies()
           

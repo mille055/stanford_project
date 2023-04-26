@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10
+FROM python:3.8
 
 
 # Set the working directory to /app
@@ -10,7 +10,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY app/ /app
 
 ENV STREAMLIT_SERVER_PORT=7000
 
@@ -20,5 +20,8 @@ EXPOSE 7000
 # Define environment variable
 ENV NAME World
 
+# Set PYTHONPATH
+ENV PYTHONPATH /app
+
 # Run app.py when the container launches
-CMD ["streamlit", "run", "demo.py", "--server.port=7000", "--server.address=0.0.0.0"]
+CMD streamlit run --server.port=7000 --server.address=0.0.0.0 demo.py 
