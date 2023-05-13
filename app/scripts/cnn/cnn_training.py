@@ -130,15 +130,15 @@ def evaluate_model(model, dataloader):
 def plot_training_curves(history, combination_name):
     fig, axs = plt.subplots(2, 1, figsize=(12, 8))
 
-    axs[0].plot(history['train_loss'].cpu().numpy(), label='train')
-    axs[0].plot(history['val_loss'].cpu().numpy(), label='val')
+    axs[0].plot(history['train_loss'], label='train')
+    axs[0].plot(history['val_loss'], label='val')
     axs[0].set_title(f"{combination_name} - Loss over epochs")
     axs[0].set_xlabel("Epochs")
     axs[0].set_ylabel("Loss")
     axs[0].legend()
 
-    axs[1].plot(history['train_acc'].cpu().numpy(), label='train')
-    axs[1].plot(history['val_acc'].cpu().numpy(), label='val')
+    axs[1].plot(history['train_acc'], label='train')
+    axs[1].plot(history['val_acc'], label='val')
     axs[1].set_title(f"{combination_name} - Accuracy over epochs")
     axs[1].set_xlabel("Epochs")
     axs[1].set_ylabel("Accuracy")
