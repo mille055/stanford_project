@@ -424,7 +424,14 @@ def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = 
 
     return cm      
 
-def create_datasets(train_datafile, val_datafile, test_datafile):
+def update_paths(df, old_base_path, new_base_path):
+    if old_base_path and new_base_path:
+        df['fnames'] = df['fnames'].str.replace(old_base_path, new_base_path)
+    return df
+
+
+
+def create_datasets(train_datafile, val_datafile, test_datafile, old_base_path=None, new_base_path=None):
     # reads in the dataframes from csv
     train_full = pd.read_csv(train_datafile)
     val_full = pd.read_csv(val_datafile)
@@ -435,6 +442,12 @@ def create_datasets(train_datafile, val_datafile, test_datafile):
     val = shorten_df(val_full)
     test = shorten_df(test_full)
 
+    # Update the paths
+    train = update_paths(train, old_base_path, new_base_path)
+    val = update_paths(val, old_base_path, new_base_path)
+    test = update_paths(test, old_base_path, new_base_path)
+
+    
     # changes to the dataframe including adding contrast and computed plane columns
     train_df = prepare_df(train)
     val_df = prepare_df(val)
