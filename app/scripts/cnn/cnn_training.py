@@ -10,6 +10,7 @@ import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
+import torch.nn.functional as F
 import time, copy, os
 from sklearn.metrics import confusion_matrix, classification_report
 
