@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from .cnn_dataset import ImgDataset
+from cnn_dataset import ImgDataset
 import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset
