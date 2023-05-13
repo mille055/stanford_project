@@ -1,4 +1,4 @@
-# AIPI540_individual_project
+# Stanford CS231N_project
 
 
 ## Background:
