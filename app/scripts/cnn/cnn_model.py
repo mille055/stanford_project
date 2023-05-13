@@ -3,6 +3,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torchvision import models
+import torch.nn.functional as F
 
 from config import classes
  
