@@ -12,12 +12,12 @@ import os
 import matplotlib.pyplot as plt
 
 #local imports
-from .cnn_model import CustomResNet50
-from .cnn_data_loaders import get_data_loaders, data_transforms
+from cnn_model import CustomResNet50
+from cnn_data_loaders import get_data_loaders, data_transforms
 
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from ..config import classes
-from ..utils import create_datasets
+from config import classes
+from utils import create_datasets
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
