@@ -9,13 +9,13 @@ import pickle
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
-from app.scripts.fusionmodel.fus_model import FusionModel
-from app.scripts.cnn.cnn_inference import pixel_inference, load_pixel_model
-from app.scripts.metadata.meta_inference import get_meta_inference
-from app.scripts.NLP.NLP_inference import get_NLP_inference, load_NLP_model
-from app.scripts.config import feats_to_keep, classes, model_paths
-from app.scripts.model_container import ModelContainer
-from app.scripts.utils import *
+from fus_model import FusionModel
+from ..cnn.cnn_inference import pixel_inference, load_pixel_model
+from ..metadata.meta_inference import get_meta_inference
+from ..NLP.NLP_inference import get_NLP_inference, load_NLP_model
+from ..config import feats_to_keep, classes, model_paths
+from ..model_container import ModelContainer
+from ..utils import *
 
 
 

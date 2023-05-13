@@ -31,10 +31,10 @@ import copy
 from datetime import datetime
 import pickle 
 
-from app.scripts.config import file_dict, feats, column_lists, RF_parameters, classes
-from app.scripts.config import abd_label_dict, val_list, train_val_split_percent, random_seed, data_transforms
-from app.scripts.config import sentence_encoder, series_description_column
-from app.scripts.utils import shorten_df, plot_and_save_cm, prepare_df
+from ..config import file_dict, feats, column_lists, RF_parameters, classes
+from ..config import abd_label_dict, val_list, train_val_split_percent, random_seed, data_transforms
+from ..config import sentence_encoder, series_description_column
+from ..utils import shorten_df, plot_and_save_cm, prepare_df
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 senttrans_model = SentenceTransformer(sentence_encoder, device=device)

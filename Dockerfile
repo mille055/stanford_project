@@ -23,5 +23,7 @@ ENV NAME World
 # Set PYTHONPATH
 ENV PYTHONPATH /app
 
+ENV SOURCE_DATA_PATH /app/data/Cases
+
 # Run app.py when the container launches
 CMD streamlit run --server.port=7000 --server.address=0.0.0.0 demo.py 

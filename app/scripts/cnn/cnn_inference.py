@@ -12,12 +12,12 @@ import os
 import matplotlib.pyplot as plt
 
 #local imports
-from app.scripts.cnn.cnn_model import CustomResNet50
-from app.scripts.cnn.cnn_data_loaders import get_data_loaders, data_transforms
+from .cnn_model import CustomResNet50
+from .cnn_data_loaders import get_data_loaders, data_transforms
 
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app.scripts.config import classes
-from app.scripts.utils import create_datasets
+from ..config import classes
+from ..utils import create_datasets
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -214,7 +214,8 @@ def visualize_results(model,dataloader, classes=classes, device=device):
 def main():
     # Create instances of model, criterion, optimizer, and scheduler
     # For example:
-    model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'models', 'pixel_model_041623.pth')
+    #model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'models', 'pixel_model_041623.pth')
+    model_path = '../models/pixel_model_041623.pth'
     model = load_pixel_model(model_path)
     
     # with open('../models/meta_and_pixel_fusion_model041623.pkl', 'rb') as file:

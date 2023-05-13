@@ -33,9 +33,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.utils.validation import check_is_fitted
 
 ### local imports ###
-from app.scripts.config import file_dict, abd_label_dict, classes, column_lists, feats
-from app.scripts.config import val_list, train_val_split_percent, random_seed, data_transforms
-from app.scripts.config import sentence_encoder, series_description_column
+from .config import file_dict, abd_label_dict, classes, column_lists, feats
+from .config import val_list, train_val_split_percent, random_seed, data_transforms
+from .config import sentence_encoder, series_description_column
 
 ### gets the dicom files from a provided directory ###
 def get_dicoms(path, first_dcm=False, **kwargs):
@@ -401,14 +401,19 @@ def make_results_df(preds, probs, true, df):
     
 def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = True):
    
+   # Generate a confusion matrix based on the true labels and predicted labels
+    cm = confusion_matrix(y_true = y_true, y_pred = y_pred, labels=classes)
+  
+    mask = np.all(cm == 0, axis=1)
+
     class_text_labels = [abd_label_dict[str(x)]['short'] for x in classes]
-   
+    class_text_labels = class_text_labels[~mask]
+
      # Generate a classification report based on the true labels and predicted labels
     print(classification_report(y_true, y_pred))
 
-    # Generate a confusion matrix based on the true labels and predicted labels
-    cm = confusion_matrix(y_true = y_true, y_pred = y_pred, labels=classes)
-
+    
+    cm = cm[~mask]
     # Create a ConfusionMatrixDisplay object with the correct labels
     cm_display = ConfusionMatrixDisplay(cm, display_labels=class_text_labels).plot(xticks_rotation = 'vertical', cmap='Blues')
     plt.figure(figsize=(25, 25))
@@ -436,6 +441,4 @@ def create_datasets(train_datafile, val_datafile, test_datafile):
     test_df = prepare_df(test)
 
     return train_df, val_df, test_df
-
-
 
