@@ -14,12 +14,12 @@ import time, copy, os
 from sklearn.metrics import confusion_matrix, classification_report
 
 # local imports
-from ..config import classes
-from .cnn_model import CustomResNet50, CustomResNet50b, CustomDenseNet, FocalLoss
-from .cnn_inference import test_pix_model, pixel_inference
-from .cnn_data_loaders import get_data_loaders
-from .cnn_dataset import ImgDataset
-from ..utils import *
+from config import classes
+from cnn_model import CustomResNet50, CustomResNet50b, CustomDenseNet, FocalLoss
+from cnn_inference import test_pix_model, pixel_inference
+from cnn_data_loaders import get_data_loaders
+from cnn_dataset import ImgDataset
+from utils import *
 
 # Determine the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
