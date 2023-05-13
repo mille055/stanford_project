@@ -426,7 +426,7 @@ def display_and_save_results(y_pred, y_true, classes=classes, fn='', saveflag = 
 
 def update_paths(df, old_base_path, new_base_path):
     if old_base_path and new_base_path:
-        df['fnames'] = df['fnames'].str.replace(old_base_path, new_base_path)
+        df['file_info'] = df['file_info'].str.replace(old_base_path, new_base_path)
     return df
 
 
