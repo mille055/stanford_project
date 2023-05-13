@@ -78,6 +78,8 @@ def train_cnn_model(model, dataloaders, criterion, optimizer, scheduler, num_epo
 
             epoch_loss = running_loss / len(dataloaders[phase].dataset)
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+            epoch_acc = epoch_acc.item() 
+            
             if phase == 'train':
                 history['train_loss'].append(epoch_loss)
                 history['train_acc'].append(epoch_acc)
