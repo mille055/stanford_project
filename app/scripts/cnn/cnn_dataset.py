@@ -31,7 +31,6 @@ class ImgDataset(Dataset):
         ds = pydicom.dcmread(img_file)
         img = np.array(ds.pixel_array, dtype=np.float32)
         #img = img/255.
-        #img = cv2.resize(img, (224,224))
         img = img[np.newaxis]
         img = torch.from_numpy(np.asarray(img))
         
