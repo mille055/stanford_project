@@ -15,7 +15,7 @@ import torchvision
 from torchvision import datasets, models, transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import ToTensor
-import os, sys, glob, re
+import os, sys, glob, re, random
 from joblib import dump, load
 from fastai.basics import delegates
 from fastcore.parallel import parallel
@@ -466,7 +466,7 @@ def create_datasets(train_datafile, val_datafile, test_datafile, old_base_path=N
     val_full = pd.read_csv(val_datafile)
     test_full = pd.read_csv(test_datafile)
 
-    # selects the middle image from each series for further evaluation
+    # selects the appropriate image or images from each series for further evaluation
     train = shorten_df(train_full, selection_behavior, selection_fraction, a=0, b=1)
     val = shorten_df(val_full, selection_behavior, selection_fraction, a=0, b=1)
     test = shorten_df(test_full, selection_behavior, selection_fraction, a=0, b=1)
@@ -484,3 +484,14 @@ def create_datasets(train_datafile, val_datafile, test_datafile, old_base_path=N
 
     return train_df, val_df, test_df
 
+def create_dataset(df, old_base_path=None, new_base_path=None, selection_behavior='single_point', selection_fraction=0.5, a=0, b=1):
+    # reads in the dataframes from csv
+    df1= pd.read_csv(df)
+    # selects the appropriate image or images from each series for further evaluation
+    df2 = shorten_df(df1, selection_behavior, selection_fraction, a=0, b=1)
+    # Update the paths
+    df2 = update_paths(df2, old_base_path, new_base_path)
+    # changes to the dataframe including adding contrast and computed plane columns
+    df3 = prepare_df(df2)
+
+    return df3
