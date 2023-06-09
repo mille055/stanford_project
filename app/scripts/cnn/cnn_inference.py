@@ -221,15 +221,15 @@ def main():
     # Create instances of model, criterion, optimizer, and scheduler
     # For example:
     #model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'models', 'pixel_model_041623.pth')
-    model_path = '../models/pixel_model_041623.pth'
-    model = load_pixel_model(model_path)
+    model_path = '../models/best_0606.pth'
+    model = load_pixel_model(model_path, model_type='DenseNet')
     
     # with open('../models/meta_and_pixel_fusion_model041623.pkl', 'rb') as file:
     # fusion_model_part = pickle.load(file)
 
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+    # criterion = nn.CrossEntropyLoss()
+    # optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
     
 
     # Get data loaders
