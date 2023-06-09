@@ -12,7 +12,7 @@ import os
 import matplotlib.pyplot as plt
 
 #local imports
-from .cnn_model import CustomResNet50
+from .cnn_model import CustomResNet50, CustomDenseNet
 from .cnn_data_loaders import get_data_loaders, data_transforms
 
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -158,7 +158,7 @@ def pixel_inference(model, filelist, classes=classes, device=device):
     return predictions_array, probabilities_array
 
 
-def load_pixel_model(modelpath, device=device, output_units = 19):
+def load_pixel_model(modelpath, device=device, output_units = 19, model_type = 'ResNet50'):
     '''
     Loads the model for the CNN assessment. 
     Input: 
@@ -169,17 +169,23 @@ def load_pixel_model(modelpath, device=device, output_units = 19):
     Output:
         model(model): Resnet50 transfer learning model
     '''
-    model = models.resnet50(pretrained=True) # Load the ResNet50 model 
+    if model_type=='ResNet50':
+        model = models.resnet50(pretrained=True) # Load the ResNet50 model 
 
-    # Replace the output layer to match the number of output units in your fine-tuned model
-    num_finetuned_output_units = output_units
-    num_features = model.fc.in_features
-    model.fc = torch.nn.Linear(num_features, num_finetuned_output_units)
+        # Replace the output layer to match the number of output units in your fine-tuned model
+        num_finetuned_output_units = output_units
+        num_features = model.fc.in_features
+        model.fc = torch.nn.Linear(num_features, num_finetuned_output_units)
 
-    # Load the saved state_dict
-    state_dict = torch.load(modelpath, map_location=device)
-    model.load_state_dict(state_dict)
+        # Load the saved state_dict
+        state_dict = torch.load(modelpath, map_location=device)
+        model.load_state_dict(state_dict)
+    else:
+        model = CustomDenseNet()
+        state_dict = torch.load(model_path)
+        model = model.load_state_dict(state_dict)
 
+    model=model.to(device)
     return model
 
 # Display a batch of predictions
