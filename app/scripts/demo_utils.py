@@ -12,12 +12,10 @@ from glob import glob
 import sys
 
 from scripts.process_tree import Processor 
-from scripts.fusionmodel.fus_model import FusionModel # Import your machine learning model function
-from scripts.fusionmodel.fus_inference import  get_fusion_inference_from_file
+
 from scripts.config import *
 from scripts.utils import *
-from scripts.model_container import ModelContainer
-
+from scripts.cnn.cnn_inference import *
 
 
 # Function to check if the image has been processed and return the value in the DICOM tag (0010, 1010)
@@ -84,34 +82,26 @@ def normalize_array(arr):
     else:
         return 0
     
-def get_single_image_inference(image_path, model_container, fusion_model):
+def get_single_image_inference(image_path, model):
     '''
     Gets a set of inference predicted class and confidence score for the overall fusion model and for the submodels
     Inputs: 
         image_path(str): path to the image
-        model_container(class): ModelContainer class which contains the models and/or their weights and the scaler for the metadata features
-        fusion_model(class): FusionModel class which contains the fusion model and the function to get inference
+        model(class):  trained model
     Outputs: 
         predictions (str) and confidence (float) for the various classifiers
    '''
     
-    scaler = model_container.metadata_scaler
-    
+   
     img_df = pd.DataFrame.from_dicoms([image_path])
-    img_df, _ = preprocess(img_df, scaler)
-
-    predicted_series_class, predicted_series_confidence, submodel_df = fusion_model.get_fusion_inference(img_df)
+   
+    predicted_series_class, predicted_series_confidence = model.get_pixel_inference(img_df.fname)
     
-    predicted_type = abd_label_dict[str(predicted_series_class)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
+    predicted_class = abd_label_dict[str(predicted_series_class)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
     predicted_confidence = np.round(predicted_series_confidence, 2)
-    meta_prediction = abd_label_dict[str(submodel_df['meta_preds'].values.tolist()[0])]['short'] #abd_label_dict[str(submodel_df['meta_preds'])]['short']
-    meta_confidence = np.round(np.max(submodel_df['meta_probs'].values.tolist()[0]), 2)
-    cnn_prediction = abd_label_dict[str(submodel_df['pixel_preds'].values.tolist()[0])]['short']
-    cnn_confidence = np.round(np.max(submodel_df['pixel_probs'].values.tolist()[0]), 2)
-    nlp_prediction = abd_label_dict[str(submodel_df['nlp_preds'].values.tolist()[0])]['short']
-    nlp_confidence = np.round(np.max(submodel_df['nlp_probs'].values.tolist()[0]), 2)
+    
 
-    return predicted_type, predicted_confidence, meta_prediction, meta_confidence, cnn_prediction, cnn_confidence, nlp_prediction, nlp_confidence
+    return predicted_class, predicted_confidence
 
 
 def extract_number_from_filename(filename):
