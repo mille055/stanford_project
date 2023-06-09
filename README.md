@@ -21,15 +21,13 @@ A single image from each series was selected to create the dataset (particularly
 The initial baseline model was a ResNet50 model with ImageNet weights and replacement of the top layer by a single fully connected layer for the 19 classes. In addition to the baseline model, other architectures that used for transfer learning included a ResNet50 model with a more complicated architecture added as the head consisting of two linear layers with an intervening ReLU layer (labeled as ResNet50b), and DenseNet121. The multilayer classifier head in ResNet50b was explored as it was postulated the additional fully connected layers and the non-linear activations could enable the model to learn more complex representations from the ResNet50 features, potentially important for the classification task. DenseNet architecture, based on the concept of dense blocks consisting of multiple layers connected in a dense manner--with each layer receiving feature maps from all preceding layers--was chosen for the possibility that the the dense connectivity could capture fine-grained details within the medical images. Different optimizers (Adam and SGD) and loss functions (Cross Entropy and Focal Loss) were explored, as well as the use of gamma filters as a preprocessing step. 
 
 ### Results:
+With the combination of DenseNet121, Adam, Focal Loss, the accuracy on the test dataset is 91%. The confusion matrix is shown below:
 ![img](/assets/Test_dataset_on_best_model0530.png)
 
 
 
 ## Metadata Classifier
 The metadata classifier is a RandomForest model. A grid search is used to tune hyperparameters, and the model is trained on the resultant optimized model. This can be quickly trained on a cpu, and has fairly high accruacy for many of the types of images. It does not, however, do well classifying post contrast series (e.g., portal venous phase, arterial, equilibrium) nor the precontrast series (T1 fat sat) that is performed with identical imaging parameters to the post contrast images. 
-
-![img.tif](/assets/FigCM_meta02230406.tif)
-
 
 
 ## How to install and use the repository code
