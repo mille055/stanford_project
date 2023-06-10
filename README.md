@@ -31,14 +31,16 @@ The metadata classifier is a RandomForest model. A grid search is used to tune h
 
 
 ## How to install and use the repository code
-** Google Colab **
+
+**Google Colab**
 
 The simplest way to view the code involved in training the models, inference from the models, and visualization of incorrect predictions and Gan-CAM images is through the
-[notebook] (/app/notebooks/Stanford_CS231N_0607late.ipynb)
-[DRL_Recommenders/README.md](app/notebooks)
-
+[colab notebook](app/notebooks/Stanford_CS231N_0607late.ipynb)
 which is located in the notebooks subdirectory of the app directory. 
 
+**Demo (in progress)**
+
+The streamlit demo displays the ability to scroll through the images of an abdominal MRI examination to get the predicted series for the image, as well as to process an entire studey or group of studys within a folder, writing the labels into the DICOM metadata of the processed files. In order to run the streamlit demo, it is necessary to have the DICOM images of an abdominal MRI examination. The steps to take to run the demo are:
 
 **1. Clone this repository**
 ```
