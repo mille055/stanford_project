@@ -35,7 +35,7 @@ The metadata classifier is a RandomForest model. A grid search is used to tune h
 **Google Colab**
 
 The simplest way to view the code involved in training the models, inference from the models, and visualization of incorrect predictions and Gan-CAM images is through the
-[colab notebook] (app/notebooks/Stanford_CS231N_0607late.ipynb)
+[colab notebook](app/notebooks/Stanford_CS231N_0607late.ipynb)
 which is located in the notebooks subdirectory of the app directory. 
 
 
