@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import pydicom
 
-from cnn.cnn_inference import *
+from cnn_inference import *
 # from fusionmodel.fus_inference import get_fusion_inference
 # from fusionmodel.fus_model import FusionModel
 # from model_container import ModelContainer
