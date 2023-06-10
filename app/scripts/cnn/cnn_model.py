@@ -5,7 +5,7 @@ import torch.nn as nn
 from torchvision import models
 import torch.nn.functional as F
 
-from config import classes
+from .config import classes
  
 # custom resnet50 model with the top now being a fully connected layer with outputs corresponding to the 19 classes
 class CustomResNet50(nn.Module):
