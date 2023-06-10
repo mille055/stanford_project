@@ -31,6 +31,14 @@ The metadata classifier is a RandomForest model. A grid search is used to tune h
 
 
 ## How to install and use the repository code
+** Google Colab
+
+The simplest way to view the code involved in training the models, inference from the models, and visualization of incorrect predictions and Gan-CAM images is through the notebook
+[!notebook] (github.com/mille055/stanford_project/app/notebooks/Stanford_CS231N_607late.ipynb)
+
+which is located in the notebooks subdirectory of the app directory. 
+
+
 **1. Clone this repository**
 ```
 git clone https://github.com/mille055/AIPI540_individual_project
