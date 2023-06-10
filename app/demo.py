@@ -16,11 +16,12 @@ import sys
 from scripts.demo_utils import check_prediction_tag, load_dicom_data, apply_window_level, normalize_array, get_single_image_inference
 from scripts.demo_utils import extract_number_from_filename
 from  scripts.process_tree import Processor 
-from  scripts.fusionmodel.fus_model import FusionModel # Import your machine learning model function
-from scripts.fusionmodel.fus_inference import  get_fusion_inference_from_file
+# from  scripts.fusionmodel.fus_model import FusionModel # Import your machine learning model function
+# from scripts.fusionmodel.fus_inference import  get_fusion_inference_from_file
+from scripts.cnn.cnn_inference import *
 from  scripts.config import *
 from scripts.utils import *
-from  scripts.model_container import ModelContainer
+# from  scripts.model_container import ModelContainer
 
 #from azure.storage.blob import BlobServiceClient
 
