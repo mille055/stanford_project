@@ -67,10 +67,8 @@ python process_tree.py
 This provides the user more control and allows for processing of an entire directory of studies, and can set behavior like whether previously processed studies should be re-processed (or skipped), and if the desire is to write over previous tags if they are present. 
 
 ## Repository Structure
-```
-tree_structure.txt
 
-```
+[View Tree Structure](tree_structure.txt)
 
 
 ## References:
