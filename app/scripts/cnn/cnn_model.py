@@ -43,7 +43,8 @@ class CustomResNet50b(nn.Module):
 class CustomDenseNet(nn.Module):
     def __init__(self, num_classes=len(classes)):
         super(CustomDenseNet, self).__init__()
-        self.densenet = models.densenet121(pretrained=True)
+        model = models.densenet121(pretrained=True)
+        self.densenet = model
 
         # Replace the last classifier layer to match the number of classes
         num_features = self.densenet.classifier.in_features
