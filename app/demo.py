@@ -40,7 +40,7 @@ st.title("Abdominal MRI Series Classifier")
 st.subheader("Stanford 231N, Spring 2023")
 st.write("Chad Miller")
 
-model = load_pixel_model('models/best_0606.pth')
+model = load_pixel_model('models/best_0606.pth', model_type='DenseNet')
 
 # the place to find the image data
 start_folder = "/volumes/cm7/start_folder"
