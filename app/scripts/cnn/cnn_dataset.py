@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import pydicom
 
-from config import file_dict, classes
+from .config import file_dict, classes
 
 # Custom dataset for the pixel-based CNN model. Gets pixel data and transforms it, and also the labels
 class ImgDataset(Dataset):
