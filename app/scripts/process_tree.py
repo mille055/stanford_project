@@ -3,9 +3,10 @@ import pandas as pd
 import os
 import pydicom
 
-from fusionmodel.fus_inference import get_fusion_inference
-from fusionmodel.fus_model import FusionModel
-from model_container import ModelContainer
+from cnn.cnn_inference import *
+# from fusionmodel.fus_inference import get_fusion_inference
+# from fusionmodel.fus_model import FusionModel
+# from model_container import ModelContainer
 from utils import *
 from config import model_paths
 
