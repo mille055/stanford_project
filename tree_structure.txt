@@ -1,0 +1,60 @@
+.
+├── README.md
+├── app
+│   ├── __init__.py
+│   ├── data
+│   │   ├── cmm_labels.txt
+│   │   ├── testfiles.csv
+│   │   ├── trainfiles.csv
+│   │   └── valfiles.csv
+│   ├── demo.py
+│   ├── models
+│   │   ├── best_0606.pth
+│   │   ├── meta_04152023.skl
+│   │   └── metadata_scaler.pkl
+│   ├── notebooks
+│   │   ├── Stanford_CS231N_0607late.ipynb
+│   │   ├── Stanford_CS231N_for_datasets.ipynb
+│   │   └── archive
+│   │       ├── AlterDicoms.ipynb
+│   │       ├── Stanford_CS231N.ipynb
+│   │       ├── Stanford_CS231N_0601_visualization_nodeit.ipynb
+│   │       ├── Stanford_CS231N_0601_visualizations_gamma2_nodeit.ipynb
+│   │       ├── Stanford_CS231N_0605
+│   │       ├── Stanford_CS231N_0605.ipynb
+│   │       ├── Stanford_CS231N_0605_firstresults.ipynb
+│   │       ├── Stanford_CS231N_0605resultsuptofocalloss.ipynb
+│   │       ├── Stanford_CS231N_0605stilltryingtogetfocallosstowork.ipynb
+│   │       ├── Stanford_CS231N_0606.ipynb
+│   │       ├── Stanford_CS231N_0606c.ipynb
+│   │       ├── Stanford_CS231N_0607.ipynb
+│   │       ├── Stanford_CS231N_0607b.ipynb
+│   │       ├── Stanford_CS231N_trying_to_get_vis.ipynb
+│   │       ├── Stanford_CS231Nb.ipynb
+│   │       └── Stanford_CS231Ngamma2_display.ipynb
+│   └── scripts
+│       ├── __init__.py
+│       ├── cnn
+│       │   ├── __init__.py
+│       │   ├── cnn_data_loaders.py
+│       │   ├── cnn_dataset.py
+│       │   ├── cnn_inference.py
+│       │   ├── cnn_model.py
+│       │   └── cnn_training.py
+│       ├── config.py
+│       ├── demo_utils.py
+│       ├── metadata
+│       │   ├── __init__.py
+│       │   ├── meta_inference.py
+│       │   └── meta_training.py
+│       ├── model_container.py
+│       ├── process_tree.py
+│       ├── updated_current_packages.txt
+│       └── utils.py
+├── assets
+│   ├── FigPixel20230412.png
+│   └── Test_dataset_on_best_model0530.png
+├── requirements.txt
+└── tree_structure.txt
+
+10 directories, 48 files
