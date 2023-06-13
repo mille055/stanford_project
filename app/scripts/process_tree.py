@@ -100,13 +100,13 @@ class Processor:
         sorted_series = series_df.sort_values(by='fname')
 
         # Find the middle image index
-        middle_index = int(len(sorted_series) * selection_fraction)
+        selected_index = int(len(sorted_series) * selection_fraction)
 
         # Get the middle image
-        middle_image = sorted_series.iloc[middle_index]
-
+        selected_image = sorted_series.iloc[selected_index]['fname']
+        print('selected_image is', selected_image)
         # Gets classification from the fusion model
-        predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, middle_image)
+        predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, selected_image)
         predicted_series_class = predicted_series_class_list[0]
         print('predicted series is ', predicted_series_class)
         # Writes the predictions into the dataframe
@@ -135,7 +135,7 @@ class Processor:
             print('writing labels')
             #print('writing new data into', save_path)
             self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-                            conf_num=np.round(predicted_series_confidence, 3), path=save_path)
+                            conf_num=np.round(np.max(predicted_series_confidence), 3), path=save_path)
 
         return sorted_series
     

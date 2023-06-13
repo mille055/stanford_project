@@ -115,7 +115,7 @@ def pixel_inference(model, filelist, classes=classes, device=device):
         prediction_array(np.array): predictions, int representing the class
         probability_array[np.array(floats): probabilities from the model, 
     '''
-    
+    print('filelist_stats:', len(filelist), filelist[0], isinstance(filelist, str))
     
     model = model.to(device)
     # Turn autograd off
