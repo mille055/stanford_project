@@ -42,7 +42,7 @@ class Processor:
         self.destination_folder = destination_folder
         self.write_labels = write_labels
         self.model = model
-        self.troubleshoot_df = None
+        #self.troubleshoot_df = None
         self.overwrite = overwrite
         self.remoteflag = remoteflag
         self.destblob = destblob
@@ -70,7 +70,7 @@ class Processor:
 
         ## gets the features from the metadata for the RF model
         #df1, _ = preprocess(df1, scaler)
-
+        print('in pipeline new studies, df1 is ', df1.shape, df1.columns)
         processed_frame = self.process_batch(df1)
         return processed_frame
 
@@ -108,6 +108,7 @@ class Processor:
         # Gets classification from the fusion model
         predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, middle_image)
         predicted_series_class = predicted_series_class_list[0]
+        print('predicted series is ', predicted_series_class)
         # Writes the predictions into the dataframe
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(np.max(predicted_series_confidence), 2)
@@ -131,6 +132,7 @@ class Processor:
 
         # writes labels into the DIOM metadata if write_labels is true 
         if self.write_labels:
+            print('writing labels')
             #print('writing new data into', save_path)
             self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
                             conf_num=np.round(predicted_series_confidence, 3), path=save_path)
