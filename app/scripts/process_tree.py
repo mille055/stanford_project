@@ -37,11 +37,11 @@ class Processor:
     Output: If pipeline_new_studies is run, it will return the processed dataframe
     
     '''
-    def __init__(self, data_dir, destination_folder, write_labels=True, overwrite = False, fusion_model=None, remoteflag = False, destblob = None, destclient = None):
+    def __init__(self, data_dir, destination_folder, write_labels=True, overwrite = False, model=None, remoteflag = False, destblob = None, destclient = None):
         self.data_dir = data_dir
         self.destination_folder = destination_folder
         self.write_labels = write_labels
-        self.fusion_model = fusion_model
+        self.model = model
         self.troubleshoot_df = None
         self.overwrite = overwrite
         self.remoteflag = remoteflag
@@ -106,15 +106,16 @@ class Processor:
         middle_image = sorted_series.iloc[middle_index]
 
         # Gets classification from the fusion model
-        predicted_series_class, predicted_series_confidence, ts_df = self.fusion_model.get_fusion_inference(middle_image)
+        predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, middle_image)
+        predicted_series_class = predicted_series_class_list[0]
         # Writes the predictions into the dataframe
         sorted_series['predicted_class'] = predicted_series_class
         sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
         ## adding the submodel info
-        sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
-        sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
-        sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
-        submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
+        # sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
+        # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
+        # sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
+        # submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
         submodel_preds_string = "'".join(map(str, submodel_preds_list))
         ## going to also add the ts_df dataframe which contains the submodel preds/probs
         # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
