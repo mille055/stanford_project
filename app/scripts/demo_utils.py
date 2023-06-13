@@ -48,8 +48,13 @@ def load_dicom_data(folder):
             if file.lower().endswith(".dcm"):
                 try:
                     dcm_file_path = os.path.join(root, file)
+                    print(dcm_file_path)
                     dcm_data = pydicom.dcmread(dcm_file_path)
-                    label, _, _, _ = check_prediction_tag(dcm_data)
+                    
+                    
+                    
+                    #label, _, _, _ = check_prediction_tag(dcm_data)
+                    label = 'unknown'
                     data.append(
                         {
                             "patient": dcm_data.PatientName,
