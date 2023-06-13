@@ -99,7 +99,7 @@ def get_single_image_inference(image_path, model):
    
     img_df = pd.DataFrame.from_dicoms([image_path])
    
-    predicted_series_class, predicted_series_confidence = model.get_pixel_inference(img_df.fname)
+    predicted_series_class, predicted_series_confidence = get_pixel_inference(model, img_df.fname)
     
     predicted_class = abd_label_dict[str(predicted_series_class)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
     predicted_confidence = np.round(predicted_series_confidence, 2)
