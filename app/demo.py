@@ -47,6 +47,7 @@ start_folder = "/volumes/cm7/start_folder"
 #start_folder = os.environ.get("SOURCE_DATA_PATH")
 
 # the place to put processed image data
+destination_folder = start_folder
 destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 #destination_folder = os.environ.get("SOURCE_DATA_PATH")
 
