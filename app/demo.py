@@ -156,15 +156,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                             text = f"Predicted Type: {predicted_type}"
                             draw.text((10, 10), text, fill="white")  # You can adjust the position (10, 10) as needed
                         
-                            if meta_prediction:
-                                textm = f'Metadata prediction: {meta_prediction}'
-                                draw.text((15, 50), textm, fill="white")
-                            if cnn_prediction:
-                                textc = f'Pixel-based CNN prediction: {cnn_prediction}'
-                                draw.text((15, 100), textc, fill="white")
-                            if nlp_prediction:
-                                textn = f'Text-based NLP prediction: {nlp_prediction}'
-                                draw.text((15, 150), textn, fill="white")
+                           
                         else:
                             draw = ImageDraw.Draw(image)
                             text = f'No prediction yet'
@@ -190,7 +182,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             get_inference = st.button("Get Inference For This Image")
             if get_inference:
                 # st.write(image_path)
-                predicted_type, predicted_confidence = get_single_image_inference(image_path, model_container, fusion_model)
+                predicted_type, predicted_confidence = get_single_image_inference(image_path, model)
                 st.write(f'Predicted type: {predicted_type}, confidence score: {predicted_confidence:.2f}')
             
            
