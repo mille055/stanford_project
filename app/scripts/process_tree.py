@@ -159,6 +159,7 @@ class Processor:
                 # Create and add custom private tags
                 data_element1 = pydicom.DataElement(custom_tag1, 'IS', str(label_num))
                 data_element1.private_creator = 'PredictedClassInfo'
+                print('writing', label_num, 'into tag1 for file', filename)
                 data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
                 data_element2.private_creator = 'PredictedClassInfo'
                 #data_element3 = pydicom.DataElement(custom_tag3, 'LO', substring)
@@ -181,14 +182,14 @@ def main():
     destination_site = '/volumes/cm7/testing_additions042323/'
     
     # get the models
-    model_container = ModelContainer()
-    fusion_model = FusionModel(model_container = model_container, num_classes=19)
+    #model_container = ModelContainer()
+    #fusion_model = FusionModel(model_container = model_container, num_classes=19)
     
     # instantiate the processor class for action on the DICOM images
-    processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
-    new_processed_df = processor.pipeline_new_studies()
-    print(new_processed_df)
-    new_processed_df.to_pickle('../data/newly_processed_cases042423.pkl')
+    #processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
+    #new_processed_df = processor.pipeline_new_studies()
+    #print(new_processed_df)
+    #new_processed_df.to_pickle('../data/newly_processed_cases042423.pkl')
 
 if __name__ == "__main__":
     main()
