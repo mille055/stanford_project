@@ -41,7 +41,7 @@ class CustomResNet50b(nn.Module):
 
 
 class CustomDenseNet(nn.Module):
-    def __init__(self, num_classes=len(classes, pretrained=True)):
+    def __init__(self, num_classes=len(classes), pretrained=True):
         super(CustomDenseNet, self).__init__()
         model = models.densenet121(pretrained=pretrained)
         self.densenet = model
