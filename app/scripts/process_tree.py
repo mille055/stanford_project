@@ -65,11 +65,11 @@ class Processor:
         df1['contrast'] = df1.apply(detect_contrast, axis=1)
         df1['plane'] = df1.apply(compute_plane, axis=1)
         df1['series_num'] = df1.series.apply(lambda x: str(x).split('_')[-1])
-        with open(model_paths['scaler'], 'rb') as file:
-            scaler = pickle.load(file)
+        #with open(model_paths['scaler'], 'rb') as file:
+        #    scaler = pickle.load(file)
 
         ## gets the features from the metadata for the RF model
-        df1, _ = preprocess(df1, scaler)
+        #df1, _ = preprocess(df1, scaler)
 
         processed_frame = self.process_batch(df1)
         return processed_frame
@@ -116,7 +116,7 @@ class Processor:
         # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
         # sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
         # submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
-        submodel_preds_string = "'".join(map(str, submodel_preds_list))
+        #submodel_preds_string = "'".join(map(str, submodel_preds_list))
         ## going to also add the ts_df dataframe which contains the submodel preds/probs
         # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
         # sorted_series = pd.concat([sorted_series, ts_df_repeated], axis=1)
@@ -133,13 +133,13 @@ class Processor:
         if self.write_labels:
             #print('writing new data into', save_path)
             self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-                            conf_num=np.round(predicted_series_confidence, 3), substring = submodel_preds_string, path=save_path)
+                            conf_num=np.round(predicted_series_confidence, 3), path=save_path)
 
         return sorted_series
     
 
 
-    def write_labels_into_dicom(self, series_group, label_num, conf_num, substring, path):
+    def write_labels_into_dicom(self, series_group, label_num, conf_num, path):
         #print('writing labels', label_num)
         for dicom_file in series_group.fname.tolist():
             filename = os.path.basename(dicom_file)
@@ -161,11 +161,11 @@ class Processor:
                 data_element1.private_creator = 'PredictedClassInfo'
                 data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
                 data_element2.private_creator = 'PredictedClassInfo'
-                data_element3 = pydicom.DataElement(custom_tag3, 'LO', substring)
-                data_element3.private_creator = 'PredictedClassInfo'
+                #data_element3 = pydicom.DataElement(custom_tag3, 'LO', substring)
+                #data_element3.private_creator = 'PredictedClassInfo'
                 ds[custom_tag1] = data_element1
                 ds[custom_tag2] = data_element2
-                ds[custom_tag3] = data_element3
+                #ds[custom_tag3] = data_element3
 
                 modified_file_path = os.path.join(path, filename)
                 ds.save_as(modified_file_path)
