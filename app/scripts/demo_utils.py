@@ -20,10 +20,11 @@ from scripts.cnn.cnn_inference import *
 
 # Function to check if the image has been processed and return the value in the DICOM tag (0010, 1010)
 def check_prediction_tag(dcm_data):
+    prediction = None
     if (0x0011, 0x1010) in dcm_data:
         prediction =  abd_label_dict[str(dcm_data[0x0011, 0x1010].value)]['short']  # this gets the numeric label written into the DICOM and converts to text description
         # if there are submodel predictions
-        prediction_cnn = None
+        
         
         if (0x0011, 0x1012) in dcm_data:
             substring = dcm_data[0x0011, 0x1012].value
@@ -33,7 +34,7 @@ def check_prediction_tag(dcm_data):
                 
             except Exception as e:
                 pass
-        return prediction_cnn
+        return prediction
     else:
         return None
     
@@ -53,8 +54,8 @@ def load_dicom_data(folder):
                     
                     
                     
-                    #label, _, _, _ = check_prediction_tag(dcm_data)
-                    label = 'unknown'
+                    label = check_prediction_tag(dcm_data)
+                    
                     data.append(
                         {
                             "patient": dcm_data.PatientName,
