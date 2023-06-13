@@ -52,8 +52,10 @@ destination_folder = st.sidebar.text_input("Enter destination folder path:", val
 #destination_folder = os.environ.get("SOURCE_DATA_PATH")
 
 selected_images = None
+dicom_df = None
 # check for dicom images within the subtree and build selectors for patient, exam, series
 if os.path.exists(start_folder) and os.path.isdir(start_folder):
+    print('dicom images found in ', start_folder)
     folder = st.sidebar.selectbox("Select a source folder:", os.listdir(start_folder), index=0)
     selected_folder = os.path.join(start_folder, folder)
 
