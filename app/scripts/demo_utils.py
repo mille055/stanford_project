@@ -100,6 +100,7 @@ def get_single_image_inference(image_path, model):
     img_df = pd.DataFrame.from_dicoms([image_path])
    
     predicted_series_class, predicted_series_confidence = pixel_inference(model, img_df.fname)
+    print('predicted_series_confidence', predicted_series_confidence)
     predicted_class_single = predicted_series_class[0]
     predicted_confidence_single=predicted_series_confidence[0]
     predicted_class = abd_label_dict[str(predicted_class_single)]['short'] #abd_label_dict[str(predicted_series_class)]['short']
