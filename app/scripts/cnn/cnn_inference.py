@@ -181,7 +181,7 @@ def load_pixel_model(modelpath, device=device, output_units = 19, model_type = '
         state_dict = torch.load(modelpath, map_location=device)
         model.load_state_dict(state_dict)
     else:
-        model = CustomDenseNet()
+        model = CustomDenseNet(pretrained=False)
         state_dict = torch.load(modelpath)
         model = model.load_state_dict(state_dict)
 
