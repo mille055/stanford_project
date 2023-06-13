@@ -136,7 +136,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
                     print(f"{image_path} is not a valid file path.")
             
                 dcm_data = pydicom.dcmread(image_path)
-                predicted_type, meta_prediction, cnn_prediction, nlp_prediction  = check_prediction_tag(dcm_data)
+                predicted_type  = check_prediction_tag(dcm_data)
 
                 window_width = st.sidebar.slider("Window Width", min_value=1, max_value=4096, value=2500, step=1)
                 window_center = st.sidebar.slider("Window Level", min_value=-1024, max_value=1024, value=0, step=1)
