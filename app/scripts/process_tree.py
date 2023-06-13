@@ -110,7 +110,7 @@ class Processor:
         predicted_series_class = predicted_series_class_list[0]
         # Writes the predictions into the dataframe
         sorted_series['predicted_class'] = predicted_series_class
-        sorted_series['prediction_confidence'] = np.round(predicted_series_confidence, 2)
+        sorted_series['prediction_confidence'] = np.round(np.max(predicted_series_confidence), 2)
         ## adding the submodel info
         # sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
         # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
