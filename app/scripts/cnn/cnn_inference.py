@@ -178,11 +178,11 @@ def load_pixel_model(modelpath, device=device, output_units = 19, model_type = '
         model.fc = torch.nn.Linear(num_features, num_finetuned_output_units)
 
         # Load the saved state_dict
-        state_dict = torch.load(modelpath, map_location=device)
+        state_dict = torch.load(modelpath, map_location=torch.device('cpu'))
         model.load_state_dict(state_dict)
     else:
         model = CustomDenseNet(pretrained=False)
-        state_dict = torch.load(modelpath)
+        state_dict = torch.load(modelpath, map_location=torch.device('cpu'))
         model = model.load_state_dict(state_dict)
 
     model=model.to(device)
