@@ -175,7 +175,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             if process_images:
                 if not destination_folder:
                     destination_path = start_folder
-                processor = Processor(start_folder, destination_folder, model, overwrite=True, write_labels=True)
+                processor = Processor(start_folder, destination_folder, model=model, overwrite=True, write_labels=True)
 
                 new_processed_df = processor.pipeline_new_studies()
           
