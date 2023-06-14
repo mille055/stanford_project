@@ -43,11 +43,11 @@ st.write("Chad Miller")
 model = load_pixel_model('models/best_0606.pth', model_type='DenseNet')
 
 # the place to find the image data
-start_folder = "~/volumes/cm7/start_folder"
+start_folder = "/volumes/cm7/start_folder"
 #start_folder = os.environ.get("SOURCE_DATA_PATH")
 
 # the place to put processed image data
-destination_folder = start_folder
+destination_folder = '../../volumes/cm7/start_folder'
 destination_folder = st.sidebar.text_input("Enter destination folder path:", value="")
 #destination_folder = os.environ.get("SOURCE_DATA_PATH")
 
@@ -174,7 +174,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
             process_images = st.sidebar.button("Process Images")
             if process_images:
                 if not destination_folder:
-                    destination_path = start_folder
+                    destination_folder = start_folder
                 processor = Processor(start_folder, destination_folder, model=model, overwrite=True, write_labels=True)
 
                 new_processed_df = processor.pipeline_new_studies()
