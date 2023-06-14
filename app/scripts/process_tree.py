@@ -96,50 +96,54 @@ class Processor:
     # on the middle image given prior results of the pixel CNN classifier showing good
     # results on this strategy
     def process_series(self, series_df, selection_fraction=0.5):
-        # Sort the dataframe by file_info (or another relevant column)
-        sorted_series = series_df.sort_values(by='fname')
+        try:
+            # Sort the dataframe by file_info (or another relevant column)
+            sorted_series = series_df.sort_values(by='fname')
 
-        # Find the middle image index
-        selected_index = int(len(sorted_series) * selection_fraction)
+            # Find the middle image index
+            selected_index = int(len(sorted_series) * selection_fraction)
 
-        # Get the middle image
-        selected_image = sorted_series.iloc[selected_index]['fname']
-        print('selected_image is', selected_image)
-        # Gets classification from the fusion model
-        predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, selected_image)
-        predicted_series_class = predicted_series_class_list[0]
-        print('predicted series is ', predicted_series_class)
-        # Writes the predictions into the dataframe
-        sorted_series['predicted_class'] = predicted_series_class
-        sorted_series['prediction_confidence'] = np.round(np.max(predicted_series_confidence), 2)
-        ## adding the submodel info
-        # sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
-        # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
-        # sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
-        # submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
-        #submodel_preds_string = "'".join(map(str, submodel_preds_list))
-        ## going to also add the ts_df dataframe which contains the submodel preds/probs
-        # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
-        # sorted_series = pd.concat([sorted_series, ts_df_repeated], axis=1)
-        
+            # Get the middle image
+            selected_image = sorted_series.iloc[selected_index]['fname']
+            print('selected_image is', selected_image)
+            # Gets classification from the fusion model
+            predicted_series_class_list, predicted_series_confidence = pixel_inference(self.model, selected_image)
+            predicted_series_class = predicted_series_class_list[0]
+            print('predicted series is ', predicted_series_class)
+            # Writes the predictions into the dataframe
+            sorted_series['predicted_class'] = predicted_series_class
+            sorted_series['prediction_confidence'] = np.round(np.max(predicted_series_confidence), 2)
+            ## adding the submodel info
+            # sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
+            # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
+            # sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
+            # submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
+            #submodel_preds_string = "'".join(map(str, submodel_preds_list))
+            ## going to also add the ts_df dataframe which contains the submodel preds/probs
+            # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
+            # sorted_series = pd.concat([sorted_series, ts_df_repeated], axis=1)
+            
 
-        # makes a new folder given by the destination_folder if it does not yet exist
-        relative_path = os.path.relpath(series_df.fname.iloc[0], self.data_dir)
-        save_path = os.path.join(self.destination_folder, os.path.dirname(relative_path))
-        
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
+            # makes a new folder given by the destination_folder if it does not yet exist
+            relative_path = os.path.relpath(series_df.fname.iloc[0], self.data_dir)
+            save_path = os.path.join(self.destination_folder, os.path.dirname(relative_path))
+            
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
 
-        # writes labels into the DIOM metadata if write_labels is true 
-        if self.write_labels:
-            print('writing labels')
-            #print('writing new data into', save_path)
-            self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
-                            conf_num=np.round(np.max(predicted_series_confidence), 3), path=save_path)
+            # writes labels into the DIOM metadata if write_labels is true 
+            if self.write_labels:
+                print('writing labels')
+                #print('writing new data into', save_path)
+                self.write_labels_into_dicom(sorted_series, label_num=predicted_series_class,
+                                conf_num=np.round(np.max(predicted_series_confidence), 3), path=save_path)
 
-        return sorted_series
+            return sorted_series
     
-
+        except AttributeError as e:
+            print(f"An error occurred while processing the series: {e}")
+            print("Skipping this series due to lack of DICOM image data.")
+            return None  
 
     def write_labels_into_dicom(self, series_group, label_num, conf_num, path):
         #print('writing labels', label_num)
