@@ -43,7 +43,7 @@ st.write("Chad Miller")
 model = load_pixel_model('models/best_0606.pth', model_type='DenseNet')
 
 # the place to find the image data
-start_folder = "/volumes/cm7/start_folder"
+start_folder = "~/volumes/cm7/start_folder"
 #start_folder = os.environ.get("SOURCE_DATA_PATH")
 
 # the place to put processed image data
@@ -64,7 +64,7 @@ if os.path.exists(start_folder) and os.path.isdir(start_folder):
     # if there are dicom images somewhere in the tree
     if os.path.exists(selected_folder) and os.path.isdir(selected_folder):
         dicom_df = load_dicom_data(selected_folder)
-        print(dicom_df)
+        #print(dicom_df)
 
         if not dicom_df.empty:
             # Select patient
