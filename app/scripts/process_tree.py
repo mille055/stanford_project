@@ -4,9 +4,6 @@ import os
 import pydicom
 
 from .cnn.cnn_inference import *
-# from fusionmodel.fus_inference import get_fusion_inference
-# from fusionmodel.fus_model import FusionModel
-# from model_container import ModelContainer
 from .utils import *
 from .config import model_paths
 
@@ -31,9 +28,7 @@ class Processor:
             and store the new images
         overwrite(bool): whether to process images that already have information in these tags, 
             typically due to prior processing
-        fusion_model(model): the classifier model which incorporates the various subcomponents
-            (metadata RandomForest, pixel CNN, and textual description NLP models) in fusion
-            model that is a single fully connected layer.
+        model(model): the classifier model
     Output: If pipeline_new_studies is run, it will return the processed dataframe
     
     '''
@@ -91,9 +86,8 @@ class Processor:
         return processed_series
 
     # since all the images in a series are typically of the same type, performs
-    # the classification at the series level. Gets the middle image from each series
-    # and performs the classification for the 3 modalities and the fusion model based
-    # on the middle image given prior results of the pixel CNN classifier showing good
+    # the classification at the series level. Gets one (by default the middle) image from each series
+    # and performs the classification on the pixel CNN classifier showing good
     # results on this strategy
     def process_series(self, series_df, selection_fraction=0.5):
         try:
@@ -113,15 +107,6 @@ class Processor:
             # Writes the predictions into the dataframe
             sorted_series['predicted_class'] = predicted_series_class
             sorted_series['prediction_confidence'] = np.round(np.max(predicted_series_confidence), 2)
-            ## adding the submodel info
-            # sorted_series['meta_prediction'], sorted_series['meta_probs'] = ts_df['meta_preds'], ts_df['meta_probs']
-            # sorted_series['cnn_prediction'], sorted_series['cnn_probs'] = ts_df['pixel_preds'], ts_df['pixel_probs']
-            # sorted_series['nlp_prediction'], sorted_series['nlp_probs'] = ts_df['nlp_preds'], ts_df['nlp_probs']
-            # submodel_preds_list = [ts_df['meta_preds'].iloc[0], ts_df['pixel_preds'].iloc[0], ts_df['nlp_preds'].iloc[0]]
-            #submodel_preds_string = "'".join(map(str, submodel_preds_list))
-            ## going to also add the ts_df dataframe which contains the submodel preds/probs
-            # ts_df_repeated = pd.concat([ts_df]* len(sorted_series), ignore_index=True)
-            # sorted_series = pd.concat([sorted_series, ts_df_repeated], axis=1)
             
 
             # makes a new folder given by the destination_folder if it does not yet exist
@@ -168,8 +153,7 @@ class Processor:
                 print('writing', label_num, 'into tag1 for file', filename)
                 data_element2 = pydicom.DataElement(custom_tag2, 'DS', str(conf_num))
                 data_element2.private_creator = 'PredictedClassInfo'
-                #data_element3 = pydicom.DataElement(custom_tag3, 'LO', substring)
-                #data_element3.private_creator = 'PredictedClassInfo'
+                
                 ds[custom_tag1] = data_element1
                 ds[custom_tag2] = data_element2
                 #ds[custom_tag3] = data_element3
@@ -182,20 +166,3 @@ class Processor:
             modified_file_path = os.path.join(path, filename)
             ds.save_as(modified_file_path)  
 
-
-def main():
-    old_data_site = '/volumes/cm7/source042323/'
-    destination_site = '/volumes/cm7/testing_additions042323/'
-    
-    # get the models
-    #model_container = ModelContainer()
-    #fusion_model = FusionModel(model_container = model_container, num_classes=19)
-    
-    # instantiate the processor class for action on the DICOM images
-    #processor = Processor(old_data_site, destination_site, fusion_model=fusion_model, write_labels=True)
-    #new_processed_df = processor.pipeline_new_studies()
-    #print(new_processed_df)
-    #new_processed_df.to_pickle('../data/newly_processed_cases042423.pkl')
-
-if __name__ == "__main__":
-    main()
