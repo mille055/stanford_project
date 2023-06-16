@@ -44,7 +44,7 @@ The streamlit demo displays the ability to scroll through the images of an abdom
 
 **1. Clone this repository**
 ```
-git clone https://github.com/mille055/AIPI540_individual_project
+git clone https://github.com/mille055/stanford_project
 ```
 **2. Install requirements:**
 ```
