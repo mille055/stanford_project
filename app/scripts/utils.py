@@ -33,9 +33,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.utils.validation import check_is_fitted
 
 ### local imports ###
-from .config import file_dict, abd_label_dict, classes, column_lists, feats
-from .config import val_list, train_val_split_percent, random_seed, data_transforms
-from .config import sentence_encoder, series_description_column
+from config import file_dict, abd_label_dict, classes, column_lists, feats
+from config import val_list, train_val_split_percent, random_seed, data_transforms
+from config import sentence_encoder, series_description_column
 
 ### gets the dicom files from a provided directory ###
 def get_dicoms(path, first_dcm=False, **kwargs):
